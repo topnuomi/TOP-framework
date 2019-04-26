@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<head>
+<title>企业用户后台管理系统 - PHPYUN人才招聘系统</title>
+<meta http-equiv=Content-Type content="text/span; charset=utf-8"/>
+<meta http-equiv=X-UA-Compatible content="IE=edge"/>
+<script>var weburl="http://www.hr135.com";</script>
+<script type="text/javascript" src="http://www.hr135.com/js/jquery-1.8.1.min.js?v=4036"></script>
+<link href="http://www.hr135.com/js/layui/css/layui.css?v=4036" rel="stylesheet" type="text/css" />
+<script src="http://www.hr135.com/js/layui/layui.js?v=4036"></script>
+<script src="http://www.hr135.com/js/layui/phpyun_layer.js?v=4036"></script> 
+<script type="text/javascript" src="http://www.hr135.com/js/member_public.js?v=4036"></script> 
+<script type="text/javascript" src="http://www.hr135.com/js/public.js?v=4036"></script> 
+<link href="http://www.hr135.com/app/template/member/com/images/m_style.css?v=4036" type="text/css" rel="stylesheet"/>
+<meta content="MSHTML 6.00.6000.16939" name=GENERATOR/> 
+<script>
+
+/*屏蔽所有的js错误*/
+function killerrors() {return true;}
+window.onerror = killerrors;
+var integral_pricename='积分';  
+</script>
+    <!--[if IE 6]>
+    <script src="http://www.hr135.com/js/png.js?v=4036"></script>
+    <script>
+      DD_belatedPNG.fix('.png,.#bg');
+    </script>
+    <![endif]-->
+</head>
+<body>
+<div class="body_box">
+<header>
+
+<div class="header">
+	<div class="header_fixed">
+		<div class="header-logo fltL">
+			<a href="http://www.hr135.com" target="_blank"><img src="http://www.hr135.com/data/logo/20180111/15255639613.PNG" class="png" ></a>
+		</div>
+		<ul class="yun_m_headernav">
+			<li class="yun_m_headernav_cur"><a  href="index.php">企业中心</a></li>
+			<li><a href="http://www.hr135.com/resume/" target="_blank">找人才 </a></li>
+			<li><a href="http://www.hr135.com/tiny/" target="_blank">找普工</a></li>
+			<li><a href="http://www.hr135.com/ask/" target="_blank">问答</a></li>
+			<li><a href="http://www.hr135.com" target="_blank">人才网首页</a></li>
+		</ul>
+
+		<div class="">
+			<div class="header_m_navright">
+	 
+				<!-- 头像-->  
+				<div class="yun_m_headertx"  onMouseOver="headerInfoShow('show')" onMouseOut="headerInfoShow('hide')"> 
+					<a href="index.php?c=uppic"> 
+						<img src="http://www.hr135.com/./data/logo/20190122/15482336563.PNG" width="25" height="25" onerror="showImgDelay(this,'http://www.hr135.com/./data/logo/20190122/15482336563.PNG','2')"/>
+					</a> 
+					
+					<div class="yun_m_headertx_hi">你好！17790352903</div>
+					<i class="yun_m_headertx_hi_icon"></i>
+					<div class="yun_m_header_info" style="display:none;">
+						<a href="index.php?c=info" class="yun_m_header_info_a">编辑资料</a>
+						<a href="http://www.hr135.com/company/c_show-id_19509.html" target="_blank" class="yun_m_header_info_a"> 预览主页</a>
+						<a href="index.php?c=comtpl" class="yun_m_header_info_a">模板设置</a>
+						<a href="javascript:void(0)" onClick="logout('index.php?act=logout')" title="退出登录" class="yun_m_header_info_a">退出登录</a>
+					</div> 
+				</div> 
+
+				<!-- 消息 START-->
+				<div class="yun_m_headermsg" onMouseOver="tzmsgNumShow('show')" onMouseOut="tzmsgNumShow('hide')">
+					<i class="yun_m_headermsg_icon"></i>
+					<span class="yun_m_headermsg_n" id="tzmsgNum" style="display:none">0</span>
+					<div class="yun_m_headermsg_box" style="display:none">
+						<div class="yun_m_headermsg_list">
+							<a href="http://www.hr135.com/member/index.php?c=hr">职位申请  <em class="yun_m_headermsg_list_n" id="jobApplyNum">(0)</em></a>
+						</div>
+						
+						<div class="yun_m_headermsg_list">
+							<a href="http://www.hr135.com/member/index.php?c=sysnews">系统消息  <em class="yun_m_headermsg_list_n" id="sysmsgNum">(0)</em></a>
+						</div>
+				
+						<div class="yun_m_headermsg_list">
+							<a href="http://www.hr135.com/member/index.php?c=msg">求职咨询  <em class="yun_m_headermsg_list_n" id="jobAskNum">(0)</em></a> 
+						</div>
+						
+						<div class="yun_m_headermsg_list">
+							<a href="http://www.hr135.com/member/index.php?c=jobpack&act=rewardlog&state=1">赏金投递  <em class="yun_m_headermsg_list_n" id="jobpackNum">(0)</em></a> 
+						</div>
+						<div class="yun_m_headermsg_list">
+							<a href="http://www.hr135.com/member/index.php?c=pl">面试评价  <em class="yun_m_headermsg_list_n" id="ComMsgNum">(0)</em></a> 
+						</div>
+					</div>
+				</div>
+				<!-- 消息 END--> 
+				<a  href="javascript:void(0)"  onclick="jobadd_url('1','0.1','','1','100');return false;" class="header_m_nav_fb">发布职位</a>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div class="clear"></div> 
+<script>
+//加减乘除
+function accAdd(arg1,arg2){ 
+	var r1,r2,m; 
+	try{r1=arg1.toString().split(".")[1].length}catch(e){r1=0} 
+	try{r2=arg2.toString().split(".")[1].length}catch(e){r2=0} 
+	m=Math.pow(10,Math.max(r1,r2)) 
+	return (arg1*m+arg2*m)/m 
+} 
+function accSub(arg1,arg2){ 
+	return accAdd(arg1,-arg2); 
+} 
+function accMul(arg1, arg2) {
+	var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+	try { m += s1.split(".")[1].length } catch (e) { }
+	try { m += s2.split(".")[1].length } catch (e) { }
+	return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
+}
+function accDiv(arg1,arg2){    
+	var t1=0,t2=0,r1,r2;    
+	try{t1=arg1.toString().split(".")[1].length}catch(e){}    
+	try{t2=arg2.toString().split(".")[1].length}catch(e){}    
+	with(Math){        
+		r1=Number(arg1.toString().replace(".",""));        
+		r2=Number(arg2.toString().replace(".",""));        
+		return (r1/r2)*pow(10,t2-t1);    
+	}
+}
+ 
+//发布职位积分抵扣填写
+function checkIssueNum(integral,integral_pro){
+	var dkjf = $("#issue_dkjf").val();
+ 	if(dkjf){
+		$(".issue_jfdkh_m").show();
+	} 
+	var need = $("#issue_need").text();
+	var need_jifen = accMul(need, integral_pro);
+
+	if(parseInt(integral) >= parseInt(need_jifen)){
+		if(parseInt(dkjf) > parseInt(need_jifen)){
+			$("#issue_dkjf").val(need_jifen);
+			var dkjfh = accSub(need , accDiv(need_jifen,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+		}	
+ 	}else{
+		if(parseInt(dkjf) > parseInt(integral)){
+			$("#issue_dkjf").val(integral);
+			var dkjfh = accSub(need , accDiv(integral,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+ 		}
+ 	}
+  	 
+	if(dkjfh<=0){
+		$("#issue_dkjfh").html(0);
+		$("#issuezf_div").hide();
+		$("#issuezf_btn").show();
+	}else{
+		$("#issue_dkjfh").html(dkjfh);
+		$("#issuezf_div").show();
+		$("#issuezf_btn").hide();
+	}
+	 	
+}
+
+// 发布兼职积分抵扣填写
+function checkIssuepNum(integral,integral_pro){
+	var dkjf = $("#issuep_dkjf").val();
+ 	if(dkjf){
+		$(".issuep_jfdkh_m").show();
+	} 
+	var need = $("#issuep_need").text();
+	var need_jifen = accMul(need, integral_pro);
+  	if(parseInt(integral) >= parseInt(need_jifen)){
+		if(parseInt(dkjf) > parseInt(need_jifen)){
+			$("#issuep_dkjf").val(need_jifen);
+			var dkjfh = accSub(need , accDiv(need_jifen,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+		}	
+ 	}else{
+		if(parseInt(dkjf) > parseInt(integral)){
+			$("#issuep_dkjf").val(integral);
+			var dkjfh = accSub(need , accDiv(integral,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+ 		}
+ 	}
+	
+	if(dkjfh<=0){
+		$("#issuep_dkjfh").html(0);
+		$("#issuepzf_div").hide();
+		$("#issuepzf_btn").show();
+	}else{
+		$("#issuep_dkjfh").html(dkjfh);
+		$("#issuepzf_div").show();
+		$("#issuepzf_btn").hide();
+	}
+		
+}
+
+function myFunction(_this) {
+    _this.value = _this.value.replace(/[^0-9]/g, '');
+}
+
+function issuezf(){//发布职位
+  	var index = layer.load('执行中，请稍候...',0);
+	var url = "index.php?c=job&act=dkBuy";
+	$.post(url,{issuejob:1},function(data){
+		if(data){
+			layer.closeAll();
+			data=eval('('+data+')'); 
+			if(data.error==1){
+				if(data.url){
+					layer.msg(data.msg, 2,8,function(){
+						window.location.href=data.url;
+					});
+				}else{
+					layer.msg(data.msg, 2,8);
+				}
+     			
+     		}else if(data.error==0){
+     			layer.msg(data.msg, 2,9,function(){
+					window.location.href='index.php?c=jobadd';
+				}); 
+    		}
+		}
+	})
+}
+
+function issuepzf(){//发布兼职
+  	var index = layer.load('执行中，请稍候...',0);
+	var url = "index.php?c=job&act=dkBuy";
+	$.post(url,{issuepart:1},function(data){
+		if(data){
+			layer.closeAll();
+			data=eval('('+data+')'); 
+			if(data.error==1){
+				if(data.url){
+					layer.msg(data.msg, 2,8,function(){
+						window.location.href=data.url;
+					});
+				}else{
+					layer.msg(data.msg, 2,8);
+				}
+     			
+     		}else if(data.error==0){
+     			layer.msg(data.msg, 2,9,function(){
+					window.location.href='index.php?c=partadd';
+				}); 
+    		}
+		}
+	})
+}
+
+function issueJobOrder(pay_type){//职位发布
+ 	$('#pay_type').val(pay_type);
+ 	var issue_dkjf = $('#issue_dkjf').val();
+ 	var index = layer.load('执行中，请稍候...',0);
+
+ 	$.ajax({
+  		async: false, 
+        type: 'POST',  
+        global:false,
+        url: "index.php?c=job&act=buyJob",  
+        data: {issuejob:1,issue_dkjf:issue_dkjf},  
+        success: function(data){  
+          layer.close(index);
+        	var data=eval('('+data+')'); 
+          
+        	if(data.error==1){
+     			layer.msg(data.msg, 2,8);
+     		}else if(data.error==0){
+     			$('#order_issue_id').val(data.orderid);
+    			$('#orderid').val(data.id);
+    			//提交表单
+    			$('#payform_issue').submit();
+    		}
+        }  
+  	});
+}
+
+function issuePartOrder(pay_type){//兼职发布
+ 	$('#pay_type').val(pay_type);
+ 	var issuep_dkjf = $('#issuep_dkjf').val();
+ 	var index = layer.load('执行中，请稍候...',0);
+
+ 	$.ajax({
+  		async: false, 
+        type: 'POST',  
+        global:false,
+        url: "index.php?c=job&act=buyJob",  
+        data: {issuepart:1,issuep_dkjf:issuep_dkjf},  
+        success: function(data){  
+          layer.close(index);
+        	var data=eval('('+data+')'); 
+          
+        	if(data.error==1){
+     			layer.msg(data.msg, 2,8);
+     		}else if(data.error==0){
+     			$('#order_issuep_id').val(data.orderid);
+    			$('#orderid').val(data.id);
+    			//提交表单
+    			$('#payform_issuep').submit();
+    		}
+        }  
+  	});
+}
+
+function wxorderstatus(orderid) { 
+	$.post('index.php?c=payment&act=wxpaystatus',{orderid:orderid},function(data){
+		if(data==1){
+			window.location.href='';
+		}
+	});
+}
+
+function pay_forms(){
+	var pay_type=$("#pay_type").val();
+	if(pay_type==''){
+		layer.msg('请选择支付方式！', 2,8);
+	}else if(pay_type == 'wxpay'){ 
+		var orderId = $("#orderid").val();
+		$.post('index.php?c=payment&act=wxurl',{orderId:orderId},function(data){
+			$('.wx_payment_ewm').html(data);
+			$.layer({
+				type : 1,
+				title :'微信扫码支付', 
+				closeBtn : [0 , true],
+				border : [10 , 0.3 , '#000', true],
+				area : ['320px','400px'],
+				page : {dom :"#wxpayTx"}
+			});
+			setInterval("wxorderstatus("+orderId+")", 3000); 
+		})
+		return false;  
+	} else{
+		$.layer({
+			type : 1,
+			title :'提示',
+			closeBtn : [0 , true],
+			border : [10 , 0.3 , '#000', true],
+			area : ['450px','280px'],
+			page : {dom :"#payshow_issue"}
+		});
+	}
+}
+function rePay(){
+	var orderId = $("#orderid").val();
+	location.href="index.php?c=payment&id="+orderId;
+}
+</script>
+  
+<!--发布职位弹出框-->
+<div id="issue_job"  style="display:none; ">
+	<div class="job_recom_box">
+ 		<div class="job_recom_list">
+			
+			<span class="job_recom_s">所需金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+											<span id="issue_need" class="job_recom_list_jobtime_s">0.1</span>元
+					 				</div>
+			</div>
+		</div>
+
+		<!-- 可用积分抵扣 -->
+					<div class="job_recom_list">
+				<span class="job_recom_s">抵扣积分：</span>
+				<input type="text" value="" id="issue_dkjf" name="issue_dkjf" onkeyup="checkIssueNum('11','100');" oninput="myFunction(this)" class="com_jf_text">账户积分11（1元 = 100积分）
+			</div>
+				<div class="job_recom_list issue_jfdkh_m" style="display:none">
+			<span class="job_recom_s">抵扣后金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+					<span id="issue_dkjfh" class="job_recom_list_jobtime_s"></span>元
+				</div>
+			</div>
+		</div>
+		<div id="issuezf_div" >
+			<form name="alipayment"  id="payform_issue" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return pay_forms();">
+				<div class="job_redpack_list">
+										<div class="job_redpack_list_name">支付方式：</div>
+										<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="issueJobOrder('wxpay');"><div class="job_redpack_pay_bor"><img src="http://www.hr135.com/app/template/member/com/images/wx_pay.png"></div> 微信支付</a>
+					</div> 
+															<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="issueJobOrder('alipay');"><div class="job_redpack_pay_bor job_redpack_pay_bor_pd"><img src="http://www.hr135.com/app/template/member/com/images/ap_pay.png"></div>支付宝支付</a>
+					</div>
+															<input type="hidden" value="" id="pay_type" name="pay_type"/>
+					<input type="hidden" name="dingdan" id="order_issue_id" value=""/>
+					<input type="hidden" value="发布职位金额"  name="subject"/>
+					<input type="hidden" name="pay_bank" value="directPay">
+				</div>
+			</form>
+		</div>
+		<div id="issuezf_btn" style="display:none"  class="job_tck_bth_pd">
+			<input type='button' value='确认支付' onClick="issuezf();" class='job_redpack_list_c_bth'>
+		</div>
+	</div>
+</div>
+ 
+<!--发布兼职弹出框-->
+<div id="issue_part"  style="display:none; ">
+	<div class="job_recom_box">
+ 		<div class="job_recom_list">
+						<span class="job_recom_s">所需金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+											<span id="issuep_need" class="job_recom_list_jobtime_s">0.2</span>元
+					 				</div>
+			</div>
+		</div>
+
+		<!-- 可用积分抵扣 -->
+					<div class="job_recom_list">
+				<span class="job_recom_s">抵扣积分：</span>
+				<input type="text" value="" id="issuep_dkjf" name="issuep_dkjf" onkeyup="checkIssuepNum('11','100');" oninput="myFunction(this)" class="com_jf_text">账户积分11（1元 = 100积分）
+			</div>
+				<div class="job_recom_list issuep_jfdkh_m" style="display:none">
+			<span class="job_recom_s">抵扣后金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+					<span id="issuep_dkjfh" class="job_recom_list_jobtime_s"></span>元
+				</div>
+			</div>
+		</div>
+		<div id="issuepzf_div" >
+			<form name="alipayment"  id="payform_issuep" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return pay_forms();">
+				<div class="job_redpack_list">
+										<div class="job_redpack_list_name">支付方式：</div>
+										<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="issuePartOrder('wxpay');"><div class="job_redpack_pay_bor"><img src="http://www.hr135.com/app/template/member/com/images/wx_pay.png"></div> 微信支付</a>
+					</div> 
+															<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="issuePartOrder('alipay');"><div class="job_redpack_pay_bor job_redpack_pay_bor_pd"><img src="http://www.hr135.com/app/template/member/com/images/ap_pay.png"></div>支付宝支付</a>
+					</div>
+															<input type="hidden" value="" id="pay_type" name="pay_type"/>
+					<input type="hidden" name="dingdan" id="order_issuep_id" value=""/>
+					<input type="hidden" value="发布兼职金额"  name="subject"/>
+					<input type="hidden" name="pay_bank" value="directPay">
+				</div>
+			</form>
+		</div>
+		<div id="issuepzf_btn" style="display:none" class="job_tck_bth_pd">
+			<input type='button' value='确认支付' onClick="issuepzf();" class='job_redpack_list_c_bth'>
+		</div>
+	</div>
+</div>
+
+<input type="hidden" name="orderid" id="orderid" value=""/>
+  
+<!-- 微信tck -->
+<div id="wxpayTx"  style="display:none;">
+	<div class="wx_payment">
+		<div class="wx_payment_cont"><div class="wx_payment_ewm">正在加载微信二维码,请稍候....</div> </div><div class="wx_payment_h2">二维码有效时长为2小时，请尽快支付</div>
+		
+		<div class="wx_payment_tip">
+			<div class="wx_payment_tip_left">
+				<i class="wx_payment_tip_line1"></i>
+				<i class="wx_payment_tip_line2"></i>
+				<i class="wx_payment_tip_line3"></i>
+			</div> 
+			<div class="wx_payment_tip_right">请使用微信扫一扫<br>扫描二维码支付</div>
+		</div>
+	</div>
+</div>  
+
+<!--  支付弹出框 -->
+<div id="payshow_issue" style="width:450px; position:absolute;left:0px;top:0px; background:#fff; display:none;">
+	<div class="payment_tip">
+		请在新打开的支付页面上完成付款，付款完成前请不要关闭此窗口。<br>
+		如您在支付过程中遇到问题，请联系客服：<span class="payment_tip_s">400-880-5523</span>
+	</div>
+	
+	<div class="payment_bottom">
+		<a href="index.php?c=paylog" class="payment_bottombutt">已完成付款</a>
+		<a href="javascript:;" onclick="rePay();" class="payment_bottom_bth2">重新支付</a>
+	</div>
+</div>
+
+ 
+</header>
+<script>
+    function Close(id) {
+        $("#" + id).hide();
+        $("#bg").hide();
+    }
+    function Next() {
+        $("#one_tip").hide();
+        $("#two_tip").show();
+    }
+    function showindextip(id) {
+        $(".indextiphide").hide();
+        $("#indextiphide" + id).show();
+    }
+    function hideindextip() {
+        $(".indextiphide").hide();
+        $("#bg").hide();
+    }
+</script>
+
+<div class="w1000">
+    <div class="admin_mainbody">
+    	<div class="sidebar">
+	<div class="left_box">
+		<div class="left_box_nav">
+			
+			<ul class="left_box_nav_list">
+				<li  class="left_box_nav_cur" data-def='1'>
+					<a href="http://www.hr135.com/member/">首页
+						<i class="left_box_nav_icon"></i>
+						<i class="left_box_nav_line"></i>
+					</a>
+				</li>
+					
+				<li  data-def='3'>
+					<a href="javascript:;">职位
+						<i class="left_box_nav_icon left_box_nav_icon_zw"></i>
+						<i class="left_box_nav_line"></i>
+					</a>
+				</li>
+				
+				<li  data-def='5'>
+					<a href="javascript:;">简历
+						<i class="left_box_nav_icon left_box_nav_icon_jl"></i>
+						<i class="left_box_nav_line"></i>
+											</a>
+				</li>
+				
+				<li  data-def='4'>
+					<a href="javascript:;">财务
+						<i class="left_box_nav_icon left_box_nav_icon_cw"></i>
+						<i class="left_box_nav_line"></i>
+					</a>
+				</li>
+				
+				<li  data-def='7'>
+					<a href="javascript:;">设置
+						<i class="left_box_nav_icon left_box_nav_icon_sz"></i>
+						<i class="left_box_nav_line"></i>
+					</a>
+				</li>
+				
+				<li  data-def='2'>
+					<a href="javascript:;">资料
+						<i class="left_box_nav_icon left_box_nav_icon_zl"></i>
+						<i class="left_box_nav_line"></i>
+					</a>
+				</li>
+			</ul>
+
+		</div>
+
+		
+			<ul class="left_nav_ul  " id='def1'>
+				<li><span><a href="index.php?c=info" title="基本信息"><i class="com_left_icon com_left_icon_info"></i>基本信息</a></span></li>
+				<li>
+					<span><a href="javascript:void(0)"  onclick="jobadd_url('1','0.1','','1','100');return false;" title="发布职位" style="color:red;"><i class="com_left_icon com_left_icon_info"></i>发布职位</a></span> 
+				</li>
+                	<li><span>
+						<a href="index.php?c=job&w=1" title="职位管理"><i class="com_left_icon com_left_icon_zwgl"></i>职位管理</a>
+					</span></li>
+                 <li  class="style12" >
+					<span>
+						<a href="index.php?c=right" style="color:red;">
+							<i class="com_left_icon com_left_icon_fw"></i>VIP招聘服务
+							<i class="com_icon com_icon_new"></i>
+						</a>
+					</span>
+				</li>
+				<li  class="style01" >
+					<span><a href="index.php?c=hr" title="我的简历"><i class="com_left_icon com_left_icon_jl"></i>我的简历</a></span> 
+				</li>
+				<!-- <li><span><a href="index.php?c=hr" title="简历投递"><i class="com_left_icon com_left_icon_info"></i>简历投递</a></span></li> -->
+                <li  class="style03" >
+					<span><a href="index.php?c=invite" title="已邀请面试的人才" style="color:red;"><i class="com_left_icon com_left_icon_yq"></i>面试邀请</a></span>
+				</li>
+				<li><span><a href="index.php?c=paylogtc" title="会员套餐"><i class="com_left_icon com_left_icon_info"></i>我的服务</a></span></li>
+				
+         		<li  class="style07">
+					<span><a href="index.php?c=tongji"><i class="com_left_icon com_left_icon_fx"></i>招聘分析</a></span>
+				</li>
+                <li  class="style05" >
+					<span>
+						<a href="index.php?c=pay" title="充值积分">
+							<font color="#FF0000"><i class="com_left_icon com_left_icon_cz"></i>充值积分</font>
+						</a>
+					</span>
+				</li>  
+                <li  class="style07" >
+					<span><a href="index.php?c=binding"><i class="com_left_icon com_left_icon_bd"></i>账户绑定</a></span>
+				</li>
+                <li><span><a href="index.php?c=sysnews" title="网站公告"><i class="com_left_icon com_left_icon_info"></i>系统消息</a></span></li>
+			</ul>
+		
+		
+		
+			<ul class="left_nav_ul   none" id='def2'>
+				<li  class="style01">
+					<span><a href="index.php?c=info" title="基本信息"><i class="com_left_icon com_left_icon_info"></i>基本信息</a></span> 
+				</li>
+				<li  class="style08" >
+					<span><a href="index.php?c=uppic" title="企业LOGO"><i class="com_left_icon com_left_icon_logo"></i>企业Logo</a></span> 
+				</li>
+				<li  class="style02" >
+					<span><a href="index.php?c=map" title="企业地图"><i class="com_left_icon com_left_icon_map"></i>企业地图</a></span> 
+				</li>
+				<li  class="style03" >
+					<span><a href="index.php?c=news" title="企业新闻"><i class="com_left_icon com_left_icon_news"></i>企业新闻</a></span> 
+				</li>
+				<li  class="style05" >
+					<span><a href="index.php?c=show" title="企业环境"><i class="com_left_icon com_left_icon_hj"></i>企业环境</a></span> 
+				</li>
+				<li  class="style04" >
+					<span><a href="index.php?c=product" title="企业产品"><i class="com_left_icon com_left_icon_cp"></i>企业产品</a></span> 
+				</li>
+				<li  class="style09" >
+					<span><a href="index.php?c=comtpl" title="模板切换"><i class="com_left_icon com_left_icon_mb"></i>企业模板</a></span>
+				</li>
+                                <li  class="style11" >
+					<span><a href="index.php?c=baoming_subject" title="培训管理"><i class="com_left_icon com_left_icon_xin"></i>培训管理</a></span> 
+				</li>
+                				<li  class="style07" >
+					<span><a href="index.php?c=binding"  style="color:red;"><i class="com_left_icon com_left_icon_bd"></i>账户认证</a></span>
+				</li> 
+			</ul>
+	
+
+		
+			<ul class="left_nav_ul  none" id='def5'>
+					<li  class="style06">
+						<span>
+							<a href="index.php?c=resume" class="f60">
+								<i class="com_left_icon com_left_icon_search"></i>搜人才
+								<i class="com_icon com_icon_new"></i>
+							</a>
+						</span>
+					</li>
+				<li  class="style01" >
+					<span><a href="index.php?c=hr" title="我的简历"><i class="com_left_icon com_left_icon_jl"></i>我的简历</a></span> 
+				</li>
+				<li  class="style03" >
+					<span><a href="index.php?c=invite" title="已邀请面试的人才" style="color:red;"><i class="com_left_icon com_left_icon_yq"></i>面试邀请</a></span>
+				</li>
+				<li  class="style06" >
+					<span><a href="index.php?c=subscribe"><i class="com_left_icon com_left_icon_info"></i>人才订阅</a></span> 
+				</li>
+				<li  class="style06" >
+					<span><a href="index.php?c=finder"><i class="com_left_icon com_left_icon_sq"></i>人才搜索器</a></span> 
+				</li>
+				<li  class="style06" >
+					<span><a href="index.php?c=attention_me" ><i class="com_left_icon com_left_icon_gz"></i>关注我的人才</a></span> 
+				</li>
+				<li  class="style06" >
+					<span><a href="index.php?c=look_job"><i class="com_left_icon com_left_icon_eye"></i>被浏览的职位</a></span> 
+				</li>
+									<li  class="style07" >
+						<span><a href="index.php?c=my_rebates" title="猎头悬赏"><i class="com_left_icon com_left_icon_lt"></i>猎头悬赏</a></span>
+					</li>
+				                				<li class="style09">
+					<span>
+						<a href="http://www.hr135.com/ask/c_friend-a_myquestion-uid_19509.html" target="_blank" title="我的问答">
+							<i class="com_left_icon com_left_icon_ask"></i>我的问答
+						</a>
+					</span> 
+				</li>
+                			</ul>
+		
+
+		
+			<ul class="left_nav_ul  none" id='def3'> 
+				<li  class="style03" >
+					<span>
+						<a href="javascript:void(0)"  onclick="jobadd_url('1','0.1','','1','100');return false;" class="f60 bold">
+							<i class="com_left_icon com_left_icon_fb"></i>发布新职位
+						</a>
+					</span> 
+				</li>
+				<li  class="style03" >
+					<span>
+						<a href="index.php?c=job&w=1" title="发布中的职位" style="color:red;"><i class="com_left_icon com_left_icon_zwgl"></i>职位管理</a>
+					</span>
+				</li>
+				<li  class="style03" >
+					<span>
+						<a href="index.php?c=jobpack" title="赏金推广职位"><i class="com_left_icon com_left_icon_hbtgl"></i>赏金推广职位</a>
+					</span>
+				</li>
+				<li  class="style07" >
+					<span><a href="index.php?c=zhaopinhui"><i class="com_left_icon com_left_iconzph"></i>招聘会记录</a></span>
+				</li>    
+				<li  class="style07" >
+					<span><a href="index.php?c=special" style="color:red;"><i class="com_left_icon com_left_icon_zt"></i>专题招聘</a></span>
+				</li>
+				<li  class="style07" >
+					<span>
+						<a onclick="jobadd_url('1','0.2','part','1','100');" title="发布兼职" class="f60 bold" style="cursor:pointer"><i class="com_left_icon com_left_icon_jz"></i>发布兼职</a>
+					</span> 
+				</li>
+				<li  class="style07" >
+					<span><a href="index.php?c=partok&w=1" title="全部兼职"><i class="com_left_icon com_left_icon_jzgl"></i>兼职管理</a></span>
+				</li>
+				<li  class="style07" >
+					<span><a href="index.php?c=partapply" title="兼职报名"><i class="com_left_icon com_left_iconbm"></i>兼职报名</a></span>
+				</li>
+				<li  class="style04" >
+					<span><a href="index.php?c=lt_job" title="猎头职位"><i class="com_left_icon com_left_icon_lt"></i>猎头职位</a></span>
+				</li>
+				<li  class="style07" >
+					<span><a href="index.php?c=tongji"><i class="com_left_icon com_left_icon_fx"></i>招聘分析</a></span>
+				</li>    
+				<li  class="style07" >
+					<span><a href="index.php?c=xjh"><i class="com_left_icon com_left_icon_zt"></i>宣讲会</a></span>
+				</li>
+			</ul>
+		
+		
+		
+
+			<ul class="left_nav_ul  none" id='def4'>
+			
+				<li  class="style05" >
+					<span>
+						<a href="index.php?c=pay" title="充值积分">
+							<font color="#FF0000"><i class="com_left_icon com_left_icon_cz"></i>充值积分</font>
+						</a>
+					</span>
+				</li>  
+
+				<li  class="style08" >
+					<span><a href="index.php?c=paylogtc" title="我的服务"><i class="com_left_icon com_left_icon_myhy"></i>我的服务</a></span>
+				</li>
+					
+				<li  class="style12" >
+					<span>
+						<a href="index.php?c=right" style="color:red;">
+							<i class="com_left_icon com_left_icon_fw"></i>VIP招聘服务
+							<i class="com_icon com_icon_new"></i>
+						</a>
+					</span>
+				</li>
+			
+				<li  class="style09" >
+					<span><a href="index.php?c=paylog" title="财务明细"><i class="com_left_icon com_left_icon_mx"></i>财务明细</a></span>
+				</li>
+
+
+				<li  class="style09" >
+					<span>
+						<a href="index.php?c=jobpack&act=loglist" title="赏金收益">
+							<i class="com_left_icon com_left_icon_hb"></i>赏金收益
+						</a>
+					</span>
+				</li>
+
+				<li  class="style12" >
+					<span>
+						<a href="index.php?c=integral"><i class="com_left_icon com_left_icon_gl"></i>积分管理</a>
+					</span>
+				</li>
+
+				<li  class="style12" >
+					<span><a href="index.php?c=coupon_list"><i class="com_left_icon com_left_icon_yhq"></i>优惠卡券</a></span>
+				</li>
+				
+	
+								<li  class="style08" >
+					<span><a href="index.php?c=invoice" title="发票列表"><i class="com_left_icon com_left_icon_fp"></i>我的发票</a></span>
+				</li>
+								<li  class="style07" >
+					<span>
+						<a href="index.php?c=ad" title="购买广告位"><i class="com_left_icon com_left_icon_ban"></i>购买广告位</a>
+					</span>
+				</li>
+			
+			</ul>
+		
+			
+	
+			<ul class="left_nav_ul  none" id='def7'>
+				<li  class="style03" >
+					<span><a href="index.php?c=vs" title="修改密码"><i class="com_left_icon com_left_icon_m"></i>修改密码</a></span> 
+				</li>  
+				
+					
+				<li  class="style11" >
+					<span><a href="index.php?c=sysnews" title="系统消息"><i class="com_left_icon com_left_icon_xin"></i>系统消息</a></span> 
+				</li>
+				
+				<li  class="style03" >
+					<span><a href="index.php?c=msg" title="求职咨询"><i class="com_left_icon com_left_icon_zx"></i>求职咨询</a></span> 
+				</li>
+				
+				<li  class="style05" >
+					<span><a href="index.php?c=pl" title="企业评论"><i class="com_left_icon com_left_icon_pl"></i>面试评价</a></span> 
+				</li>
+				
+			</ul>
+	</div>
+</div>	
+<script>
+$(function(){
+	$('.left_box_nav_list li').click(function(){
+		
+		var datadef = $(this).attr('data-def');
+		$('.left_nav_ul').addClass('none');
+		$('#def'+datadef).removeClass('none');
+		$('.left_box_nav_cur').removeClass('left_box_nav_cur');
+		$(this).addClass('left_box_nav_cur');
+	});
+})
+</script> 
+    	
+    	 
+
+         
+		
+		 
+		
+					<div class="com_index_Prompt ">
+				<span class="com_index_Prompt_tip ">贵公司还没进行营业执照认证，可能会影响您的招聘效果哦</span>
+				<a href="index.php?c=binding" class="com_index_Prompt_ws cblue ">立即认证>></a>
+			</div>
+        
+        <div class="clear"></div>
+        <!--  首页-->
+        <div class="com_m_index_right">
+						<div class="yun_wtbd_tip">
+				<div class="yun_wtbd_tip_tit">绑定微信，及时查询简历投递，优秀人才绝不错过！</div>
+				<div class="yun_wtbd_tip_p"> 可便捷操作简历搜索、职位管理、发布职位、简历投递快速提醒等，随时随地轻松招人才</div>
+				<a href="javascript:;" class="wxtitle yun_wtbd_tip_bth">马上绑定微信</a>
+			</div>
+			
+            <div class="comindex_info_box">
+                <div class="comindex_info_logo">
+                    <div class="comindex_info_logo_img">
+                        <a href="index.php?c=uppic" class="">
+                            <img src="http://www.hr135.com/./data/logo/20190122/15482336563.PNG" width="100" height="100" onerror="showImgDelay(this,'http://www.hr135.com/./data/logo/20190122/15482336563.PNG','2')" /></a>
+                    </div>
+
+                    <a href="index.php?c=uppic" class="comindex_info_logo_a cblue">修改LOGO</a>
+                </div>
+
+                <div class="comindex_comname">
+                     
+						四川华东亿尚网络科技有限公司
+												
+					                   
+                </div>
+                <div class="com_m_index_vip_box">
+                    我的服务：<span class="com_m_index_vip_box_c">半月会员</span>&nbsp;&nbsp;&nbsp; 会员服务时间：
+                    <span class="f60">
+						<em class="com_m_index_vip_box_c_3">
+													2019.04.04-</em>2019-04-19
+											</span>
+
+                    <a href="index.php?c=right" class="com_m_index_vip_sj"><i class="com_m_index_vip_sj_icon"></i>升级VIP会员</a>
+                    <a href="index.php?c=right&act=added" target="_blank" class="com_m_index_vip_a">购买增值包</a>
+                </div>
+                <div class="comindex_rz ">
+                                        <a title="邮件未验证" href="index.php?c=binding" class="comindex_rz_a">
+                        <i class="comindex_rz_icon comindex_rz_yxwrz"></i>邮箱未验证
+                    </a>
+                                         <a title="手机已验证" href="index.php?c=binding" class="comindex_rz_a">
+                        <i class="comindex_rz_icon comindex_rz_sjyrz"></i>手机已验证
+                    </a>
+                                         <a title="营业执照未验证" href="index.php?c=binding" id="biza" class="comindex_rz_a">
+                        <i class="comindex_rz_icon comindex_rz_zzwrz"></i>营业执照未验证
+                    </a>
+                                    </div>
+                <div class="comindex_cz">
+                    <div class="comindex_cz_list">
+                        <a href="index.php?c=info" class="comindex_cz_a cblue"><i class="comindex_cz_icon"></i>编辑资料</a>
+                        <i class="comindex_cz_line">|</i>
+                        <a href="http://www.hr135.com/company/c_show-id_19509.html" target="_blank" class="comindex_cz_a cblue "><i class="comindex_cz_icon comindex_cz_icon_yl"></i>预览主页</a>
+                        <i class="comindex_cz_line">|</i>
+                        <a href="index.php?c=comtpl" class="comindex_cz_a cblue">
+                            <i class="comindex_cz_icon comindex_cz_icon_set"></i>模板设置</a>
+                             <div class="com_index_sign_box">
+						<div class="com_index_sign"><div class="signdiv"><a href="javascript:void(0)"  class="left_box_zp_qd">签到</a><div class="sign_main" id="sign_layer">
+		<div class="sign_succ_calendar_title">
+		<div class="calendar_month_span">2019年04月</div>
+		</div>
+		<div class="sign" id="sign_cal"><table><tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr><tr><td>&nbsp;</td><td class="day1 ">1</td><td class="day2 ">2</td><td class="day3 ">3</td><td class="day4 ">4</td><td class="day5 ">5</td><td class="day6 ">6</td></tr><tr><td class="day7 ">7</td><td class="day8 ">8</td><td class="day9 ">9</td><td class="day10 ">10</td><td class="day11 ">11</td><td class="day12 ">12</td><td class="day13 ">13</td></tr><tr><td class="day14 ">14</td><td class="day15 ">15</td><td class="day16 ">16</td><td class="day17 ">17</td><td class="day18 ">18</td><td class="day19 ">19</td><td class="day20 ">20</td></tr><tr><td class="day21 ">21</td><td class="day22 ">22</td><td class="day23 ">23</td><td class="day24 ">24</td><td class="day25 ">25</td><td class="day26 ">26</td><td class="day27 ">27</td></tr><tr><td class="day28 ">28</td><td class="day29 ">29</td><td class="day30 ">30</td></tr></table></div></div></div></div>
+					</div>
+                    </div>
+                </div>
+
+            
+
+               
+
+                <i class="com_index_line"></i>
+                <div class="comindex_money">
+                    <div class="comindex_money_h1">可用积分</div>
+                    <div class="comindex_money_m">
+                        <span id="integral" class="comindex_money_n">11<em class="comindex_money_m">个</em></span>
+                    </div>
+                    <div class="comindex_money_zt"> 已支付订单
+                        <a href="index.php?c=paylog" style="color:red">1</a><i class="comindex_cz_line">|</i>未付款
+                        <a href="index.php?c=paylog" style="color:red">2</a>
+                    </div>
+                    <div class="comindex_money_pd">
+                        <a href="index.php?c=pay&type=integral" class="comindex_money_pd_a cblue">充值</a>
+                        <a href="index.php?c=paylog&consume=ok" class="comindex_money_pd_a cblue">明细</a>
+                        <a href="index.php?c=integral" class="comindex_money_pd_a cblue">赚积分</a>
+                    </div>
+                    <div class="comindex_money_sy">
+                        <a href="index.php?c=integral_reduce">消费规则>></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clear"></div>
+            <div class="index_banner"><a href="index.php?c=right"><img src="http://www.hr135.com/app/template/member/com/images/banner_hy.png"></a></div>
+            <div class="comindex_box">
+                <div class="yun_m_index_date_box"style="position:relative"><div class="comindex_logintime">上次登录时间：2019-04-12 16:22 </div>
+                    <div class="yun_m_index_date_box_tit" > 招聘管理 </div>
+                    <div class="yun_m_index_date_list">
+                        <a href="index.php?c=hr">
+                            <div class="yun_m_index_date_n">
+                                <span class="yun_m_index_date_n_m">1
+								</span></div>
+                            <div class="yun_m_index_datename">收到简历</div>
+                        </a>
+                    </div>
+                    <a href="index.php?c=down">
+                        <div class="yun_m_index_date_list">
+                            <div class="yun_m_index_date_n"> 0</div>
+                            <div class="yun_m_index_datename">下载简历</div>
+                        </div>
+                    </a>
+                    <a href="index.php?c=look_resume">
+                        <div class="yun_m_index_date_list">
+                            <div class="yun_m_index_date_n"> 2</div>
+                            <div class="yun_m_index_datename">浏览记录</div>
+                        </div>
+                    </a>
+                    <a href="index.php?c=attention_me">
+                        <div class="yun_m_index_date_list yun_m_index_date_list_end">
+                            <div class="yun_m_index_date_n"> 0</div>
+                            <div class="yun_m_index_datename">关注记录</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="clear"></div>
+
+                <div class="com_m_index_vip">
+                    <div class="yun_m_index_date_box_tit mt20" style="position:relative; padding-bottom:10px;"> 简历速配
+                        <a href="index.php?c=attention_me" class="com_m_index_vip_look" target="_blank">查看关注我公司的人才>></a>
+                    </div>
+                    <div id="resumelist" class="com_m_index_resume">
+
+                        <div id="noresumelist" class="msg_no none">根据您的招聘需求，暂未匹配到合适的简历！ </div>
+                    </div>
+                </div>
+                <div class="com_m_index_vip_right">
+					
+                    <div class="com_m_index_kjcz">
+                        <div class="com_m_index_kjcz_tit"> 快捷操作 </div>
+                        <div class="com_m_index_kjcz_p">
+                            <a href="javascript:;" onclick="return RefreshAll('105852');"><i class="com_m_index_kjcz_p_icon"></i>刷新职位</a>
+                            <input type="hidden" id="refreshjobids" value="" />
+                        </div>
+                        <div class="com_m_index_kjcz_p">
+                            <a href="javascript:void(0)" onclick="jobadd_url('1','0.1','','1','100');return false;"><i class="com_m_index_kjcz_p_icon com_m_index_kjcz_p_icon_fb"></i>发布职位</a>
+                        </div>
+                        <div class="com_m_index_kjcz_p">
+                            <a href="index.php?c=job&w=1"> <i class="com_m_index_kjcz_p_icon com_m_index_kjcz_p_icon_zd"></i>置顶职位</a>
+                        </div>
+                    </div>
+                                        <div class="com_index_kf mt20">
+                        <div class="com_m_index_h1"><span class="com_m_index_h1_s" style="font-size:14px;">Hi,我是您的客服经理</span></div>
+                        <div class="com_index_kf_box">
+                            <div class="com_index_kf_box_user">
+                                <div class="com_index_kf_box_user_photo">
+                                    <img src="http://www.hr135.com/data/upload/guwen/20170424/14987904774.JPG" style="width:64px;height:64px">
+                                </div>
+                                <div class="com_index_kf_box_username">ces</div>
+                                <div class="">
+                                                                        <a target="_blank" href="tencent://message/?uin=266848847&Site=PHPYUN人才招聘系统&Menu=yes">
+                                        <img border="0" src="http://wpa.qq.com/pa?p=1:266848847:12" alt="点击这里给我发消息"></a>
+                                                                    </div>
+                            </div>
+                            <div class="com_index_kf_p">电话：13789525652</div>
+                            <div class="com_index_kf_p">微信：asda5666</div>
+                            <div class="com_index_kf_p">Q Q：266848847</div>
+                            <div class="com_index_kf_p">
+                                                                <a href="javascript:void(0)" onclick="zan('48');" class="com_index_kf_dz">
+                                    <i class="com_index_kf_dz_icon"></i>点赞
+                                </a>
+                                                                 <a href="javascript:void(0)" onclick="reportgw('48','投诉顾问');" class="com_index_kf_ts"><i class="com_index_kf_ts_icon"></i>投诉</a>
+                                                            </div>
+                        </div>
+                    </div>
+                                        <div class="index_wx_box">
+                        <div class="index_wx_box_ewm"> <img src="http://www.hr135.com/data/logo/20160714/14708405239.PNG" width="80" height="80"></div>
+                        <div class="index_wx_box_tit">微信招聘 </div>
+                        扫码分享微信朋友圈， 招人更简单
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--投诉顾问弹出框-->
+<div id="48" style="display:none;">
+    <div class="Binding_pop_box" style="padding:10px;width:350px;height:200px; background:#fff;">
+
+        <div class="complaint_hi">尊敬的用户您好！</div>
+        <div class="complaint_p">为了能够给您提供高质量的服务，反馈具体情况，我们会第一时间给您满意的答复！</div>
+        <div class="complaint_p_gw" style="padding:10px 0;color:#f00">您要投诉的顾问是：ces</div>
+        <div class="popjb_tip"></div>
+
+        <div class="">
+            <textarea id="reason" name="reason" class="complaint_text"></textarea>
+        </div>
+        <div class="complaint_bot">
+            <input class="com_pop_bth_qd" onclick="reportSub('index.php?c=report')" type="button" value="确定">
+            <input type='hidden' value="48" id='eid' name='eid'>
+            <input class="com_pop_bth_qx" type="button" value="取消" onclick="layer.close($('#layindex').val());">
+        </div>
+    </div>
+</div>
+<!----end--->
+
+<!--刷新职位提示弹出框-->
+
+<div id="shuaxin" style="display:none;">
+    <div class="sx_pd">
+        <div class="sx_top">
+            <dl>
+                <dt></dt>
+                <dd>
+                    <div>今天还没刷新，刷新职位将<em class="sx_bot_or">职位排名提前</em><br/>让人才更容易看到你，<em class="sx_bot_or">提高职位申请率！</em></div>
+                    <div class="sx_top_t">
+                        <em class="sx_top_t_tt">刷新前请确认以下信息准确完整：</em>
+													<p>联系电话：17790352903</p>
+						                        <p>上次刷新时间：2019-04-12 16:22:59</p>
+                        <p>招聘职位：销售 </p>
+                    </div>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="sx_bot">
+        <a class="sx_bot_sx" href="javascript:void(0)" onclick="RefreshAll('105852');">刷新</a>
+        <a class="sx_bot_qx" href="javascript:void(0)">取消</a>
+    </div>
+
+</div>
+
+<div id="updaterating" style="display:none;">
+    <div class="sx_pd">
+        <div class="sx_top">
+            <dl>
+                <dt></dt>
+                <dd>
+                    <div>
+                        <em class="sx_top_t_tt">尊敬的企业用户您好！</em>
+                    </div>
+                    <div class="sx_top_t">很抱歉，你的会员<em class="sx_bot_or">已到期</em><br/> 
+                    	服务时间：
+                        <em class="sx_bot_or">2019.04.04-2019-04-19</em>
+                    </div>
+                    <div class="sx_top_t">
+                     	<p>为了更好地使用招聘服务，请先 <a href="index.php?c=right" style="color: red;">续费会员</a> ！</p>
+                    </div>
+
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="sx_bot">
+        <a class="sx_bot_sx" href="index.php?c=right">续费</a>
+        <a class="sx_bot_qx" href="javascript:void(0)">取消</a>
+    </div>
+
+</div>
+
+<div id="wxbd" style="display:none;">
+	<div class="yun_wxbd_img"> 
+		<img src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFC8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyanR2LWdnci05MlUxRnhzTmhzY0IAAgThSrBcAwSAUQEA" width="100" height="100" />
+	</div>
+	<div class="yun_wxbd_tit">微信扫一扫</div>
+	<div class="yun_wxbd_p">招聘人才，消息先人一步</div>
+	<div class="yun_wxbd_ok">
+		<a class="sx_bot_qx" href="javascript:void(0)" style=" background:none; margin-left:0px;height:20px; line-height:20px;">好，知道了</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+    function RefreshAll(id) {
+        var chk_value = [];
+        chk_value = id.split(",");
+
+        if(chk_value.length == 0) {
+            layer.msg("您暂无发布中的职位！", 2, 8);
+            return false;
+        } else {
+            //判断是否达到每天最大操作次数
+            $.post(weburl + '/index.php?m=ajax&c=ajax_day_action_check', { 'type': 'refreshjob' }, function(data) {
+				layer.closeAll('loading');
+				data = eval('(' + data + ')');
+				if(data.status == -1) {
+					layer.msg(data.msg, 2, 8);
+				} else if(data.status == 1) { //未达到最大操作次数，可以继续刷新职位
+					$("#refreshjobids").val(chk_value);
+					var jobid = $("#refreshjobids").val();
+					var breakjob_num = '4';
+					var sxdj = '1';
+					var online = '1';
+					var pro = '100';
+					var num = accSub(chk_value.length, breakjob_num);
+					var sxneed = accMul(sxdj, num);
+					if(online == 3) {
+						var sxneed = accMul(sxneed, pro);
+					}
+					var ajaxUrl = weburl + "/member/index.php?c=job&act=refresh_job";
+					$.post(ajaxUrl, {
+						jobid: jobid
+					}, function(data) {
+						data = eval('(' + data + ')');
+						if(data.error == 1) {
+							layer.msg(data.msg, 2, 9, function() {
+								window.location.href = '';
+							});
+						} else if(data.error == 2) {
+
+							if(online == 3) {
+								var msg = '很抱歉，您的套餐已用完，继续操作将会消费 <span class="job_add_tck_bq_money">' + sxneed + ' </span>积分';
+							} else {
+								var msg = '很抱歉，您的套餐已用完，继续操作将会消费 <span class="job_add_tck_bq_money">' + sxneed + ' </span>元';
+							}
+
+							var msglayer = layer.open({
+								type: 1,
+								title: '刷新职位',
+								closeBtn: 1,
+								border: [10, 0.3, '#000', true],
+								area: ['550px', 'auto'],
+								content: $("#tcmsg")
+							});
+
+							$("#msg_show").html(msg);
+							$("#pay_jobid").val(chk_value);
+							$("#pay_need").val(sxneed);
+							$("#btn_value").html('<a href="javascript:void(0);" onclick="onRefresh();">确定</a>');
+
+						} else {
+							if(data.url) {
+								layer.msg(data.msg, 2, 9, function() {
+									window.location.href = data.url;
+								});
+							} else {
+								layer.msg(data.msg, 2, 8);
+							}
+						}
+					});
+				}
+			}); //end post 判断是否达到每天最大操作次数
+        }
+    }
+</script>
+
+<!--提示弹出框 end-->
+<script type="text/javascript">
+    var jobrefresh = '1';
+
+    layui.use(['layer'], function() {
+        var layer = layui.layer,
+            $ = layui.$;
+
+        ''
+    });
+ 
+	''
+    $(function() {
+        hsresumelist();
+    })
+    ''
+
+	$(document).ready(function() {
+ 		$('.wxtitle').click(function(){
+			var wxlayer = layer.open({
+				type: 1,
+				title: '绑定微信',
+				closeBtn: 0,
+				border: [10, 0.3, '#000', true],
+				area: ['300px', 'auto'],
+				content: $("#wxbd")
+			});
+
+			$(".sx_bot_qx").click(function() {
+				layer.close(wxlayer);
+			})
+		})
+	})
+
+    function reportgw(eid, title) {
+        var layindex = $.layer({
+            type: 1,
+            title: title,
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['400px', '300px'],
+            page: {
+                dom: "#" + eid
+            }
+        });
+        $("#layindex").val(layindex);
+    }
+
+    function reportSub(url) {
+        var reason = $("#reason").val();
+        var eid = $("#eid").val();
+        if(reason == '') {
+            layer.msg('请填写投诉内容！', 2, 8);
+            return false;
+        }
+        $.post(url, {
+            reason: reason,
+            eid: eid
+        }, function(data) {
+            layer.close($('#layindex').val());
+            if(data == '0') {
+                layer.msg('投诉失败！', 2, 8);
+            } else if(data == '1') {
+                layer.msg('投诉成功！', 2, 9, function() {
+                    window.location.reload();
+                });
+            } else if(data == '2') {
+                layer.msg('已投诉成功，等待管理员回复！', 2, 8);
+            }
+        });
+    }
+
+    function zan(id) {
+        $.post("index.php?m=ajax&c=guwenZan", {
+            id: id
+        }, function(data) {
+            if(data == '2') {
+                layer.msg('请不要重复点赞！', 2, 8);
+            } else if(data == '1') {
+                layer.msg('点赞成功！', 2, 9, function() {
+                    window.location.reload();
+                });
+            }
+        });
+    }
+
+    function hsresumelist() {
+        $.get('index.php?c=index&act=resumeajax', {
+            rand: Math.random()
+        }, function(data) {
+            var res = JSON.parse(data);
+            if(res.list.length > 0) {
+                var html = '';
+                for(var i = 0; i < res.list.length; i++) {
+                    html += '<div class="com_index_rue_list"><dl>';
+                    html += '<dt><a href="' + res.list[i].resumeurl + '" target="_blank"><img src="' + res.list[i].photo + '" width="40" height="40" title="' + res.list[i].username_n + '"/></a></dt>';
+                    html += '<dd><strong><a class="blod" href="' + res.list[i].resumeurl + '" target="_blank" title="' + res.list[i].username_n + '">' + res.list[i].username_n + '</a></strong>';
+                    html += '<div class="com_index_rue_list_js">' + res.list[i].cityname + '<i class="com_index_rue_listline">|</i>' + res.list[i].edu_n + '<i class="com_index_rue_listline">|</i>' + res.list[i].exp_n + '</div>';
+                    html += '<div class="com_index_rue_list_yx"><span class="com_index_rue_list_yx_s">意向职位：</span><span class="comn_index_user">' + res.list[i].jobname + '</span></div></dd></dl></div>';
+                }
+                $("#resumelist").prepend(html);
+            } else {
+                $("#noresumelist").removeClass('none');
+            }
+        })
+    }
+</script>
+
+<script>
+ 
+//加减乘除
+function accAdd(arg1,arg2){ 
+	var r1,r2,m; 
+	try{r1=arg1.toString().split(".")[1].length}catch(e){r1=0} 
+	try{r2=arg2.toString().split(".")[1].length}catch(e){r2=0} 
+	m=Math.pow(10,Math.max(r1,r2)) 
+	return (arg1*m+arg2*m)/m 
+} 
+function accSub(arg1,arg2){ 
+	return accAdd(arg1,-arg2); 
+} 
+function accMul(arg1, arg2) {
+	var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+	try { m += s1.split(".")[1].length } catch (e) { }
+	try { m += s2.split(".")[1].length } catch (e) { }
+	return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
+}
+function accDiv(arg1,arg2){    
+	var t1=0,t2=0,r1,r2;    
+	try{t1=arg1.toString().split(".")[1].length}catch(e){}    
+	try{t2=arg2.toString().split(".")[1].length}catch(e){}    
+	with(Math){        
+		r1=Number(arg1.toString().replace(".",""));        
+		r2=Number(arg2.toString().replace(".",""));        
+		return (r1/r2)*pow(10,t2-t1);    
+	}
+}
+
+function myFunction(_this) {
+    _this.value = _this.value.replace(/[^0-9]/g, '');
+}
+
+
+// 刷新职位积分抵扣填写
+function checkSxNum(integral,integral_pro){
+	var dkjf = $("#sxdkjf").val();
+ 	if(dkjf){
+		$(".sxjfdkh_m").show();
+	} 
+	var need = $("#sxneed").text();
+	var need_jifen = accMul(need, integral_pro);
+  	if(parseInt(integral) >= parseInt(need_jifen)){
+		if(parseInt(dkjf) > parseInt(need_jifen)){
+			$("#sxdkjf").val(need_jifen);
+			var dkjfh = accSub(need , accDiv(need_jifen,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+		}	
+ 	}else{
+		if(parseInt(dkjf) > parseInt(integral)){
+			$("#sxdkjf").val(integral);
+			var dkjfh = accSub(need , accDiv(integral,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+ 		}
+ 	}
+	 
+	if(dkjfh<=0){
+		$("#sxdkjfh").html(0);
+		$("#sxzf_div").hide();
+		$("#sxzf_btn").show();
+	}else{
+		$("#sxdkjfh").html(dkjfh);
+		$("#sxzf_div").show();
+		$("#sxzf_btn").hide();
+	}
+ 
+}
+
+// 刷新兼职积分抵扣填写
+function checkSxpNum(integral,integral_pro){
+	var dkjf = $("#sxpdkjf").val();
+ 	if(dkjf){
+		$(".sxpjfdkh_m").show();
+	} 
+	var need = $("#sxpneed").text();
+	var need_jifen = accMul(need, integral_pro);
+	
+	if(parseInt(integral) >= parseInt(need_jifen)){
+		if(parseInt(dkjf) > parseInt(need_jifen)){
+			$("#sxpdkjf").val(need_jifen);
+			var dkjfh = accSub(need , accDiv(need_jifen,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+		}	
+ 	}else{
+		if(parseInt(dkjf) > parseInt(integral)){
+			$("#sxpdkjf").val(integral);
+			var dkjfh = accSub(need , accDiv(integral,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+ 		}
+ 	}
+
+	if(dkjfh<=0){
+		$("#sxpdkjfh").html(0);
+		$("#sxpzf_div").hide();
+		$("#sxpzf_btn").show();
+	}else{
+		$("#sxpdkjfh").html(dkjfh);
+		$("#sxpzf_div").show();
+		$("#sxpzf_btn").hide();
+	}
+}
+
+// 发布高级职位积分抵扣填写
+function checkIssueLtNum(integral,integral_pro){
+	var dkjf = $("#issuelt_dkjf").val();
+ 	if(dkjf){
+		$(".issuelt_jfdkh_m").show();
+	} 
+	var need = $("#issuelt_need").text();
+	var need_jifen = accMul(need, integral_pro);
+
+	if(parseInt(integral) >= parseInt(need_jifen)){
+		if(parseInt(dkjf) > parseInt(need_jifen)){
+			$("#issuelt_dkjf").val(need_jifen);
+			var dkjfh = accSub(need , accDiv(need_jifen,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+		}	
+ 	}else{
+		if(parseInt(dkjf) > parseInt(integral)){
+			$("#issuelt_dkjf").val(integral);
+			var dkjfh = accSub(need , accDiv(integral,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+ 		}
+ 	}
+
+	if(dkjfh<=0){
+		$("#issuelt_dkjfh").html(0);
+		$("#issueltzf_div").hide();
+		$("#issueltzf_btn").show();
+	}else{
+		$("#issuelt_dkjfh").html(dkjfh);
+		$("#issueltzf_div").show();
+		$("#issueltzf_btn").hide();
+	}
+ 
+}
+ 
+// 刷新高级职位积分抵扣填写
+function checkSxltNum(integral,integral_pro){
+	var dkjf = $("#sxltdkjf").val();
+ 	if(dkjf){
+		$(".sxltjfdkh_m").show();
+	} 
+	var need = $("#sxltneed").text();
+	var need_jifen = accMul(need, integral_pro);
+
+	if(parseInt(integral) >= parseInt(need_jifen)){
+		if(parseInt(dkjf) > parseInt(need_jifen)){
+			$("#sxltdkjf").val(need_jifen);
+			var dkjfh = accSub(need , accDiv(need_jifen,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+		}	
+ 	}else{
+		if(parseInt(dkjf) > parseInt(integral)){
+			$("#sxltdkjf").val(integral);
+			var dkjfh = accSub(need , accDiv(integral,integral_pro));
+		}else{
+			var dkjfh = accSub(need, accDiv(dkjf,integral_pro));
+ 		}
+ 	}
+  	 
+	if(dkjfh<=0){
+		$("#sxltdkjfh").html(0);
+		$("#sxltzf_div").hide();
+		$("#sxltzf_btn").show();
+	}else{
+		$("#sxltdkjfh").html(dkjfh);
+		$("#sxltzf_div").show();
+		$("#sxltzf_btn").hide();
+	}
+ 	
+}
+ 
+
+/**
+ * 积分抵扣，全额积分付费
+ */
+function sxzf(){//刷新职位
+	var sxjobid = $('#sxjobid').val();
+  	var index = layer.load('执行中，请稍候...',0);
+	var url = "index.php?c=job&act=dkBuy";
+	$.post(url,{sxjobid:sxjobid},function(data){
+		if(data){
+			layer.closeAll('loading');
+			data=eval('('+data+')'); 
+			if(data.error==1){
+				if(data.url){
+					layer.msg(data.msg, 2,8,function(){
+						window.location.href=data.url;
+					});
+				}else{
+					layer.msg(data.msg, 2,8);
+				}
+     			
+     		}else if(data.error==0){
+     			layer.msg(data.msg, 2,9,function(){
+					window.location.href='';
+				}); 
+    		}
+		}
+	})
+}
+
+function sxpzf(){//刷新兼职
+	var sxpartid = $('#partjobid').val();
+  	var index = layer.load('执行中，请稍候...',0);
+	var url = "index.php?c=job&act=dkBuy";
+	$.post(url,{sxpartid:sxpartid},function(data){
+		if(data){
+			layer.closeAll('loading');
+			data=eval('('+data+')'); 
+			if(data.error==1){
+				if(data.url){
+					layer.msg(data.msg, 2,8,function(){
+						window.location.href=data.url;
+					});
+				}else{
+					layer.msg(data.msg, 2,8);
+				}
+     			
+     		}else if(data.error==0){
+     			layer.msg(data.msg, 2,9,function(){
+					window.location.href='';
+				}); 
+    		}
+		}
+	})
+}
+
+function issueltzf(){//发布高级职位
+  	var index = layer.load('执行中，请稍候...',0);
+	var url = "index.php?c=job&act=dkBuy";
+	$.post(url,{issueltjob:1},function(data){
+		if(data){
+			layer.closeAll('loading');
+			data=eval('('+data+')'); 
+			if(data.error==1){
+				if(data.url){
+					layer.msg(data.msg, 2,8,function(){
+						window.location.href=data.url;
+					});
+				}else{
+					layer.msg(data.msg, 2,8);
+				}
+     			
+     		}else if(data.error==0){
+     			layer.msg(data.msg, 2,9,function(){
+					window.location.href='index.php?c=lt_job&act=add';
+				}); 
+    		}
+		}
+	})
+}
+
+function sxltzf(){//刷新高级职位
+	var sxltjobid = $('#sxltjobid').val();
+  	var lt_breakjob_num = $('#lt_breakjob_num_sy').val();
+ 	var index = layer.load('执行中，请稍候...',0);
+	var url = "index.php?c=job&act=dkBuy";
+	$.post(url,{sxltjobid:sxltjobid,lt_breakjob_num:lt_breakjob_num},function(data){
+		if(data){
+			layer.closeAll('loading');
+			data=eval('('+data+')'); 
+			if(data.error==1){
+				if(data.url){
+					layer.msg(data.msg, 2,8,function(){
+						window.location.href=data.url;
+					});
+				}else{
+					layer.msg(data.msg, 2,8);
+				}
+     			
+     		}else if(data.error==0){
+     			layer.msg(data.msg, 2,9,function(){
+					window.location.href='';
+				}); 
+    		}
+		}
+	})
+}
+
+/**
+ * 积分抵扣，金额付款（含部分积分抵扣）
+ */
+function issueLtJobOrder(pay_type){//高级职位
+ 	$('#pay_type').val(pay_type);
+ 	var issuelt_dkjf = $('#issuelt_dkjf').val();
+ 	var index = layer.load('执行中，请稍候...',0);
+
+ 	$.ajax({
+  		async: false, 
+        type: 'POST',  
+        global:false,
+        url: "index.php?c=job&act=buyJob",  
+        data: {issueltjob:1,issuelt_dkjf:issuelt_dkjf},  
+        success: function(data){  
+          layer.close(index);
+        	var data=eval('('+data+')'); 
+          
+        	if(data.error==1){
+     			layer.msg(data.msg, 2,8);
+     		}else if(data.error==0){
+     			$('#order_issuelt_id').val(data.orderid);
+    			$('#orderid').val(data.id);
+    			//提交表单
+    			$('#payform_issuelt').submit();
+    		}
+        }  
+  	});
+}
+
+function refreshLtJobOrder(pay_type){//刷新高级职位
+ 	$('#pay_type').val(pay_type);
+ 	var sxltjobid = $('#sxltjobid').val();
+  	var sxltdkjf = $('#sxltdkjf').val();
+	var lt_breakjob_num = $('#lt_breakjob_num_sy').val();
+ 	var index = layer.load('执行中，请稍候...',0);
+ 	
+ 	$.ajax({
+  		async: false, //设置ajax同步  
+        type: 'POST',  
+        global:false,
+        url: "index.php?c=job&act=buyJob",  
+        data: {sxltjobid:sxltjobid,sxltdkjf:sxltdkjf,lt_breakjob_num:lt_breakjob_num},  
+        success: function(data){  
+          layer.close(index);
+        	var data=eval('('+data+')'); 
+          
+        	if(data.error==1){
+     			layer.msg(data.msg, 2,8);
+     		}else if(data.error==0){
+     			$('#order_refreshpart_id').val(data.orderid);
+    			$('#orderid').val(data.id);
+    			//提交表单
+    			$('#payform_refresh').submit();
+    		}
+        }  
+  	});
+}
+
+function refreshPartOrder(pay_type){//刷新兼职
+ 	$('#pay_type').val(pay_type);
+ 	var sxpartid = $('#partjobid').val();
+  	var sxpdkjf = $('#sxpdkjf').val();
+  	var index = layer.load('执行中，请稍候...',0);
+ 	
+ 	$.ajax({
+  		async: false, //设置ajax同步  
+        type: 'POST',  
+        global:false,
+        url: "index.php?c=job&act=buyJob",  
+        data: {sxpartid:sxpartid,sxpdkjf:sxpdkjf},  
+        success: function(data){  
+          layer.close(index);
+        	var data=eval('('+data+')'); 
+          
+        	if(data.error==1){
+     			layer.msg(data.msg, 2,8);
+     		}else if(data.error==0){
+     			$('#order_refreshpart_id').val(data.orderid);
+    			$('#orderid').val(data.id);
+    			//提交表单
+    			$('#payform_refresh').submit();
+    		}
+        }  
+  	});
+}
+
+function refreshJobOrder(pay_type){//刷新职位
+ 	$('#pay_type').val(pay_type);
+ 	var sxjobid = $('#sxjobid').val();
+  	var sxdkjf = $('#sxdkjf').val();
+  	var index = layer.load('执行中，请稍候...',0);
+ 	
+ 	$.ajax({
+  		async: false, //设置ajax同步  
+        type: 'POST',  
+        global:false,
+        url: "index.php?c=job&act=buyJob",  
+        data: {sxjobid:sxjobid,sxdkjf:sxdkjf},  
+        success: function(data){  
+          layer.close(index);
+        	var data=eval('('+data+')'); 
+          
+        	if(data.error==1){
+     			layer.msg(data.msg, 2,8);
+     		}else if(data.error==0){
+     			$('#order_refresh_id').val(data.orderid);
+    			$('#orderid').val(data.id);
+    			//提交表单
+    			$('#payform_refresh').submit();
+    		}
+        }  
+  	});
+}
+ 
+function wxorderstatus(orderid) { 
+	$.post('index.php?c=payment&act=wxpaystatus',{orderid:orderid},function(data){
+		if(data==1){
+			window.location.href='';
+		}
+	});
+}
+
+function pay_forms(){
+	var pay_type=$("#pay_type").val();
+	if(pay_type==''){
+		layer.msg('请选择支付方式！', 2,8);
+	}else if(pay_type == 'wxpay'){ 
+		var orderId = $("#orderid").val();
+		$.post('index.php?c=payment&act=wxurl',{orderId:orderId},function(data){
+			$('.wx_payment_ewm').html(data);
+			$.layer({
+				type : 1,
+				title :'微信扫码支付', 
+				closeBtn : [0 , true],
+				border : [10 , 0.3 , '#000', true],
+				area : ['320px','400px'],
+				page : {dom :"#wxpayTx"}
+			});
+			setInterval("wxorderstatus("+orderId+")", 3000); 
+		})
+		return false;  
+	} else{
+		$.layer({
+			type : 1,
+			title :'提示',
+			closeBtn : [0 , true],
+			border : [10 , 0.3 , '#000', true],
+			area : ['450px','280px'],
+			page : {dom :"#payshow"}
+		});
+	}
+}
+function rePay(){
+	var orderId = $("#orderid").val();
+	location.href="index.php?c=payment&id="+orderId;
+}
+</script>
+
+
+<!--刷新职位弹出框-->
+<div id="refresh"  style="display:none; ">
+	<div class="job_recom_box">
+		<input type="hidden" name="sxjobid" id="sxjobid" value=""/>
+ 
+ 		<div class="job_recom_list">
+
+			
+			
+			<span class="job_recom_s">所需金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+											<span id="sxneed" class="job_recom_list_jobtime_s">1</span>元
+									</div>
+			</div>
+		</div>
+
+		<!-- 可用积分抵扣 -->
+					<div class="job_recom_list">
+				<span class="job_recom_s">抵扣积分：</span>
+				<input type="text" value="" id="sxdkjf" name="sxdkjf" onkeyup="checkSxNum('11','100');" oninput="myFunction(this)" class="com_jf_text">账户积分11（1元 = 100积分）
+			</div>
+		
+		<div class="job_recom_list sxjfdkh_m" style="display:none">
+			<span class="job_recom_s">抵扣后金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+					<span id="sxdkjfh" class="job_recom_list_jobtime_s"></span>元
+				</div>
+			</div>
+		</div>
+
+		<div id="sxzf_div" >
+			<form name="alipayment"  id="payform_refresh" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return pay_forms();">
+				<div class="job_redpack_list">
+											<div class="job_redpack_list_name">支付方式：</div>
+						
+												<div class="job_redpack_pay">
+							<a href="javascript:;" onclick="refreshJobOrder('wxpay');"><div class="job_redpack_pay_bor"><img src="http://www.hr135.com/app/template/member/com/images/wx_pay.png"></div> 微信支付</a>
+						</div>
+						
+												<div class="job_redpack_pay">
+							<a href="javascript:;" onclick="refreshJobOrder('alipay');"><div class="job_redpack_pay_bor job_redpack_pay_bor_pd"><img src="http://www.hr135.com/app/template/member/com/images/ap_pay.png"></div>支付宝支付</a>
+						</div>
+						
+										<input type="hidden" value="" id="pay_type" name="pay_type"/>
+					<input type="hidden" name="dingdan" id="order_refresh_id" value=""/>
+					<input type="hidden" value="刷新职位金额"  name="subject"/>
+					<input type="hidden" name="pay_bank" value="directPay">
+				</div>
+			</form>
+		</div>
+		<div id="sxzf_btn"  style="display:none"  class="job_tck_bth_pd">
+			<input type='button' value='确认支付' onClick="sxzf();" class='job_redpack_list_c_bth'>
+		</div>
+	</div>
+</div>
+
+
+
+<!--刷新兼职弹出框-->
+<div id="part_refresh"  style="display:none; ">
+	<div class="job_recom_box">
+		<input type="hidden" name="partjobid" id="partjobid" value=""/>
+ 
+ 		<div class="job_recom_list">
+			
+			
+			<span class="job_recom_s">所需金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+											<span id="sxpneed" class="job_recom_list_jobtime_s">0.1</span>元
+									</div>
+			</div>
+		</div>
+
+		<!-- 可用积分抵扣 -->
+					<div class="job_recom_list">
+				<span class="job_recom_s">抵扣积分：</span>
+				<input type="text" value="" id="sxpdkjf" name="sxpdkjf" onkeyup="checkSxpNum('11','100');" oninput="myFunction(this)" class="com_jf_text">账户积分11（1元 = 100积分）
+			</div>
+				<div class="job_recom_list sxpjfdkh_m" style="display:none">
+			<span class="job_recom_s">抵扣后金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+					<span id="sxpdkjfh" class="job_recom_list_jobtime_s"></span>元
+				</div>
+			</div>
+		</div>
+		<div id="sxpzf_div" >
+			<form name="alipayment"  id="payform_refresh" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return pay_forms();">
+				<div class="job_redpack_list">
+										<div class="job_redpack_list_name">支付方式：</div>
+										<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="refreshPartOrder('wxpay');"><div class="job_redpack_pay_bor"><img src="http://www.hr135.com/app/template/member/com/images/wx_pay.png"></div> 微信支付</a>
+					</div> 
+															<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="refreshPartOrder('alipay');"><div class="job_redpack_pay_bor job_redpack_pay_bor_pd"><img src="http://www.hr135.com/app/template/member/com/images/ap_pay.png"></div>支付宝支付</a>
+					</div>
+															<input type="hidden" value="" id="pay_type" name="pay_type"/>
+					<input type="hidden" name="dingdan" id="order_refreshpart_id" value=""/>
+					<input type="hidden" value="刷新兼职金额"  name="subject"/>
+					<input type="hidden" name="pay_bank" value="directPay">
+				</div>
+			</form>
+		</div>
+		<div id="sxpzf_btn"  style="display:none"  class="job_tck_bth_pd">
+			<input type='button' value='确认支付' onClick="sxpzf();" class='job_redpack_list_c_bth'>
+		</div>
+	</div>
+</div>
+
+<!--发布高级职位弹出框-->
+<div id="issue_ltjob"  style="display:none;">
+	<div class="job_recom_box">
+ 		<div class="job_recom_list">
+			
+			
+			<span class="job_recom_s">所需金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+											<span id="issuelt_need" class="job_recom_list_jobtime_s">0.03</span>元
+					 				</div>
+			</div>
+		</div>
+
+		<!-- 可用积分抵扣 -->
+					<div class="job_recom_list">
+				<span class="job_recom_s">抵扣积分：</span>
+				<input type="text" value="" id="issuelt_dkjf" name="issuelt_dkjf" onkeyup="checkIssueLtNum('11','100');" oninput="myFunction(this)" class="com_jf_text">账户积分11（1元 = 100积分）
+			</div>
+				<div class="job_recom_list issuelt_jfdkh_m" style="display:none">
+			<span class="job_recom_s">抵扣后金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+					<span id="issuelt_dkjfh" class="job_recom_list_jobtime_s"></span>元
+				</div>
+			</div>
+		</div>
+		<div id="issueltzf_div" >
+			<form name="alipayment"  id="payform_issuelt" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return pay_forms();">
+				<div class="job_redpack_list">
+										<div class="job_redpack_list_name">支付方式：</div>
+										<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="issueLtJobOrder('wxpay');"><div class="job_redpack_pay_bor"><img src="http://www.hr135.com/app/template/member/com/images/wx_pay.png"></div> 微信支付</a>
+					</div> 
+															<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="issueLtJobOrder('alipay');"><div class="job_redpack_pay_bor job_redpack_pay_bor_pd"><img src="http://www.hr135.com/app/template/member/com/images/ap_pay.png"></div>支付宝支付</a>
+					</div>
+															<input type="hidden" value="" id="pay_type" name="pay_type"/>
+					<input type="hidden" name="dingdan" id="order_issuelt_id" value=""/>
+					<input type="hidden" value="发布职位金额"  name="subject"/>
+					<input type="hidden" name="pay_bank" value="directPay">
+				</div>
+			</form>
+		</div>
+		<div id="issueltzf_btn" style="display:none" class="job_tck_bth_pd">
+			<input type='button' value='确认支付' onClick="issueltzf();" class='job_redpack_list_c_bth'>
+		</div>
+	</div>
+</div>
+
+<!--刷新高级职位弹出框-->
+<div id="ltjob_refresh"  style="display:none; ">
+	<div class="job_recom_box">
+		<input type="hidden" name="sxltjobid" id="sxltjobid" value=""/>
+ 		<input type="hidden" id="lt_breakjob_num_sy" value="9"/>
+
+ 		<div class="job_recom_list">
+			
+			
+			<span class="job_recom_s">所需金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+											<span id="sxltneed" class="job_recom_list_jobtime_s">10</span>元
+					 				</div>
+			</div>
+		</div>
+
+		<!-- 可用积分抵扣 -->
+					<div class="job_recom_list">
+				<span class="job_recom_s">抵扣积分：</span>
+				<input type="text" value="" id="sxltdkjf" name="sxltdkjf" onkeyup="checkSxltNum('11','100');" oninput="myFunction(this)" class="com_jf_text">账户积分11（1元 = 100积分）
+			</div>
+				<div class="job_recom_list sxltjfdkh_m" style="display:none">
+			<span class="job_recom_s">抵扣后金额：</span>
+			<div class="job_recom_list_jobtime">
+				<div class="job_recom_list_jobtime_money">
+					<span id="sxltdkjfh" class="job_recom_list_jobtime_s"></span>元
+				</div>
+			</div>
+		</div>
+		<div id="sxltzf_div" >
+			<form name="alipayment"  id="payform_refresh" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return pay_forms();">
+				<div class="job_redpack_list">
+										<div class="job_redpack_list_name">支付方式：</div>
+										<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="refreshLtJobOrder('wxpay');"><div class="job_redpack_pay_bor"><img src="http://www.hr135.com/app/template/member/com/images/wx_pay.png"></div> 微信支付</a>
+					</div> 
+															<div class="job_redpack_pay">
+						<a href="javascript:;" onclick="refreshLtJobOrder('alipay');"><div class="job_redpack_pay_bor job_redpack_pay_bor_pd"><img src="http://www.hr135.com/app/template/member/com/images/ap_pay.png"></div>支付宝支付</a>
+					</div>
+															<input type="hidden" value="" id="pay_type" name="pay_type"/>
+					<input type="hidden" name="dingdan" id="order_refresh_ltjob_id" value=""/>
+					<input type="hidden" value="刷新猎头职位金额"  name="subject"/>
+					<input type="hidden" name="pay_bank" value="directPay">
+				</div>
+			</form>
+		</div>
+		<div id="sxltzf_btn" style="display:none" class="job_tck_bth_pd">
+			<input type='button' value='确认支付' onClick="sxltzf();" class='job_redpack_list_c_bth'>
+		</div>
+	</div>
+</div>
+
+<input type="hidden" name="orderid" id="orderid" value=""/>
+  
+<!-- 微信tck -->
+<div id="wxpayTx"  style="display:none;">
+	<div class="wx_payment">
+		<div class="wx_payment_cont"><div class="wx_payment_ewm">正在加载微信二维码,请稍候....</div> </div><div class="wx_payment_h2">二维码有效时长为2小时，请尽快支付</div>
+		
+		<div class="wx_payment_tip">
+			<div class="wx_payment_tip_left">
+				<i class="wx_payment_tip_line1"></i>
+				<i class="wx_payment_tip_line2"></i>
+				<i class="wx_payment_tip_line3"></i>
+			</div> 
+			<div class="wx_payment_tip_right">请使用微信扫一扫<br>扫描二维码支付</div>
+		</div>
+	</div>
+</div>  
+
+<!--  支付弹出框 -->
+<div id="payshow" style="width:450px; position:absolute;left:0px;top:0px; background:#fff; display:none;">
+	<div class="payment_tip">
+		请在新打开的支付页面上完成付款，付款完成前请不要关闭此窗口。<br>
+		如您在支付过程中遇到问题，请联系客服：<span class="payment_tip_s">400-880-5523</span>
+	</div>
+	
+	<div class="payment_bottom">
+		<a href="index.php?c=paylog" class="payment_bottombutt">已完成付款</a>
+		<a href="javascript:;" onclick="rePay();" class="payment_bottom_bth2">重新支付</a>
+	</div>
+</div>
+
+
+
+<!-- layui 当前显示弹出框index-->
+<input type='hidden' id="layindex" value="">
+
+<div class="clear"></div>
+<div class=footer>
+    <div class=w900>
+        <div class=footernav>
+            <div class="footer_bot_p">Copyright C 20092014 All Rights Reserved 版权所有 鑫潮人力资源服务
+
+
+
+
+苏ICP备12049413号-3 </div>
+            <div class="footer_bot_p">地址:江苏省沭阳县软件园B栋1009室 电话(Tel):400-880-5523 EMAIL:admin@admin.com</div>
+            <div class="footer_bot_p">Powered by
+                <a target="_blank" href="http://www.phpyun.com">PHPYun.</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clear"></div>
+
+<div id="bg" ></div>
+<div id="uclogin" style="display:none"></div>
+<div class="clear"></div>
+
+<div style="width:550px;height:440px; background:#fff;  display: none; z-index:100000000000" id="tcmsg">
+    <div class="job_add_tck">
+
+        <div class="job_add_tck_tip">
+            <div class="job_add_tck_hi"><span class="job_add_tck_hi_n">尊敬的企业用户您好！</span></div>
+            <div class="job_add_tck_bq">
+                <span id="msg_show">很抱歉，您的套餐已用完，请先升级会员</span>
+            </div>
+
+            <div class="job_add_tck_bth" id="btn_value">确定</div>
+
+            <input type="hidden" id="pay_jobid" value="" />
+            <input type="hidden" id="pay_need" value="" />
+
+        </div>
+
+        <div class="job_add_tck_cont">
+            <div class="job_add_tck_fqtip">成为付费用户即可享受免费服务</div>
+
+            <div class="job_add_tck_tc_box">
+                <ul class="job_add_tck_tc_tit" id="rating_type">
+                    <li class="job_add_tck_tc_tit_cur">套餐会员</li>                    <li >时间会员</li>                    <li>增值包</li>
+                </ul>
+
+                <div class="job_add_tck_tc_cont">
+                    <ul class="job_add_tck_tc_list" id="rating_1"  >
+
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">金牌会员</span>
+                               
+									<span class="job_add_tck_tc_jg"><em class="job_add_tck_tc_money">
+
+																			￥											899
+										 
+																		</em>/ 
+									360天									</span>
+								
+                                <a href="index.php?c=right" class="job_add_tck_tc_buy">购买</a>
+                            </div>
+
+                            <span class="job_add_tck_tc_s">发布职位数 888</span>
+                            <span class="job_add_tck_tc_s">刷新职位数 100</span>
+                            <span class="job_add_tck_tc_s">下载简历数 800</span>
+                            <span class="job_add_tck_tc_s">邀请面试数 800</span>
+                            <span class="job_add_tck_tc_s">发布兼职数 10</span>
+                            <span class="job_add_tck_tc_s">刷新兼职数 10</span>
+                            <div class="job_add_tck_tcsm">套餐说明：赠送广告位5处，时间共6个月，针对全国招聘和地区招聘							赠送900积分															，现在购买，再送50元优惠券一张，先到先得，送完为止															</div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">银牌会员</span>
+                               
+									<span class="job_add_tck_tc_jg"><em class="job_add_tck_tc_money">
+
+																			￥											99
+										 
+																		</em>/ 
+									30天									</span>
+								
+                                <a href="index.php?c=right" class="job_add_tck_tc_buy">购买</a>
+                            </div>
+
+                            <span class="job_add_tck_tc_s">发布职位数 600</span>
+                            <span class="job_add_tck_tc_s">刷新职位数 10</span>
+                            <span class="job_add_tck_tc_s">下载简历数 180</span>
+                            <span class="job_add_tck_tc_s">邀请面试数 80</span>
+                            <span class="job_add_tck_tc_s">发布兼职数 0</span>
+                            <span class="job_add_tck_tc_s">刷新兼职数 0</span>
+                            <div class="job_add_tck_tcsm">套餐说明：银牌会员							赠送250积分															，现在购买，再送10元优惠券一张，先到先得，送完为止															</div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">铜牌会员</span>
+                               
+									<span class="job_add_tck_tc_jg"><em class="job_add_tck_tc_money">
+
+																			￥											99
+										 
+																		</em>/ 
+									20天									</span>
+								
+                                <a href="index.php?c=right" class="job_add_tck_tc_buy">购买</a>
+                            </div>
+
+                            <span class="job_add_tck_tc_s">发布职位数 10</span>
+                            <span class="job_add_tck_tc_s">刷新职位数 15</span>
+                            <span class="job_add_tck_tc_s">下载简历数 20</span>
+                            <span class="job_add_tck_tc_s">邀请面试数 20</span>
+                            <span class="job_add_tck_tc_s">发布兼职数 10</span>
+                            <span class="job_add_tck_tc_s">刷新兼职数 15</span>
+                            <div class="job_add_tck_tcsm">套餐说明：铜牌会员							赠送50积分															，现在购买，再送20元优惠券一张，先到先得，送完为止															</div>
+                        </li>
+                                            </ul>
+                    <ul class="job_add_tck_tc_list" id="rating_2" style="display:none">
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">全年会员</span>
+                                <span class="job_add_tck_tc_jg"><em class="job_add_tck_tc_money">
+																	￥										2000
+																									
+								</em>/365天</span>
+                                <em class="job_add_tck_tc_jg">套餐总数不限</em>
+                                <a href="index.php?c=right&act=time" class="job_add_tck_tc_buy">购买</a>
+                            </div>
+
+                            <span class="job_add_tck_tc_s">发布职位 不限</span>
+                            <span class="job_add_tck_tc_s">刷新职位 不限</span>
+                            <span class="job_add_tck_tc_s">下载简历 不限</span>
+                            <span class="job_add_tck_tc_s">邀请面试 不限</span>
+                            <span class="job_add_tck_tc_s">发布兼职 不限</span>
+                            <span class="job_add_tck_tc_s">刷新兼职 不限</span>
+                            <div class="job_add_tck_tcsm">套餐说明：全年会员																					</div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">半年VIP会员</span>
+                                <span class="job_add_tck_tc_jg"><em class="job_add_tck_tc_money">
+																	￥										800
+																									
+								</em>/180天</span>
+                                <em class="job_add_tck_tc_jg">套餐总数不限</em>
+                                <a href="index.php?c=right&act=time" class="job_add_tck_tc_buy">购买</a>
+                            </div>
+
+                            <span class="job_add_tck_tc_s">发布职位 1000次/日</span>
+                            <span class="job_add_tck_tc_s">刷新职位 1000次/日</span>
+                            <span class="job_add_tck_tc_s">下载简历 1次/日</span>
+                            <span class="job_add_tck_tc_s">邀请面试 1次/日</span>
+                            <span class="job_add_tck_tc_s">发布兼职 1次/日</span>
+                            <span class="job_add_tck_tc_s">刷新兼职 1次/日</span>
+                            <div class="job_add_tck_tcsm">套餐说明：半年VIP会员							赠送560积分														</div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">季度VIP会员</span>
+                                <span class="job_add_tck_tc_jg"><em class="job_add_tck_tc_money">
+																	￥										500
+																									
+								</em>/90天</span>
+                                <em class="job_add_tck_tc_jg">套餐总数不限</em>
+                                <a href="index.php?c=right&act=time" class="job_add_tck_tc_buy">购买</a>
+                            </div>
+
+                            <span class="job_add_tck_tc_s">发布职位 11次/日</span>
+                            <span class="job_add_tck_tc_s">刷新职位 11次/日</span>
+                            <span class="job_add_tck_tc_s">下载简历 2次/日</span>
+                            <span class="job_add_tck_tc_s">邀请面试 不限</span>
+                            <span class="job_add_tck_tc_s">发布兼职 不限</span>
+                            <span class="job_add_tck_tc_s">刷新兼职 不限</span>
+                            <div class="job_add_tck_tcsm">套餐说明：三个月VIP会员							赠送270积分														</div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">月会员</span>
+                                <span class="job_add_tck_tc_jg"><em class="job_add_tck_tc_money">
+																	￥										200
+																									
+								</em>/30天</span>
+                                <em class="job_add_tck_tc_jg">套餐总数不限</em>
+                                <a href="index.php?c=right&act=time" class="job_add_tck_tc_buy">购买</a>
+                            </div>
+
+                            <span class="job_add_tck_tc_s">发布职位 10次/日</span>
+                            <span class="job_add_tck_tc_s">刷新职位 10次/日</span>
+                            <span class="job_add_tck_tc_s">下载简历 5次/日</span>
+                            <span class="job_add_tck_tc_s">邀请面试 5次/日</span>
+                            <span class="job_add_tck_tc_s">发布兼职 15次/日</span>
+                            <span class="job_add_tck_tc_s">刷新兼职 15次/日</span>
+                            <div class="job_add_tck_tcsm">套餐说明：月会员																					</div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">半月会员</span>
+                                <span class="job_add_tck_tc_jg"><em class="job_add_tck_tc_money">
+																	￥										20
+																									
+								</em>/15天</span>
+                                <em class="job_add_tck_tc_jg">套餐总数不限</em>
+                                <a href="index.php?c=right&act=time" class="job_add_tck_tc_buy">购买</a>
+                            </div>
+
+                            <span class="job_add_tck_tc_s">发布职位 3次/日</span>
+                            <span class="job_add_tck_tc_s">刷新职位 3次/日</span>
+                            <span class="job_add_tck_tc_s">下载简历 2次/日</span>
+                            <span class="job_add_tck_tc_s">邀请面试 3次/日</span>
+                            <span class="job_add_tck_tc_s">发布兼职 5次/日</span>
+                            <span class="job_add_tck_tc_s">刷新兼职 6次/日</span>
+                            <div class="job_add_tck_tcsm">套餐说明：半月会员							赠送1积分														</div>
+                        </li>
+                                            </ul>
+                    <ul class="job_add_tck_tc_list" id="add_pack" style="display: none;">
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">职位增值服务
+	                                <span class="job_add_tck_tc_jg">
+	                                	套餐价：<em class="job_add_tck_tc_money">￥1</em> 元 
+	                                	<!--会员价：<em class="job_add_tck_tc_money">￥10</em> 元-->
+	                                </span>
+                                </span>
+                                <a href="index.php?c=right&act=added&id=69" class="job_add_tck_tc_buy">详情</a>
+                            </div>
+                            
+                        <div class="job_add_tck_tc_list_zzb">   
+                        	下载简历：1份，	邀请面试：1份，	发布职位：1份， 刷新职位：1份， 发布兼职：1份， 刷新兼职：1份， 发布猎头职位：1份， 下载高级简历：1份
+                        </div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">综合增值服务
+	                                <span class="job_add_tck_tc_jg">
+	                                	套餐价：<em class="job_add_tck_tc_money">￥100</em> 元 
+	                                	<!--会员价：<em class="job_add_tck_tc_money">￥10</em> 元-->
+	                                </span>
+                                </span>
+                                <a href="index.php?c=right&act=added&id=70" class="job_add_tck_tc_buy">详情</a>
+                            </div>
+                            
+                        <div class="job_add_tck_tc_list_zzb">   
+                        	下载简历：20份，	邀请面试：20份，	发布职位：15份， 刷新职位：15份， 发布兼职：15份， 刷新兼职：15份， 发布猎头职位：20份， 下载高级简历：10份
+                        </div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">兼职增值服务
+	                                <span class="job_add_tck_tc_jg">
+	                                	套餐价：<em class="job_add_tck_tc_money">￥10</em> 元 
+	                                	<!--会员价：<em class="job_add_tck_tc_money">￥10</em> 元-->
+	                                </span>
+                                </span>
+                                <a href="index.php?c=right&act=added&id=83" class="job_add_tck_tc_buy">详情</a>
+                            </div>
+                            
+                        <div class="job_add_tck_tc_list_zzb">   
+                        	下载简历：0份，	邀请面试：0份，	发布职位：0份， 刷新职位：0份， 发布兼职：15份， 刷新兼职：15份， 发布猎头职位：0份， 下载高级简历：0份
+                        </div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">简历超值套餐
+	                                <span class="job_add_tck_tc_jg">
+	                                	套餐价：<em class="job_add_tck_tc_money">￥30</em> 元 
+	                                	<!--会员价：<em class="job_add_tck_tc_money">￥10</em> 元-->
+	                                </span>
+                                </span>
+                                <a href="index.php?c=right&act=added&id=78" class="job_add_tck_tc_buy">详情</a>
+                            </div>
+                            
+                        <div class="job_add_tck_tc_list_zzb">   
+                        	下载简历：20份，	邀请面试：20份，	发布职位：5份， 刷新职位：5份， 发布兼职：5份， 刷新兼职：5份， 发布猎头职位：2份， 下载高级简历：15份
+                        </div>
+                        </li>
+                                                <li>
+                            <div class="job_add_tck_tc_list_tit">
+                                <span class="job_add_tck_tc_name">高级职位增值服务
+	                                <span class="job_add_tck_tc_jg">
+	                                	套餐价：<em class="job_add_tck_tc_money">￥50</em> 元 
+	                                	<!--会员价：<em class="job_add_tck_tc_money">￥10</em> 元-->
+	                                </span>
+                                </span>
+                                <a href="index.php?c=right&act=added&id=84" class="job_add_tck_tc_buy">详情</a>
+                            </div>
+                            
+                        <div class="job_add_tck_tc_list_zzb">   
+                        	下载简历：0份，	邀请面试：0份，	发布职位：0份， 刷新职位：0份， 发布兼职：0份， 刷新兼职：0份， 发布猎头职位：30份， 下载高级简历：20份
+                        </div>
+                        </li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("ul#rating_type").on("click", "li", function() {
+        $(this).addClass("job_add_tck_tc_tit_cur");
+        $(this).siblings('li').removeClass("job_add_tck_tc_tit_cur");
+
+        var text = this.innerHTML;
+
+        if(text == '套餐会员') {
+            $("#rating_1").show();
+            $("#rating_2").hide();
+            $("#add_pack").hide();
+
+        } else if(text == '时间会员') {
+            $("#rating_1").hide();
+            $("#rating_2").show();
+            $("#add_pack").hide();
+
+        } else if(text == '增值包') {
+
+            $("#rating_1").hide();
+            $("#rating_2").hide();
+            $("#add_pack").show();
+
+        }
+    })
+
+    var height = "300px";
+
+    function addjob_job() {
+        $.layer({
+            type: 1,
+            title: '发布职位',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['480px', height],
+            page: {
+                dom: '#issue_job'
+            }
+        });
+    }
+
+    function onRefresh() {
+        var jobid = $("#pay_jobid").val();
+        $("#sxjobid").val(jobid);
+
+        var need = $("#pay_need").val();
+        if(need != '') {
+            $("#sxneed").html(need);
+        }
+        $.layer({
+            type: 1,
+            title: '刷新职位',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['480px', height],
+            page: {
+                dom: '#refresh'
+            }
+        });
+    }
+
+    function addjob_part() {
+        $.layer({
+            type: 1,
+            title: '发布兼职',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['480px', height],
+            page: {
+                dom: '#issue_part'
+            }
+        });
+    }
+
+    function onRefreshPart() {
+        var jobid = $("#pay_jobid").val();
+        $("#partjobid").val(jobid);
+        var need = $("#pay_need").val();
+        if(need != '') {
+            $("#sxpneed").html(need);
+        }
+        $.layer({
+            type: 1,
+            title: '刷新职位',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['480px', height],
+            page: {
+                dom: '#part_refresh'
+            }
+        });
+    }
+
+    function addjob_lt() {
+        $.layer({
+            type: 1,
+            title: '发布猎头职位',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['480px', height],
+            page: {
+                dom: '#issue_ltjob'
+            }
+        });
+    }
+
+    function onRefreshLt() {
+        var jobid = $("#pay_jobid").val();
+        $("#sxltjobid").val(jobid);
+        $.layer({
+            type: 1,
+            title: '刷新猎头职位',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['480px', height],
+            page: {
+                dom: '#ltjob_refresh'
+            }
+        });
+    }
+
+    function onResume_invite() {
+        $.layer({
+            type: 1,
+            title: '邀请面试',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['480px', height],
+            page: {
+                dom: '#invite_server'
+            }
+        });
+    }
+</script>
+
+
+</body>
+
+</html>

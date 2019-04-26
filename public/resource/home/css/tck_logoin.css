@@ -1,0 +1,136 @@
+﻿@charset "utf-8";
+/* CSS Document */
+.none{ display:none;}
+/*弹出登录框*/
+.logoin_tck{width:580px;height:250px; background:#fff; }
+.logoin_tck_left{position:relative;width:370px; float:left;border-right:1px solid #f5f5f5; margin-top:25px; padding-left:25px;}
+.logoin_tck_t_list{width:100%; float:left; margin-top:15px;}
+.logoin_tck_tit{width:60px; float:left; line-height:33px;color:#999; text-align:center}
+.logoin_tck_text{width:198px;height:33px;border:1px solid #d3dcdd;  float:left; overflow:hidden}
+.logoin_tck_text_icon{width:33px; display:inline-block;height:33px; background: url(../images/re.png) no-repeat center center; float:left;}
+.logoin_tck_text_icon_p{background:url(../images/so.png) no-repeat center center;}
+.logoin_tck_text_icon_y{background: url(../images/so.png) no-repeat center center;}
+.logoin_tck_text_t1{width:160px;height:32px; line-height:32px; float:left;color:#999;border:1px solid #fff;}
+.logoin_tck_p{width:258px; padding-top:15px; padding-bottom:15px; float:left}
+.logoin_tck_p_chek{width:13px;height:13px; overflow:hidden; vertical-align:middle; margin-right:5px;}
+.logoin_tck_fot{ float:right;color:#3767b0}
+.logoin_tck_fl{ float:left;color:#948989}
+.logoin_tck_fw{ display:inline-block; float:left; line-height:33px;color:#999}
+.logoin_tck_submit{width:100px;height:40px; background:#3cb0ed;border:none;color:#fff; cursor:pointer}
+.logoin_tck_bth_sub{width:258px;height:43px; background:#0180cf;border:none;color:#fff; font-size:16px; cursor:pointer}
+.logoin_tck_text_yzm{width:120px;}
+.logoin_tck_text_yzm_r{width:; float:left; }
+.logoin_tck_right{width:135px; float:left; margin-top:35px; padding-left:20px; font-size:14px;color:#a09797; text-align:center}
+.logoin_tck_reg{ padding-top:10px; padding-bottom:20px;}
+.logoin_tck_reg a{width:80px;height:28px; line-height:28px; text-align:center;border:1px solid #14c59a; display:block;color:#14c59a; margin:30px auto 0;}
+.logoin_tck_reg a:hover{ background:#14c59a;color:#fff; text-decoration:none}
+.logoin_tck_other{ margin-top:30px;}
+.logoin_tck_other_img{ margin-top:13px;}
+.logoin_tck_other_img a{ display:inline-block;width:35px;height:35px;border:1px solid #ddd;border-radius:50%; text-align:center; margin-right:5px;}
+.logoin_tck_other_img a:hover{border:1px solid #0180cf}
+.logoin_tck_other_img .logoin_tck_other_wx:hover{border:1px solid #39bd04}
+.logoin_tck_other_img .logoin_tck_other_xl:hover{border:1px solid #e5480a}
+.logoin_tck_other_img img{ margin-top:8px;}.Pop-up_logoin_list{width:100%; float:left; margin-top:20px;}
+.interview_inp{width:270px;height:30px; line-height:30px;border:1px solid #ccc;}
+.r_Interview{width:280px; position:relative;padding-left:90px; margin-top:10px;}
+.Interview_span{width:80px; display:inline-block;height:30px; line-height:30px; position:absolute;left:0px;top:0px; text-align:right;color:#666}
+.Interview_text{width:250px;height:30px; line-height:30px;border:1px solid #cfcfcf;border-radius:2px;box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) ; text-indent:10px;color:#666}
+.Interview_textarea_text{width:230px;height:60px; line-height:30px;border:1px solid #cfcfcf;border-radius:2px ;box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); padding:5px 10px;}
+.Interview_select{width:250px;height:30px; line-height:30px;border:1px solid #cfcfcf;border-radius:2px;box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) ; }
+.Interview_text_w200{width:200px;}
+.Interview_text_box{width:250px;height:30px; line-height:30px;border:1px solid #cfcfcf;border-radius:2px; position:relative}
+.Interview_text_box_t{width:100%; text-align:left;height:30px; padding-left:10px; border:none; background:#fff url(../images/sub_bg2.gif) no-repeat 230px center;border-radius:2px;box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) ; color:#666}
+.Interview_text_box_list{ width:250px;position:absolute;left:-1px;top:30px; background:#fff;border:1px solid #ccc;
+;max-height:160px;_height:expression(this.scrollHeight > 160 ? "160px" : "auto");overflow: auto;
+overflow-x: hidden; background:#fff}
+.Interview_text_box_list li{width:100%;}
+.Interview_text_box_list li a{ width:240px;display:block; padding-left:10px;height: 26px;line-height: 26px;}
+.Interview_text_box_list li a:hover{ background:#bad9f9;color:#333; text-decoration:none}
+.fastlogin_verification{width:200px; float:left}
+.wxcode_login {
+    width: 41px;
+    height: 41px;
+    background-image:url(../images/eer.png);
+    background-repeat: no-repeat;
+    position: absolute;
+    right:-14px;
+    top: 1px;
+    cursor: pointer;
+}
+
+.normal_login {
+    width: 41px;
+    height: 41px;
+    background-image: url(../images/pc.png);
+    background-repeat: no-repeat;
+    position: absolute;
+    right: -14px;
+    top: 1px;
+    cursor: pointer;
+    display: none;
+}
+
+.wxlogintext {
+    margin: 0 auto;
+    width: 150px;
+    height: 150px;
+    padding: 10px;
+    margin-top: 70px;
+    border: 1px #eeeeee solid;
+}
+.wxlogintext img {
+    width: 150px;
+    height: 150px;
+    border: 0px;
+}
+.wxlogintxt {
+    margin: 0 auto;
+    width: 190px;
+    text-align:center;
+    margin-top:20px;
+    height: 36px;
+    line-height: 36px;
+    background-color: #EEEEEE;
+    color: #999999;
+    border-radius: 30px;
+}
+
+
+
+
+.login_pop_up_box{width:500px; height:520px;  float:left}
+.login_pop_up_box_left{width:300px; float:left; padding-top:85px; padding-left:20px;}
+
+.login_pop_up_box_right{width:440px; padding-left:50px; float:left; position:relative}
+.login_pop_up_box_title{width:100%;height:60px; padding-top:35px; }
+.login_pop_up_box_title ul li{width:210px;height:58px; line-height:58px; float:left;border-bottom:2px solid #fff; font-size:18px; text-align:center;cursor: pointer;}
+.login_pop_up_box_title ul .login_pop_up_cur{color:#F45204;border-bottom:2px solid #F45204}
+.login_pop_up_box_text{width:338px;height:50px;border-radius: 3px;border:1px solid #ddd; background:#fff; padding-left:60px; position:relative; margin-top:20px;}
+.login_pop_up_box_yztext{width:118px;height:50px;border-radius: 3px;border:1px solid #ddd; background:#fff; padding-left:60px; position:relative; margin-top:20px;}
+.login_pop_up_box_t{width:100%;height:50px; line-height:50px; margin:0; padding:0;border:none;border-radius: 3px; font-size:15px;}
+.login_pop_up_box_icon{    width: 50px;height: 50px;    border-radius: 3px 0px 0px 3px; background:#dedddd; display:inline-block; position:absolute;left:0px;top:0px;}
+.login_pop_up_box_icon_zh{ background:#dedddd url(../images/tck_icon1.png) no-repeat center center}
+.login_pop_up_box_icon_mm{ background:#dedddd url(../images/tck_icon2.png) no-repeat center center}
+.login_pop_up_box_icon_yz{ background:#dedddd url(../images/tck_icon3.png) no-repeat center center}
+.login_pop_up_box_icon_sj{ background:#dedddd url(../images/tck_icon4.png) no-repeat center center}
+.login_pop_up_box_icon_dx{ background:#dedddd url(../images/tck_icon5.png) no-repeat center center}
+.login_pop_up_box_bth{width:400px;height:50px; background:#FF6600;border:none;color:#fff; font-size:16px;border-radius: 3px; margin-top:20px; cursor:pointer}
+.login_pop_up_box_bth:hover{color:#fff;background: #ef660b; text-decoration:none;}
+.login_pop_up_box_fot{width:400px;height:40px; line-height:40px; position:relative}
+.login_pop_up_box_fot a{color:#1c99ef}
+.login_pop_up_box_rightreg{ position:absolute;right:0px;top:0px;color:#1c99ef}
+.login_pop_up_box_yzimg{ position:absolute;left:180px;top:0px;}
+.login_pop_up_box_sjtext{width:188px;height:50px;border-radius: 3px;border:1px solid #ddd; background:#fff; padding-left:60px; position:relative; margin-top:20px;}
+.login_pop_up_box_yztext_hq {position: absolute;top: -1px;left: 248px;width: 149px;letter-spacing: 0;height: 52px;line-height: 52px;border-radius: 0 4px 4px 0;background-color: #2bb2fa;color:#fff; text-align:center; font-size:15px;}
+.login_pop_up_box_yztext_hq:hover{color:#fff;background: #0ea7f8; text-decoration:none;}
+.login_pop_up_box_other{width:100%; padding-top:10px;}
+.login_pop_up_box_other a{ display: inline-block; margin-right:20px; padding-left:24px;}
+.login_pop_up_box_other_qq{ background:url(../images/qq.png) no-repeat left center}
+.login_pop_up_box_other_wx{ background:url(../images/wx_icon1.png) no-repeat left center}
+.login_pop_up_box_other_sina{ background:url(../images/xl_icon1.png) no-repeat left center}
+.login_pop_up_box_smlogin {display: inline-block;width: 80px;height: 25px;text-align: center;line-height: 25px;font-size: 14px;color: #FF8C14;background: url(../images/sm_login.png) no-repeat;position: relative;top: 0px;right:90px;}
+.wx_login_show{width:430px;}
+.login_pop_up_msg{width:165px;height:28px; position:absolute;left:50px;top:-25px;}
+.login_pop_up_msg_tx{width:124px;height:26px; line-height:26px; padding-left:25px;border:1px solid #ffc7c7; background:#ffecec url(../images/ico_warn2.png) no-repeat 5px center;color:#d54801; position:relative}
+.login_pop_up_re_m{ position:relative; z-index:10}
+.login_pop_up_msg_icon{width:10px;height:6px; background:url(../images/yun_icon_sj.png) no-repeat; position:absolute;left:10px;bottom:-5px;_bottom:-13px;}
