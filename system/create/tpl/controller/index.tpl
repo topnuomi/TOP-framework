@@ -2,12 +2,12 @@
 namespace {namespace}\{name}\controller;
 
 use system\top\Controller;
-use {namespace}\{name}\model\demo;
+use {namespace}\{name}\model\Demo;
 
-class index extends Controller {
+class Index extends Controller {
 
     public function index() {
-        $model = new demo();
+        $model = new Demo();
         return [
             'data' => $model->get(1)
         ];

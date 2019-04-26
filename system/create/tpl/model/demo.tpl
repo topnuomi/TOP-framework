@@ -3,7 +3,7 @@ namespace {namespace}\{name}\model;
 
 use system\top\Model;
 
-class demo extends Model {
+class Demo extends Model {
 
     protected $table = '';
     protected $pk = '';

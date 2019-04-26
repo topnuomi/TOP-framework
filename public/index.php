@@ -7,4 +7,5 @@ define('BASEDIR', __DIR__ . '/..');
 define('APPNAMESPACE', 'application');
 // 加载框架
 require BASEDIR . '/system/Top.php';
+
 \system\Top::entry();

@@ -14,7 +14,7 @@ class Load {
     private static $classInstance = [];
 
     /**
-     * 自动加载
+     * 文件自动加载
      * @param $class
      * @return bool
      * @throws BaseException
@@ -24,11 +24,14 @@ class Load {
         if (!isset(self::$files[$class])) {
             $classPath = str_replace('\\', '/', $class);
             $file = BASEDIR . '/' . $classPath . '.php';
-            // 文件存在
             if (file_exists($file)) {
+                // 文件存在
                 self::$files[$class] = $file;
                 require $file;
+            } else if (file_exists(BASEDIR . '/composer.json')) {
+                self::$files[$class] = $file;
             } else {
+                // 文件不存在并且没有composer.json则抛出异常
                 throw new BaseException('文件' . $file . '不存在');
             }
         }

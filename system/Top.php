@@ -6,7 +6,7 @@ use system\library\App;
 
 /**
  * 框架入口
- * 所有目录都是小写...所有类名首字母为大写（嗯，挺好看，命名空间也很清爽）...
+ * 所有目录都是小写，所有类名首字母为大写
  * 命令行创建模块请进入目录： 根目录/system/create
  * 执行 php create.php 入口文件  命名空间  模块名  [新项目(new)]
  * [] 为可选参数
@@ -20,9 +20,6 @@ class Top {
     // 默认访问位置
     private static $defaultAddress = 'home';
 
-    /**
-     * @throws \Exception
-     */
     public static function entry() {
         header('content-type: text/html; charset=utf-8');
         // 指定时区
