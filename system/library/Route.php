@@ -11,7 +11,6 @@ use system\library\decorator\ifs\DefaultDecoratorIfs;
  *
  * @author topnuomi 2018年11月19日
  */
-
 class Route {
 
     // 路由实例
@@ -90,13 +89,13 @@ class Route {
     public function check() {
         // 检查模块是否存在
         if (!is_dir(BASEDIR . '/' . APPNS . '/' . $this->module))
-            throw new RouteException("Module '" . $this->module . "' doesn't exist");
+            throw new RouteException('模块' . $this->module . '不存在');
         // 检查控制器是否存在
         if (!class_exists($this->className))
-            throw new RouteException("Controller '" . $this->className . "' doesn't exist");
+            throw new RouteException('控制器' . $this->className . '不存在');
         // 检查方法在控制器中是否存在
         if (!in_array($this->action, get_class_methods($this->className)))
-            throw new RouteException("Function '" . $this->action . "' doesn't exist in " . $this->ctrl);
+            throw new RouteException('方法' . $this->action . '在控制器' . $this->ctrl . '中不存在');
     }
 
     /**
@@ -106,9 +105,9 @@ class Route {
     public function handler() {
         $userDecorators = Register::get('Config')->get('decorator');
         $systemDecorators = [
-            'system.library.decorator.InitDecorator', // 初始化
-            'system.library.decorator.ReturnDecorator', // 辅助控制器
-            'system.library.decorator.StringDecorator', // 辅助控制器
+            'system.library.decorator.InitDecorator',
+            'system.library.decorator.ReturnDecorator',
+            'system.library.decorator.StringDecorator',
         ];
         $decorators = array_merge($systemDecorators, $userDecorators);
         foreach ($decorators as $key => $value) {
@@ -119,7 +118,7 @@ class Route {
         $object = new $this->className();
         if (method_exists($object, '_init'))
             $data = $object->_init();
-        if(!isset($data) || $data == null) {
+        if (!isset($data) || $data == null) {
             $data = call_user_func_array([
                 $object,
                 $this->action
