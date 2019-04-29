@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: xingxin
- * Date: 2019/4/26/0026
- * Time: 16:25
- */
 
 namespace system\library\template;
 
