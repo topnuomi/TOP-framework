@@ -28,5 +28,4 @@ return [
         // 'right' => '}',
         // 'cacheTime' => 5
     ],
-    'secret' => ''
 ];
