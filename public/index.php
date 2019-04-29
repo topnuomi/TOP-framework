@@ -8,4 +8,4 @@ define('APPNS', 'application');
 // 加载框架
 require BASEDIR . '/system/Top.php';
 
-\system\Top::entry();
+\system\Top::start();

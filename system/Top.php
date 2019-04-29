@@ -20,7 +20,7 @@ class Top {
     // 默认访问位置
     private static $defaultAddress = 'home';
 
-    public static function entry() {
+    public static function start() {
         header('content-type: text/html; charset=utf-8');
         // 指定时区
         date_default_timezone_set('PRC');
