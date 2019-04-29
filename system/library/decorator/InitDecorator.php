@@ -53,7 +53,7 @@ class InitDecorator implements DefaultDecoratorIfs {
         // 加载系统函数库
         require BASEDIR . '/system/top/functions/functions.php';
         // 加载用户函数库
-        $funcFile = BASEDIR . '/' . APPNAMESPACE . '/' . $route->module . '/functions.php';
+        $funcFile = BASEDIR . '/' . APPNS . '/' . $route->module . '/functions.php';
         if (file_exists($funcFile)) {
             require $funcFile;
         }

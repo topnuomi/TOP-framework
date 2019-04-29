@@ -135,7 +135,7 @@ class Pathinfo implements RouteIfs {
         $this->rawUri = $uri;
         $paramArray = explode('/', $uri);
         $name = $paramArray[0];
-        $file = BASEDIR . '/' . APPNAMESPACE . '/route.php';
+        $file = BASEDIR . '/' . APPNS . '/route.php';
         if (file_exists($file)) {
             $routeConfig = require $file;
             if (isset($routeConfig[$name])) {
@@ -182,7 +182,7 @@ class Pathinfo implements RouteIfs {
         $this->uriArray = $this->processUriArray();
         $this->module = $this->module();
         $this->ctrl = $this->ctrl();
-        $this->className = '\\' . APPNAMESPACE . '\\' . $this->module . '\\controller\\' . $this->ctrl;
+        $this->className = '\\' . APPNS . '\\' . $this->module . '\\controller\\' . $this->ctrl;
         $this->action = $this->action();
         $this->param = $this->param();
         unset($this->uriArray);

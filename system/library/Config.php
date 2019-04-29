@@ -38,7 +38,7 @@ class Config {
     public function get($name = '') {
         // 加载的文件名
         $module = Register::get('Route')->module;
-        $file = BASEDIR . '/' . APPNAMESPACE . '/' . $module . '/config/config.php';
+        $file = BASEDIR . '/' . APPNS . '/' . $module . '/config/config.php';
         if (! isset(self::$files[$file])) {
             if (file_exists($file)) {
                 $config = require $file;

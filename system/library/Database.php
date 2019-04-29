@@ -47,6 +47,12 @@ class Database {
 
     private $on = [];
 
+    /**
+     * Database constructor.
+     * @param $table
+     * @param $pk
+     * @throws exception\BaseException
+     */
     private function __construct($table, $pk) {
         $driver = Register::get('DBDriver');
         $this->config = $config = Register::get('Config')->get('db');

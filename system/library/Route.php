@@ -89,7 +89,7 @@ class Route {
      */
     public function check() {
         // 检查模块是否存在
-        if (!is_dir(BASEDIR . '/' . APPNAMESPACE . '/' . $this->module))
+        if (!is_dir(BASEDIR . '/' . APPNS . '/' . $this->module))
             throw new RouteException("Module '" . $this->module . "' doesn't exist");
         // 检查控制器是否存在
         if (!class_exists($this->className))

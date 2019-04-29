@@ -4,7 +4,7 @@ define('DEBUG', true);
 // 根目录
 define('BASEDIR', __DIR__ . '/..');
 // APP的根命名空间
-define('APPNAMESPACE', 'application');
+define('APPNS', 'application');
 // 加载框架
 require BASEDIR . '/system/Top.php';
 
