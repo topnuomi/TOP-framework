@@ -109,7 +109,6 @@ class Route {
             'system.library.decorator.InitDecorator', // 初始化
             'system.library.decorator.ReturnDecorator', // 辅助控制器
             'system.library.decorator.StringDecorator', // 辅助控制器
-            'system.library.decorator.ViewDecorator' // 视图
         ];
         $decorators = array_merge($systemDecorators, $userDecorators);
         foreach ($decorators as $key => $value) {

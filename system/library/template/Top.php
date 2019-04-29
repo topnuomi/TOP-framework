@@ -11,7 +11,7 @@ use system\library\template\tags\Tags;
  *
  * @author topnuomi 2018年11月22日
  */
-class DefaultTemplate implements TemplateIfs {
+class Top implements TemplateIfs {
 
     private static $instance;
 
@@ -31,12 +31,17 @@ class DefaultTemplate implements TemplateIfs {
     }
 
     /**
-     * DefaultTemplate constructor.
+     * @throws \system\library\exception\BaseException
      * @throws \Exception
      */
-    private function __construct() {
+    public function run() {
+        // TODO: Implement run() method.
         $this->tags = Tags::instance();
         $this->config = Register::get('Config')->get('view');
+        return $this;
+    }
+
+    private function __construct() {
     }
 
     /**
@@ -99,7 +104,7 @@ class DefaultTemplate implements TemplateIfs {
      */
     public function fetch($file, $param, $cache) {
         // TODO Auto-generated method stub
-        $filename = BASEDIR . '/' . $this->config['dir'] . $file . '.' . $this->config['ext'];
+        $filename = $this->config['dir'] . $file . '.' . $this->config['ext'];
         if (file_exists($filename)) {
             $filename = $this->processing($filename);
             if ($this->cacheStatus || $cache) {

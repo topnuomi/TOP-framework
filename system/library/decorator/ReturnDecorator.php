@@ -11,22 +11,14 @@ use system\library\Register;
  */
 class ReturnDecorator implements DefaultDecoratorIfs {
 
-    /**
-     *
-     * {@inheritdoc}
-     *
-     * @see \system\library\decorator\ifs\DefaultDecoratorIfs::before()
-     */
     public function before() {
         // TODO Auto-generated method stub
     }
 
     /**
      * 布尔或数组则显示视图
-     *
-     * {@inheritdoc}
-     *
-     * @see \system\library\decorator\ifs\DefaultDecoratorIfs::after()
+     * @param array $data
+     * @throws \system\library\exception\BaseException
      */
     public function after($data) {
         // TODO Auto-generated method stub

@@ -3,11 +3,9 @@
 namespace system\library\decorator;
 
 use system\library\Register;
-use system\library\Config;
 use system\library\decorator\ifs\DefaultDecoratorIfs;
 use system\top\View;
 use system\library\cache\FileCache;
-use system\library\template\DefaultTemplate;
 
 /**
  * 初始化
@@ -25,10 +23,8 @@ class InitDecorator implements DefaultDecoratorIfs {
     public function before() {
         $route = Register::get('Route');
         $sessionConfig = Register::get('Config')->get('session');
-        if (!empty($sessionConfig) && $sessionConfig['open'] === true) {
+        if (!empty($sessionConfig) && $sessionConfig['open'] === true)
             session_start();
-            // session_save_path('./tmp/');
-        }
         // 数据库驱动
         $config = Register::get('Config')->get('db');
         $driver = $config['driver'] ? $config['driver'] : 'MySQLi';
@@ -46,14 +42,10 @@ class InitDecorator implements DefaultDecoratorIfs {
             foreach ($initRegister as $key => $value) {
                 Register::set($key, function () use ($value) {
                     $value = '\\' . str_replace('.', '\\', ltrim($value, '.'));
-                    return new $value();
+                    return $value::instance();
                 });
             }
         }
-        // 注册默认模板驱动
-        Register::set('DefaultTemplate', function () {
-            return DefaultTemplate::instance();
-        });
         // 注册视图
         Register::set('View', function () {
             return View::instance();

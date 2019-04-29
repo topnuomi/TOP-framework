@@ -8,6 +8,8 @@ namespace system\library\template\ifs;
  */
 interface TemplateIfs {
 
+    public function run();
+
     public function cache($status);
 
     /**

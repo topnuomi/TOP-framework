@@ -1,6 +1,9 @@
 <?php
 return [
-    'register' => [],
+    'register' => [
+        'Twig' => 'system.library.template.Twig',
+        'Top' => 'system.library.template.Top'
+    ],
     'decorator' => [],
     'session' => [
         'open' => true,
@@ -16,14 +19,14 @@ return [
         'charset' => 'utf8'
     ],
     'view' => [
+        'engine' => 'Twig',
         'ext' => 'html',
-        'dir' => './application/home/view/',
-        'engine' => 'DefaultTemplate',
-        'left' => '{',
-        'right' => '}',
-        'compileDir' => './runtime/compile/application/home/',
+        'dir' => '../application/home/view/',
         'cacheDir' => './runtime/cache/application/home/',
-        'cacheTime' => 5
+        // 'compileDir' => './runtime/compile/application/home/',
+        // 'left' => '{',
+        // 'right' => '}',
+        // 'cacheTime' => 5
     ],
     'secret' => ''
 ];

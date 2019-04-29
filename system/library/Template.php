@@ -23,7 +23,7 @@ class Template {
      * @param TemplateIfs $template            
      */
     private function __construct(TemplateIfs $template) {
-        $this->template = $template;
+        $this->template = $template->run();
     }
 
     /**
