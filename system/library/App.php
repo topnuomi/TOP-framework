@@ -2,8 +2,6 @@
 
 namespace system\library;
 
-use system\library\error\BaseError;
-use system\library\exception\BaseException;
 use system\library\exception\DatabaseException;
 use system\library\exception\RouteException;
 use system\library\route\Command;

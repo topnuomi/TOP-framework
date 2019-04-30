@@ -3,7 +3,6 @@
 namespace system\top;
 
 use system\library\Database;
-use system\library\exception\BaseException;
 
 /**
  * 基础模型
@@ -49,8 +48,6 @@ class Model {
 
     /**
      * 用数据库配置获取实例
-     * Model constructor.
-     * @throws \Exception
      */
     public function __construct() {
         if ($this->table) {
@@ -60,14 +57,19 @@ class Model {
 
     /**
      * 影响的表（仅多表delete）
-     * @param $effect
-     * @return $this
+     * @param string|array $effect
+     * @return \system\top\Model
      */
     public function effect($effect) {
         $this->db->effect($effect);
         return $this;
     }
 
+    /**
+     * 过滤重复值的字段
+     * @param string|array $field
+     * @return \system\top\Model
+     */
     public function distinct($field) {
         $this->db->distinct($field);
         return $this;
@@ -75,8 +77,8 @@ class Model {
 
     /**
      * 指定字段
-     * @param $field
-     * @return $this
+     * @param string|array $field
+     * @return \system\top\Model
      */
     public function field($field) {
         $this->db->field($field);
@@ -85,8 +87,8 @@ class Model {
 
     /**
      * 查询条件
-     * @param $where
-     * @return $this
+     * @param string|array $where
+     * @return \system\top\Model
      */
     public function where($where) {
         $this->db->where($where);
@@ -95,8 +97,8 @@ class Model {
 
     /**
      * 排序
-     * @param $order
-     * @return $this
+     * @param string $order
+     * @return \system\top\Model
      */
     public function order($order) {
         $this->db->order($order);
@@ -105,8 +107,8 @@ class Model {
 
     /**
      * 范围
-     * @param $limit
-     * @return $this
+     * @param string|array $limit
+     * @return \system\top\Model
      */
     public function limit($limit) {
         $this->db->limit($limit);
@@ -118,7 +120,7 @@ class Model {
      * @param $type
      * @param $table
      * @param $name
-     * @return $this
+     * @return \system\top\Model
      */
     public function join($type, $table, $name) {
         $this->db->join($type, $table, $name);
@@ -128,7 +130,7 @@ class Model {
     /**
      * 多表
      * @param $on
-     * @return $this
+     * @return \system\top\Model
      */
     public function on($on) {
         $this->db->on($on);

@@ -17,12 +17,16 @@ class Database {
     // 当前类实例
     private static $instance = [];
 
+    // 当前表结构
     private static $tableDesc = [];
 
+    // 数据库配置
     private $config = [];
 
+    // 当前操作的表
     private $table = '';
 
+    // 当前表的主键
     private $pk = '';
 
     // 多个表（仅delete操作）
@@ -45,13 +49,13 @@ class Database {
     // 多表
     private $join = [];
 
+    // 关联
     private $on = [];
 
     /**
      * Database constructor.
      * @param $table
      * @param $pk
-     * @throws exception\BaseException
      */
     private function __construct($table, $pk) {
         $driver = Register::get('DBDriver');
@@ -87,7 +91,7 @@ class Database {
     /**
      * 指定多张表
      * @param $effect
-     * @return $this
+     * @return \system\library\Database
      */
     public function effect($effect) {
         $this->effect = $effect;
@@ -96,7 +100,7 @@ class Database {
 
     /**
      * @param $field
-     * @return $this
+     * @return \system\library\Database
      */
     public function distinct($field) {
         $this->distinct = $field;
@@ -106,7 +110,7 @@ class Database {
     /**
      * 设置操作字段
      * @param $field
-     * @return $this
+     * @return \system\library\Database
      */
     public function field($field) {
         $this->field = $field;
@@ -116,7 +120,7 @@ class Database {
     /**
      * 设置条件
      * @param $where
-     * @return $this
+     * @return \system\library\Database
      */
     public function where($where) {
         if (!empty($where)) {
@@ -128,7 +132,7 @@ class Database {
     /**
      * 设置排序
      * @param $order
-     * @return $this
+     * @return \system\library\Database
      */
     public function order($order) {
         $this->order = $order;
@@ -138,7 +142,7 @@ class Database {
     /**
      * 设置记录范围
      * @param $limit
-     * @return $this
+     * @return \system\library\Database
      */
     public function limit($limit) {
         $this->limit = $limit;
@@ -163,7 +167,7 @@ class Database {
     }
 
     /**
-     *
+     * 多表关联
      * @param string $on
      * @return \system\library\Database
      */

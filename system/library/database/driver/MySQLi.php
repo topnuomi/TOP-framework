@@ -39,11 +39,6 @@ class MySQLi implements DatabaseIfs {
         if ($link === false) {
             throw new DatabaseException(mysqli_connect_error());
         }
-        // $select = mysqli_select_db($link, $config['dbname']);
-        // if (!$select) {
-        //     throw new DatabaseException(mysqli_error($this->link));
-        // }
-        // mysqli_set_charset($link, $config['charset']);
         mysqli_query($link, 'set names ' . $config['charset']);
         return $this;
     }
@@ -261,7 +256,7 @@ class MySQLi implements DatabaseIfs {
         $result = mysqli_query($this->link, $query);
         if (!$result)
             throw new DatabaseException(mysqli_error($this->link));
-        $this->writeLogs($result, $query);
+        // $this->writeLogs($result, $query);
         return $result;
     }
 

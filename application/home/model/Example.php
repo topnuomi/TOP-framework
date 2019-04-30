@@ -2,7 +2,6 @@
 
 namespace application\home\model;
 
-use system\library\Load;
 use system\top\Model;
 
 /**

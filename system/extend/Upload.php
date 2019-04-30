@@ -62,7 +62,8 @@ class Upload {
                             $filePath = resize_image($filePath, $width, $height);
                         }
                         $hash = md5_file($filePath);
-                        if ($file = $picture->getPictureByHash($hash)) {
+                        $file = $picture->getPictureByHash($hash);
+                        if ($file) {
                             @unlink($filePath);
                             $filePath = $file['path'];
                         } else {

@@ -13,8 +13,8 @@ return [
         'driver' => 'MySQLi',
         'host' => '127.0.0.1',
         'user' => 'root',
-        'passwd' => 'root',
-        'dbname' => 'blog',
+        'passwd' => '',
+        'dbname' => '',
         'prefix' => 'b_',
         'charset' => 'utf8'
     ],

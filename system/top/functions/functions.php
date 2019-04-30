@@ -71,7 +71,8 @@ function redirect($url) {
  * @param string $dirName
  */
 function remove_dir($dirName) {
-    if ($handle = @opendir($dirName)) {
+    $handle = @opendir($dirName);
+    if ($handle) {
         while (false !== ($item = readdir($handle))) {
             if ($item != "." && $item != "..") {
                 if (is_dir($dirName . '/' . $item)) {

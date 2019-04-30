@@ -108,7 +108,8 @@ class Water {
             $this->error = '请指定要处理的图片文件';
             return false;
         }
-        if ($filename = $this->addWater($file, $cover)) {
+        $filename = $this->addWater($file, $cover);
+        if ($filename) {
             return $filename;
         } else {
             $this->error = '水印添加失败';
