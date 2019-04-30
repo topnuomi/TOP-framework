@@ -1,7 +1,7 @@
 <?php
-namespace system\library\decorator;
+namespace system\decorator;
 
-use system\library\decorator\ifs\DefaultDecoratorIfs;
+use system\decorator\ifs\DefaultDecoratorIfs;
 
 /**
  * 辅助控制器的装饰器

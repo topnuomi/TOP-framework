@@ -1,7 +1,7 @@
 <?php
-namespace system\library\decorator;
+namespace system\decorator;
 
-use system\library\decorator\ifs\DefaultDecoratorIfs;
+use system\decorator\ifs\DefaultDecoratorIfs;
 use system\library\Register;
 
 /**

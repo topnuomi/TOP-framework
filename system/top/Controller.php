@@ -14,8 +14,8 @@ abstract class Controller {
 
     /**
      * 输出JSON数据
-     * @param string $msg
-     * @param number $code
+     * @param $msg
+     * @param int $code
      * @param array $data
      * @param array $ext
      * @return string

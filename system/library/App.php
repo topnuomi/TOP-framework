@@ -20,7 +20,9 @@ class App {
         // 注册自动加载函数
         spl_autoload_register('\system\library\Load::_Autoload');
         // 引入composer自动加载文件
-        require BASEDIR . '/vendor/autoload.php';
+        $composerLoadFile = BASEDIR . '/vendor/autoload.php';
+        if (file_exists($composerLoadFile))
+            require $composerLoadFile;
         // 使用whoops美化异常输出
         $whoops = new \Whoops\Run;
         $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);

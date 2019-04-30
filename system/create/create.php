@@ -19,7 +19,8 @@ class Create {
         $this->dir = __DIR__ . '/';
         $this->namespace = $namespace;
         $this->base = $this->dir . '../../';
-        $this->start = $this->base . $start . '.php';
+        if ($start)
+            $this->start = $this->base . $start . '.php';
         $this->projectPath = $this->base . $this->namespace . '/' . $this->name . '/';
         $this->create();
     }

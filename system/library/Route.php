@@ -4,7 +4,7 @@ namespace system\library;
 
 use system\library\exception\RouteException;
 use system\library\route\ifs\RouteIfs;
-use system\library\decorator\ifs\DefaultDecoratorIfs;
+use system\decorator\ifs\DefaultDecoratorIfs;
 
 /**
  * 路由类
@@ -105,9 +105,9 @@ class Route {
     public function handler() {
         $userDecorators = Register::get('Config')->get('decorator');
         $systemDecorators = [
-            'system.library.decorator.InitDecorator',
-            'system.library.decorator.ReturnDecorator',
-            'system.library.decorator.StringDecorator',
+            'system.decorator.InitDecorator',
+            'system.decorator.ReturnDecorator',
+            'system.decorator.StringDecorator',
         ];
         $decorators = array_merge($systemDecorators, $userDecorators);
         foreach ($decorators as $key => $value) {

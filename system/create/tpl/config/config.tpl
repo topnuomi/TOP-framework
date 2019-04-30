@@ -1,6 +1,10 @@
 <?php
 return [
-    'register' => [],
+    'register' => [
+        'Top' => 'system.library.template.Top',
+        // 'Smarty' => 'system.library.template.Smarty'
+        // 'Twig' => 'system.library.template.Twig',
+    ],
     'decorator' => [],
     'session' => [
         'open' => true,
@@ -15,13 +19,13 @@ return [
         'charset' => 'utf8'
     ],
     'view' => [
+        'engine' => 'Top',
         'ext' => 'html',
-        'dir' => './{namespace}/{name}/view/',
-        'engine' => 'DefaultTemplate',
+        'dir' => '../{namespace}/{name}/view/',
+        'cacheDir' => './runtime/cache/{namespace}/{name}/',
+        'compileDir' => './runtime/compile/{namespace}/{name}/',
         'left' => '{',
         'right' => '}',
-        'compileDir' => './runtime/compile/{namespace}/{name}/',
-        'cacheDir' => './runtime/cache/{namespace}/{name}/',
         'cacheTime' => 5
-    ]
+    ],
 ];

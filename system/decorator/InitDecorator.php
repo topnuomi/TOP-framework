@@ -1,9 +1,9 @@
 <?php
 
-namespace system\library\decorator;
+namespace system\decorator;
 
 use system\library\Register;
-use system\library\decorator\ifs\DefaultDecoratorIfs;
+use system\decorator\ifs\DefaultDecoratorIfs;
 use system\top\View;
 use system\library\cache\FileCache;
 

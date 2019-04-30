@@ -5,6 +5,8 @@ namespace system\library\template;
 
 use system\library\Register;
 use system\library\template\ifs\TemplateIfs;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class Twig implements TemplateIfs {
 
@@ -39,7 +41,7 @@ class Twig implements TemplateIfs {
 
     public function cache($status) {
         // TODO: Implement cache() method.
-        return $this;
+        return true;
     }
 
     /**
@@ -53,13 +55,14 @@ class Twig implements TemplateIfs {
      */
     public function fetch($file, $param, $cache) {
         $baseViewDir = rtrim($this->config['dir'], '/') . '/';
-        $loader = new \Twig\Loader\FilesystemLoader($baseViewDir);
+        $loader = new FilesystemLoader($baseViewDir);
         $loader->addPath($baseViewDir, 'base');
-        $template = new \Twig\Environment($loader, [
+        $template = new Environment($loader, [
             'cache' => rtrim($this->config['cacheDir'], '/') . '/',
             'auto_reload' => true,
             'debug' => DEBUG
         ]);
-        return $template->render('@base/' . $file . '.' . $this->config['ext'], $param);
+        $templateFile = '@base/' . $file . '.' . $this->config['ext'];
+        return $template->render($templateFile, $param);
     }
 }
