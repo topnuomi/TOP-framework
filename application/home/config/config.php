@@ -2,7 +2,8 @@
 return [
     'register' => [
         'Twig' => 'system.library.template.Twig',
-        'Top' => 'system.library.template.Top'
+        // 'Smarty' => 'system.library.template.Smarty',
+        // 'Top' => 'system.library.template.Top'
     ],
     'decorator' => [],
     'session' => [

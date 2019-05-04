@@ -1,5 +1,8 @@
 {% extends "@base/Common/base.html" %}
 
 {% block content %}
-<h1>It's works</h1>
+    <h1>Twig</h1>
+    {% for value in lists %}
+        {{ value }}
+    {% endfor %}
 {% endblock %}

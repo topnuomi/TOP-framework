@@ -13,7 +13,7 @@ use Twig\Source;
 use Twig\Template;
 
 /* @base/Index/index.html */
-class __TwigTemplate_68a461edcefea866542e073506fd2e0878dcb0d6cedcdf6df136616db4c1a791 extends \Twig\Template
+class __TwigTemplate_77f6f4434e23a407b1c0b188f9b24dae360b4fa23942695959cc1259bf1a51d4 extends \Twig\Template
 {
     private $source;
 
@@ -44,8 +44,21 @@ class __TwigTemplate_68a461edcefea866542e073506fd2e0878dcb0d6cedcdf6df136616db4c
     public function block_content($context, array $blocks = [])
     {
         // line 4
-        echo "<h1>It's works</h1>
-";
+        echo "    <h1>Twig</h1>
+    ";
+        // line 5
+        $context['_parent'] = $context;
+        $context['_seq'] = twig_ensure_traversable(($context["lists"] ?? null));
+        foreach ($context['_seq'] as $context["_key"] => $context["value"]) {
+            // line 6
+            echo "        ";
+            echo twig_escape_filter($this->env, $context["value"], "html", null, true);
+            echo "
+    ";
+        }
+        $_parent = $context['_parent'];
+        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['value'], $context['_parent'], $context['loop']);
+        $context = array_intersect_key($context, $_parent) + $_parent;
     }
 
     public function getTemplateName()
@@ -60,7 +73,7 @@ class __TwigTemplate_68a461edcefea866542e073506fd2e0878dcb0d6cedcdf6df136616db4c
 
     public function getDebugInfo()
     {
-        return array (  47 => 4,  44 => 3,  34 => 1,);
+        return array (  54 => 6,  50 => 5,  47 => 4,  44 => 3,  34 => 1,);
     }
 
     public function getSourceContext()
@@ -68,7 +81,10 @@ class __TwigTemplate_68a461edcefea866542e073506fd2e0878dcb0d6cedcdf6df136616db4c
         return new Source("{% extends \"@base/Common/base.html\" %}
 
 {% block content %}
-<h1>It's works</h1>
-{% endblock %}", "@base/Index/index.html", "D:\\WWW\\top\\TOP-framework-1.1\\application\\home\\view\\Index\\index.html");
+    <h1>Twig</h1>
+    {% for value in lists %}
+        {{ value }}
+    {% endfor %}
+{% endblock %}", "@base/Index/index.html", "D:\\www\\TOP-framework-1.1\\application\\home\\view\\Index\\index.html");
     }
 }

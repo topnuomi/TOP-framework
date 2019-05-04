@@ -29,10 +29,14 @@ class Smarty implements TemplateIfs {
     public function run() {
         $this->config = Register::get('Config')->get('view');
         $this->smarty = new \Smarty();
+        (isset($this->config['cacheDir'])) && $this->smarty->setCacheDir($this->config['cacheDir']);
+        (isset($this->config['compileDir'])) && $this->smarty->setCompileDir($this->config['compileDir']);
         return $this;
     }
 
     public function cache($status) {
+        $time = (isset($this->config['cacheTime'])) ? $this->config['cacheTime'] : \Smarty::CACHING_LIFETIME_CURRENT;
+        $this->smarty->setCaching($time);
         return true;
     }
 
@@ -40,6 +44,6 @@ class Smarty implements TemplateIfs {
         foreach ($param as $k => $v)
             $this->smarty->assign($k, $v);
         $templateFile = $this->config['dir'] . $file . '.' . $this->config['ext'];
-        return $this->smarty->display($templateFile);
+        return $this->smarty->fetch($templateFile);
     }
 }

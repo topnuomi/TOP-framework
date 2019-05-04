@@ -35,6 +35,7 @@ abstract class Controller {
      */
     public function cache($status = true) {
         Register::get('View')->cache($status);
+        return $this;
     }
 
     /**
