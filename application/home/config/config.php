@@ -1,9 +1,9 @@
 <?php
 return [
     'register' => [
-        'Twig' => 'system.library.template.Twig',
-        // 'Smarty' => 'system.library.template.Smarty',
-        // 'Top' => 'system.library.template.Top'
+        'Twig' => \system\library\template\Twig::class,
+        // 'Smarty' => \system\library\template\Smarty::class,
+        // 'Top' => \system\library\template\Top::class,
     ],
     'decorator' => [],
     'session' => [
@@ -14,9 +14,9 @@ return [
         'driver' => 'MySQLi',
         'host' => '127.0.0.1',
         'user' => 'root',
-        'passwd' => '',
-        'dbname' => '',
-        'prefix' => 'b_',
+        'passwd' => '888888',
+        'dbname' => 'by_zh',
+        'prefix' => 'ot_',
         'charset' => 'utf8'
     ],
     'view' => [
