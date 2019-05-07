@@ -1,36 +1,28 @@
 <?php
+
 namespace system\decorator;
 
-use system\decorator\ifs\DefaultDecoratorIfs;
+use system\decorator\ifs\DecoratorIfs;
 
 /**
  * 辅助控制器的装饰器
  *
  * @author topnuomi 2018年11月22日
  */
-class StringDecorator implements DefaultDecoratorIfs {
+class StringDecorator implements DecoratorIfs {
 
-    /**
-     *
-     * {@inheritdoc}
-     *
-     * @see \system\library\decorator\ifs\DefaultDecoratorIfs::before()
-     */
     public function before() {
         // TODO Auto-generated method stub
     }
 
     /**
      * 字符串则直接输出
-     *
-     * {@inheritdoc}
-     *
-     * @see \system\library\decorator\ifs\DefaultDecoratorIfs::after()
+     * @param array $data
      */
     public function after($data) {
         // TODO Auto-generated method stub
         // 如果是字符串，直接echo
-        if (! is_array($data) && ! is_bool($data) && ! is_object($data)) {
+        if (!is_array($data) && !is_bool($data) && !is_object($data)) {
             echo $data;
         }
     }

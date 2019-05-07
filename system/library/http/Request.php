@@ -1,4 +1,5 @@
 <?php
+
 namespace system\library\http;
 
 /**
@@ -13,14 +14,14 @@ class Request {
     private static $instanct;
 
     public static function instance() {
-        if (! self::$instanct) {
+        if (!self::$instanct) {
             self::$instanct = new self();
         }
         return self::$instanct;
     }
 
     private function __construct() {
-        $this->server = (! empty($_SERVER)) ? $_SERVER : [];
+        $this->server = (!empty($_SERVER)) ? $_SERVER : [];
     }
 
     public function method() {
@@ -103,14 +104,14 @@ class Request {
      * 创建一个请求（post或get取决于data是否有值且不为空或空数组）
      *
      * @param string $url
-     * @param array $data            
-     * @param array $header            
+     * @param array $data
+     * @param array $header
      * @return boolean
      */
     public function create($url, $data = [], $header = []) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
-        if (! empty($data)) {
+        if (!empty($data)) {
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
@@ -129,8 +130,8 @@ class Request {
     /**
      * 获取客户端IP
      *
-     * @param number $type            
-     * @param string $client            
+     * @param number $type
+     * @param string $client
      * @return NULL|string|number
      */
     public function ip($type = 0, $client = true) {
@@ -164,5 +165,26 @@ class Request {
         return $ip[$type];
     }
 
-    public function __destruct() {}
+    public function post($name) {
+        $data = (isset($_POST[$name])) ? $_POST[$name] : '';
+        return $this->checkData($data);
+    }
+
+    public function get($name) {
+        $data = (isset($_GET[$name])) ? $_GET[$name] : '';
+        return $this->checkData($data);
+    }
+
+    public function checkData($data) {
+        if (is_array($data)) {
+            foreach ($data as $k => $v)
+                $data[$k] = filter($v);
+        } else {
+            $data = filter($data);
+        }
+        return $data;
+    }
+
+    public function __destruct() {
+    }
 }

@@ -52,10 +52,13 @@ class Database {
     // 关联
     private $on = [];
 
+    private $data = null;
+
     /**
      * Database constructor.
      * @param $table
      * @param $pk
+     * @throws exception\BaseException
      */
     private function __construct($table, $pk) {
         $driver = Register::get('DBDriver');
@@ -189,9 +192,8 @@ class Database {
 
     /**
      * 查询一条记录
-     *
-     * @param callable|string|bool $param
-     * @return array|boolean
+     * @param bool $param
+     * @return object
      */
     public function find($param = false) {
         if (is_callable($param))
@@ -205,7 +207,7 @@ class Database {
             $this->where([$field => $param]);
         $result = self::$driver->find($this->table, $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order);
         $this->_reset();
-        return $result;
+        return (object)$result;
     }
 
     /**
@@ -226,6 +228,8 @@ class Database {
             $this->where([$field => $param]);
         $result = self::$driver->select($this->table, $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order, $this->limit);
         $this->_reset();
+        foreach ($result as $k => $v)
+            $result[$k] = (object)$v;
         return $result;
     }
 

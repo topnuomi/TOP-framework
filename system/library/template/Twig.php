@@ -2,7 +2,6 @@
 
 namespace system\library\template;
 
-
 use system\library\Register;
 use system\library\template\ifs\TemplateIfs;
 use Twig\Environment;
@@ -12,7 +11,6 @@ class Twig implements TemplateIfs {
 
     private static $instance;
 
-    // 视图配置
     private $config = [];
 
     private function __construct() {
@@ -29,10 +27,6 @@ class Twig implements TemplateIfs {
         return self::$instance;
     }
 
-    /**
-     * @return $this
-     * @throws \system\library\exception\BaseException
-     */
     public function run() {
         // TODO: Implement run() method.
         $this->config = Register::get('Config')->get('view');
@@ -44,15 +38,6 @@ class Twig implements TemplateIfs {
         return true;
     }
 
-    /**
-     * @param $file
-     * @param $param
-     * @param $cache
-     * @return mixed|string
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function fetch($file, $param, $cache) {
         $baseViewDir = rtrim($this->config['dir'], '/') . '/';
         $loader = new FilesystemLoader($baseViewDir);

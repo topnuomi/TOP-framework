@@ -39,7 +39,7 @@ class Model {
     protected $validate = [];
 
     // 当前操作的数据（仅能在insert、update操作后获取到操作的数据，否则请使用模型data方法获取进行验证后的数据）
-    public $data = [];
+    private $data = [];
 
     // 是否为insert操作，决定如何验证数据
     // true：验证模型中配置的全部字段
@@ -48,11 +48,17 @@ class Model {
 
     /**
      * 用数据库配置获取实例
+     * Model constructor.
+     * @param string $table
      */
-    public function __construct() {
-        if ($this->table) {
-            $this->db = Database::table($this->table, $this->pk);
+    public function __construct($table = '') {
+        if ($table) {
+            $this->table = $table;
+        } else if (!$this->table) {
+            $table = get_table_name(get_called_class());
+            $this->table = $table;
         }
+        $this->db = Database::table($this->table, $this->pk);
     }
 
     /**
@@ -106,7 +112,7 @@ class Model {
     }
 
     /**
-     * 范围
+     * 限制
      * @param string|array $limit
      * @return \system\top\Model
      */
@@ -148,7 +154,7 @@ class Model {
         if ($data) {
             // 此处取消了数据验证，在$this->>data()方法中验证，减少一次数据库查询
             // 入库时最后的数据处理
-            $data = $this->data = $this->inHandle($data);
+            $data = $this->inHandle($data);
             return $this->db->insert($data);
         }
         return false;
@@ -175,7 +181,7 @@ class Model {
         if ($data) {
             // 此处取消了数据验证，在$this->data()方法中验证，减少一次数据库查询
             // 入库时最后的数据处理
-            $data = $this->data = $this->inHandle($data);
+            $data = $this->inHandle($data);
             return $this->db->update($data, $param);
         }
         return false;
@@ -488,4 +494,28 @@ class Model {
     public function getMessage() {
         return $this->message;
     }
+
+    /**
+     * 某些方法提供以下替代方式
+     * @param $name
+     * @return array|mixed|null
+     */
+    public function __get($name){
+        $data = null;
+        switch ($name) {
+            case 'one':
+                $data = $this->find();
+                break;
+            case 'all':
+                $data = $this->select();
+                break;
+            case 'sql':
+                $data = $this->_sql();
+                break;
+            default:
+                $data = $this->$name();
+        }
+        return $data;
+    }
+
 }

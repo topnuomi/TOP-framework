@@ -2,10 +2,10 @@
 
 namespace system\library;
 
-
 use system\library\exception\BaseException;
+use system\top\Model;
 
-class Load {
+class Loader {
 
     // 已加载的文件
     private static $files;
@@ -43,16 +43,15 @@ class Load {
      * @param $name
      * @param string $module
      * @return mixed
-     * @throws BaseException
      */
     public static function model($name, $module = '') {
-        (!$module) && $module = Register::get('Route')->module;
+        (!$module) && $module = Register::get('Router')->module;
         if (!isset(self::$classInstance[$module . $name])) {
-            $className = '\\' . APPNAMESPACE . '\\' . $module . '\\model\\' . $name;
+            $className = '\\' . APPNS . '\\' . $module . '\\model\\' . $name;
             if (class_exists($className)) {
                 self::$classInstance[$module . $name] = new $className();
             } else {
-                throw new BaseException('Model ' . $className . ' doesn\'t exist');
+                self::$classInstance[$module . $name] = new Model($name);
             }
         }
         return self::$classInstance[$module . $name];

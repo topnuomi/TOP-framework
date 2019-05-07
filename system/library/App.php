@@ -12,13 +12,13 @@ class App {
     /**
      * @param int $type
      * @param string $defaultAddress
-     * @throws \Exception
+     * @throws exception\BaseException
      */
     public static function start($type = 1, $defaultAddress = 'home') {
         // 引入框架的自动加载文件
-        require __DIR__ . '/Load.php';
+        require __DIR__ . '/Loader.php';
         // 注册自动加载函数
-        spl_autoload_register('\system\library\Load::_Autoload');
+        spl_autoload_register('\system\library\Loader::_Autoload');
         // 引入composer自动加载文件
         $composerLoadFile = BASEDIR . '/vendor/autoload.php';
         if (file_exists($composerLoadFile))
@@ -46,7 +46,7 @@ class App {
         }
         try {
             // 实例化路由
-            $route = new Route($routeDriver, $defaultAddress);
+            $route = new Router($routeDriver, $defaultAddress);
             $route->handler();
         } catch (RouteException $route) {
             exit($route->handler());

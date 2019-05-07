@@ -7,8 +7,8 @@ use system\library\App;
 /**
  * 框架入口
  * 所有目录都是小写，所有类名首字母为大写
- * 命令行创建模块请进入目录： 根目录/system/create
- * 执行 php create.php 入口文件  命名空间  模块名  [新项目(new)]
+ * 命令行创建模块请进入目录： /system/create
+ * 执行 php create.php  命名空间  模块名  [入口文件名]
  * [] 为可选参数
  * @author topnuomi 2018年11月19日
  */

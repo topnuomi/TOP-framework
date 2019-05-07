@@ -6,7 +6,7 @@ namespace system\decorator\ifs;
  *
  * @author topnuomi 2018年11月22日
  */
-interface DefaultDecoratorIfs {
+interface DecoratorIfs {
 
     /**
      * 前置操作

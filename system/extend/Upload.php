@@ -5,7 +5,7 @@
 
 namespace system\extend;
 
-use system\library\Load;
+use system\library\Loader;
 
 /**
  * 文件上传类
@@ -47,7 +47,7 @@ class Upload {
     public function uploadPicture($fileName = '', $width = 0, $height = 0, $waterFile = '') {
         if (!empty($_FILES)) {
             $data = [];
-            $picture = Load::model('Picture');
+            $picture = Loader::model('Picture');
             foreach ($_FILES as $k => $v) {
                 $fileParts = pathinfo($v['name']);
                 if (in_array($fileParts['extension'], self::$fileType)) {

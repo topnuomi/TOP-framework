@@ -2,16 +2,19 @@
 
 namespace system\library;
 
+use system\decorator\ifs\DecoratorIfs;
+use system\decorator\InitDecorator;
+use system\decorator\ReturnDecorator;
+use system\decorator\StringDecorator;
 use system\library\exception\RouteException;
 use system\library\route\ifs\RouteIfs;
-use system\decorator\ifs\DefaultDecoratorIfs;
 
 /**
  * 路由类
  *
  * @author topnuomi 2018年11月19日
  */
-class Route {
+class Router {
 
     // 路由实例
     public $route;
@@ -46,7 +49,7 @@ class Route {
         $this->action = $this->route->action;
         $this->param = $this->route->param;
         $this->check();
-        Register::set('Route', function () {
+        Register::set('Router', function () {
             return $this->route;
         });
         Register::set('Config', function () {
@@ -56,9 +59,9 @@ class Route {
 
     /**
      * 指定装饰器
-     * @param DefaultDecoratorIfs $decorator
+     * @param DecoratorIfs $decorator
      */
-    public function decorator(DefaultDecoratorIfs $decorator) {
+    public function decorator(DecoratorIfs $decorator) {
         $this->decorator[] = $decorator;
     }
 
@@ -104,16 +107,10 @@ class Route {
      */
     public function handler() {
         $userDecorators = Register::get('Config')->get('decorator');
-        $systemDecorators = [
-            'system.decorator.InitDecorator',
-            'system.decorator.ReturnDecorator',
-            'system.decorator.StringDecorator',
-        ];
+        $systemDecorators = [InitDecorator::class, ReturnDecorator::class, StringDecorator::class];
         $decorators = array_merge($systemDecorators, $userDecorators);
-        foreach ($decorators as $key => $value) {
-            $value = '\\' . str_replace('.', '\\', ltrim($value, '.'));
+        foreach ($decorators as $key => $value)
             $this->decorator(new $value());
-        }
         $this->beforeRoute();
         $object = new $this->className();
         if (method_exists($object, '_init'))

@@ -54,6 +54,24 @@ function u($url, $param = '') {
 }
 
 /**
+ * 获取表名
+ * @param $classname
+ * @return string
+ */
+function get_table_name($classname) {
+    $arr = explode('\\', $classname);
+    $class = end($arr);
+    $arr = str_split($class);
+    for ($i = 0; $i < count($arr); $i++) {
+        $ord = ord($arr[$i]);
+        if ($ord > 64 && $ord < 91 && $i != 0)
+            $arr[$i-1] = $arr[$i-1] . '_';
+    }
+    $table = implode('', $arr);
+    return strtolower($table);
+}
+
+/**
  * 获取客户端IP
  * @return NULL|number|string
  */
@@ -61,6 +79,10 @@ function get_client_ip() {
     return \request()->ip();
 }
 
+/**
+ * 页面跳转
+ * @param $url
+ */
 function redirect($url) {
     header('location: ' . u($url));
     exit;
@@ -86,6 +108,7 @@ function remove_dir($dirName) {
         rmdir($dirName);
     }
 }
+
 /**
  * 过滤字符串
  * @param string $str
@@ -100,6 +123,13 @@ function filter($str) {
     return $str;
 }
 
+/**
+ * 框架session操作
+ * @param $name
+ * @param string $value
+ * @return bool
+ * @throws \system\library\exception\BaseException
+ */
 function session($name, $value = '') {
     $config = \system\library\Register::get('Config')->get('session');
     if (empty($config) || !$config['prefix']) {
@@ -120,6 +150,12 @@ function session($name, $value = '') {
     }
 }
 
+/**
+ * 二维数组排序操作
+ * @param $arr
+ * @param $key
+ * @return mixed
+ */
 function assoc_unique($arr, $key) {
     $tmp_arr = [];
     foreach ($arr as $k => $v) {
@@ -133,22 +169,31 @@ function assoc_unique($arr, $key) {
     return $arr;
 }
 
+/**
+ * 改变图片大小
+ * @param $imgSrc
+ * @param $resize_width
+ * @param $resize_height
+ * @param string $newName
+ * @param bool $isCut
+ * @return string
+ */
 function resize_image($imgSrc, $resize_width, $resize_height, $newName = '', $isCut = false) {
     $im = @imagecreatefromstring(file_get_contents($imgSrc));
     $exif = exif_read_data($imgSrc);
-    if(!empty($exif['Orientation'])) {
-        switch($exif['Orientation']) {
+    if (!empty($exif['Orientation'])) {
+        switch ($exif['Orientation']) {
             case 8:
-              $im = imagerotate($im,90,0);
-              break;
+                $im = imagerotate($im, 90, 0);
+                break;
             case 3:
-              $im = imagerotate($im,180,0);
-              break;
+                $im = imagerotate($im, 180, 0);
+                break;
             case 6:
-              $im = imagerotate($im,-90,0);
-              break;
+                $im = imagerotate($im, -90, 0);
+                break;
             default:
-            
+
         }
     }
     //图片的类型
@@ -190,22 +235,22 @@ function resize_image($imgSrc, $resize_width, $resize_height, $newName = '', $is
     return $dstimg;
 }
 
-function is_mobile()
-{
+/**
+ * 判断是否是移动端
+ * @return bool
+ */
+function is_mobile() {
     // 如果有HTTP_X_WAP_PROFILE则一定是移动设备
-    if (isset($_SERVER['HTTP_X_WAP_PROFILE']))
-    {
+    if (isset($_SERVER['HTTP_X_WAP_PROFILE'])) {
         return true;
     }
     // 如果via信息含有wap则一定是移动设备,部分服务商会屏蔽该信息
-    if (isset ($_SERVER['HTTP_VIA']))
-    {
+    if (isset ($_SERVER['HTTP_VIA'])) {
         // 找不到为flase,否则为true
         return stristr($_SERVER['HTTP_VIA'], "wap") ? true : false;
     }
     // 脑残法，判断手机发送的客户端标志,兼容性有待提高
-    if (isset ($_SERVER['HTTP_USER_AGENT']))
-    {
+    if (isset ($_SERVER['HTTP_USER_AGENT'])) {
         $clientkeywords = [
             'nokia',
             'sony',
@@ -241,18 +286,15 @@ function is_mobile()
             'mobile'
         ];
         // 从HTTP_USER_AGENT中查找手机浏览器的关键字
-        if (preg_match("/(" . implode('|', $clientkeywords) . ")/i", strtolower($_SERVER['HTTP_USER_AGENT'])))
-        {
+        if (preg_match("/(" . implode('|', $clientkeywords) . ")/i", strtolower($_SERVER['HTTP_USER_AGENT']))) {
             return true;
         }
     }
     // 协议法，因为有可能不准确，放到最后判断
-    if (isset ($_SERVER['HTTP_ACCEPT']))
-    {
+    if (isset ($_SERVER['HTTP_ACCEPT'])) {
         // 如果只支持wml并且不支持html那一定是移动设备
         // 如果支持wml和html但是wml在html之前则是移动设备
-        if ((strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') !== false) && (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') === false || (strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') < strpos($_SERVER['HTTP_ACCEPT'], 'text/html'))))
-        {
+        if ((strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') !== false) && (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') === false || (strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') < strpos($_SERVER['HTTP_ACCEPT'], 'text/html')))) {
             return true;
         }
     }
@@ -260,6 +302,7 @@ function is_mobile()
 }
 
 // 模型自动验证函数
+
 /**
  * 检查是否为空
  *
@@ -279,6 +322,12 @@ function notNull($value) {
     return true;
 }
 
+/**
+ * 预置不等于判断
+ * @param $value
+ * @param $value1
+ * @return bool
+ */
 function notEqual($value, $value1) {
     if ($value == $value1) {
         return false;

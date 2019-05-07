@@ -2,8 +2,8 @@
 
 namespace system\decorator;
 
+use system\decorator\ifs\DecoratorIfs;
 use system\library\Register;
-use system\decorator\ifs\DefaultDecoratorIfs;
 use system\top\View;
 use system\library\cache\FileCache;
 
@@ -12,16 +12,14 @@ use system\library\cache\FileCache;
  *
  * @author topnuomi 2018年11月20日
  */
-class InitDecorator implements DefaultDecoratorIfs {
+class InitDecorator implements DecoratorIfs {
 
     /**
      * 注册一些可能会用到的类
-     * {@inheritdoc}
-     * @see \system\library\decorator\ifs\DefaultDecoratorIfs::before()
      * @throws \system\library\exception\BaseException
      */
     public function before() {
-        $route = Register::get('Route');
+        $route = Register::get('Router');
         $sessionConfig = Register::get('Config')->get('session');
         if (!empty($sessionConfig) && $sessionConfig['open'] === true)
             session_start();
@@ -41,7 +39,6 @@ class InitDecorator implements DefaultDecoratorIfs {
         if (!empty($initRegister)) {
             foreach ($initRegister as $key => $value) {
                 Register::set($key, function () use ($value) {
-                    $value = '\\' . str_replace('.', '\\', ltrim($value, '.'));
                     return $value::instance();
                 });
             }
@@ -60,10 +57,7 @@ class InitDecorator implements DefaultDecoratorIfs {
     }
 
     /**
-     *
-     * {@inheritdoc}
-     *
-     * @see \system\library\decorator\ifs\DefaultDecoratorIfs::after()
+     * @param array $data
      */
     public function after($data) {
         // TODO Auto-generated method stub

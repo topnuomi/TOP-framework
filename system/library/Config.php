@@ -37,7 +37,7 @@ class Config {
      */
     public function get($name = '') {
         // 加载的文件名
-        $module = Register::get('Route')->module;
+        $module = Register::get('Router')->module;
         $file = BASEDIR . '/' . APPNS . '/' . $module . '/config/config.php';
         if (! isset(self::$files[$file])) {
             if (file_exists($file)) {
@@ -47,7 +47,12 @@ class Config {
                 self::$files[$file] = true;
             }
         }
-        if (empty($this->config) || ! isset($this->config) || ! $this->config || ! isset($this->config[$name]) || ! $this->config[$name]) {
+        if (empty($this->config)
+            || ! isset($this->config)
+            || ! $this->config
+            || ! isset($this->config[$name])
+            || ! $this->config[$name]
+        ) {
             return [];
         }
         return $this->config[$name];

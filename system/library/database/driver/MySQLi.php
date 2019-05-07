@@ -125,7 +125,7 @@ class MySQLi implements DatabaseIfs {
         }
         $where = $this->getWhere($where);
         $order = $this->getOrder($order);
-        $this->sql = "select {$field} from $table{$join}{$where}{$order}";
+        $this->sql = "select {$field} from $table{$join}{$where}{$order} limit 1";
         $result = $this->query($this->sql);
         return mysqli_fetch_assoc($result);
     }

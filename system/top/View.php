@@ -1,4 +1,5 @@
 <?php
+
 namespace system\top;
 
 use system\library\Register;
@@ -24,7 +25,7 @@ class View {
      * @throws \Exception
      */
     public static function instance() {
-        if (! self::$instance) {
+        if (!self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
@@ -66,8 +67,8 @@ class View {
      * @throws \Exception
      */
     public function fetch($file = '', $param = [], $cache = false) {
-        if (! $file) {
-            $route = Register::get('Route');
+        if (!$file) {
+            $route = Register::get('Router');
             $file = $route->ctrl . '/' . $route->action;
         }
         return $this->template->fetch($file, $param, $cache);

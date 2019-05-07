@@ -1,7 +1,8 @@
 <?php
+
 namespace system\decorator;
 
-use system\decorator\ifs\DefaultDecoratorIfs;
+use system\decorator\ifs\DecoratorIfs;
 use system\library\Register;
 
 /**
@@ -9,7 +10,7 @@ use system\library\Register;
  *
  * @author topnuomi 2018年11月22日
  */
-class ReturnDecorator implements DefaultDecoratorIfs {
+class ReturnDecorator implements DecoratorIfs {
 
     public function before() {
         // TODO Auto-generated method stub
@@ -28,7 +29,7 @@ class ReturnDecorator implements DefaultDecoratorIfs {
             if (request()->isAjax()) { // 如果是ajax请求，则将数组转json，echo出去
                 echo json_encode($data);
             } else { // 显示视图
-                $route = Register::get('Route');
+                $route = Register::get('Router');
                 $view = Register::get('View');
                 echo $view->fetch($route->ctrl . '/' . $route->action, $data);
             }
