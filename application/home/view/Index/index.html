@@ -1,8 +1,10 @@
 {% extends "@base/Common/base.html" %}
-
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-    <h1>Twig</h1>
-    {% for value in lists %}
-        {{ value }}
+    <h4>SQL：{{ query }}</h4>
+    <ul>
+    {% for key,value in lists %}
+        <li>{{ key+1 }}，{{ value.title }}，{{ value.name }}</li>
     {% endfor %}
+    </ul>
 {% endblock %}

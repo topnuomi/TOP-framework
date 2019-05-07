@@ -5,7 +5,9 @@ return [
         // 'Smarty' => \system\library\template\Smarty::class,
         // 'Top' => \system\library\template\Top::class,
     ],
-    'decorator' => [],
+    'decorator' => [
+        application\home\decorator\Log::class
+    ],
     'session' => [
         'open' => true,
         'prefix' => 'home',
