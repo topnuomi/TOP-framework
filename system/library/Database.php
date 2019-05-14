@@ -122,7 +122,6 @@ class Database {
 
     /**
      * 设置条件
-     * @param $where
      * @return \system\library\Database
      */
     public function where() {
@@ -152,7 +151,6 @@ class Database {
 
     /**
      * 设置排序
-     * @param $order
      * @return \system\library\Database
      */
     public function order() {
@@ -169,10 +167,9 @@ class Database {
 
     /**
      * 设置记录范围
-     * @param $limit
      * @return \system\library\Database
      */
-    public function limit($limit) {
+    public function limit() {
         $limit = func_get_args();
         if (!empty($limit)) {
             if (count($limit) > 1) {
