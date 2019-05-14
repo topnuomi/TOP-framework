@@ -125,9 +125,27 @@ class Database {
      * @param $where
      * @return \system\library\Database
      */
-    public function where($where) {
+    public function where() {
+        $where = func_get_args();
         if (!empty($where)) {
-            $this->where[] = $where;
+            switch (count($where)) {
+                case 3:
+                    $this->where[] = [
+                        $where[0] => [
+                            $where[1],
+                            $where[2]
+                        ]
+                    ];
+                    break;
+                case 2:
+                    $this->where[] = [
+                        $where[0] => $where[1]
+                    ];
+                    break;
+                default:
+                    $this->where[] = $where[0];
+                    break;
+            }
         }
         return $this;
     }
@@ -137,8 +155,15 @@ class Database {
      * @param $order
      * @return \system\library\Database
      */
-    public function order($order) {
-        $this->order = $order;
+    public function order() {
+        $order = func_get_args();
+        if (!empty($order)) {
+            if (count($order) > 1) {
+                $this->order = $order[0] . ' ' . $order[1];
+            } else {
+                $this->order = $order[0];
+            }
+        }
         return $this;
     }
 
@@ -148,7 +173,14 @@ class Database {
      * @return \system\library\Database
      */
     public function limit($limit) {
-        $this->limit = $limit;
+        $limit = func_get_args();
+        if (!empty($limit)) {
+            if (count($limit) > 1) {
+                $this->limit = $limit[0] . ', ' . $limit[1];
+            } else {
+                $this->limit = $limit[0];
+            }
+        }
         return $this;
     }
 

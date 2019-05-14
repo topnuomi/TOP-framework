@@ -93,31 +93,37 @@ class Model {
 
     /**
      * 查询条件
-     * @param string|array $where
      * @return \system\top\Model
      */
-    public function where($where) {
-        $this->db->where($where);
+    public function where() {
+        call_user_func_array([
+            $this->db,
+            'where'
+        ], func_get_args());
         return $this;
     }
 
     /**
      * 排序
-     * @param string $order
      * @return \system\top\Model
      */
-    public function order($order) {
-        $this->db->order($order);
+    public function order() {
+        call_user_func_array([
+            $this->db,
+            'order'
+        ], func_get_args());
         return $this;
     }
 
     /**
      * 限制
-     * @param string|array $limit
      * @return \system\top\Model
      */
-    public function limit($limit) {
-        $this->db->limit($limit);
+    public function limit() {
+        call_user_func_array([
+            $this->db,
+            'limit'
+        ], func_get_args());
         return $this;
     }
 

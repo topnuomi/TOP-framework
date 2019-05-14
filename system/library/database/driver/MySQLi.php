@@ -84,10 +84,10 @@ class MySQLi implements DatabaseIfs {
      */
     public function update($table, $join, $on, $where, $order, $limit, $data) {
         // TODO Auto-generated method stub
-        $join = $this->join($join, $on);
-        $where = $this->getWhere($where);
-        $order = $this->getOrder($order);
-        $limit = $this->getLimit($limit);
+        $join = $this->processJoin($join, $on);
+        $where = $this->processWhere($where);
+        $order = $this->processOrder($order);
+        $limit = $this->processLimit($limit);
         $query = 'update ' . $table . "{$join} set ";
         $updateData = [];
         foreach ($data as $key => $value) {
@@ -116,15 +116,15 @@ class MySQLi implements DatabaseIfs {
      */
     public function find($table, $distinct, $field, $join, $on, $where, $order) {
         // TODO Auto-generated method stub
-        $join = $this->join($join, $on);
-        $distinct = $this->getDistinct($distinct);
+        $join = $this->processJoin($join, $on);
+        $distinct = $this->processDistinct($distinct);
         if ($distinct) {
             $field = $distinct;
         } else {
-            $field = $this->getField($field);
+            $field = $this->processField($field);
         }
-        $where = $this->getWhere($where);
-        $order = $this->getOrder($order);
+        $where = $this->processWhere($where);
+        $order = $this->processOrder($order);
         $this->sql = "select {$field} from $table{$join}{$where}{$order} limit 1";
         $result = $this->query($this->sql);
         return mysqli_fetch_assoc($result);
@@ -144,16 +144,16 @@ class MySQLi implements DatabaseIfs {
      */
     public function select($table, $distinct, $field, $join, $on, $where, $order, $limit) {
         // TODO Auto-generated method stub
-        $join = $this->join($join, $on);
-        $distinct = $this->getDistinct($distinct);
+        $join = $this->processJoin($join, $on);
+        $distinct = $this->processDistinct($distinct);
         if ($distinct) {
             $field = $distinct;
         } else {
-            $field = $this->getField($field);
+            $field = $this->processField($field);
         }
-        $where = $this->getWhere($where);
-        $order = $this->getOrder($order);
-        $limit = $this->getLimit($limit);
+        $where = $this->processWhere($where);
+        $order = $this->processOrder($order);
+        $limit = $this->processLimit($limit);
         $this->sql = "select {$field} from {$table}{$join}{$where}{$order}{$limit}";
         $result = $this->query($this->sql);
         return mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -173,10 +173,10 @@ class MySQLi implements DatabaseIfs {
     public function delete($effect, $table, $join, $on, $where, $order, $limit) {
         // TODO Auto-generated method stub
         $effect = $this->effect($effect);
-        $join = $this->join($join, $on);
-        $where = $this->getWhere($where);
-        $order = $this->getOrder($order);
-        $limit = $this->getLimit($limit);
+        $join = $this->processJoin($join, $on);
+        $where = $this->processWhere($where);
+        $order = $this->processOrder($order);
+        $limit = $this->processLimit($limit);
         $this->sql = "delete{$effect} from $table{$join}{$where}{$order}{$limit}";
         $this->query($this->sql);
         return mysqli_affected_rows($this->link);
@@ -207,9 +207,9 @@ class MySQLi implements DatabaseIfs {
      * @throws \Exception
      */
     public function count($table, $field, $join, $on, $where) {
-        $field = $this->getField($field);
-        $join = $this->join($join, $on);
-        $where = $this->getWhere($where);
+        $field = $this->processField($field);
+        $join = $this->processJoin($join, $on);
+        $where = $this->processWhere($where);
         $this->sql = "select count({$field}) from $table{$join}{$where}";
         $result = $this->query($this->sql);
         $count = mysqli_fetch_array($result);
@@ -228,14 +228,14 @@ class MySQLi implements DatabaseIfs {
      * @throws \Exception
      */
     public function common($table, $distinct, $field, $join, $on, $where, $type) {
-        $distinct = $this->getDistinct($distinct);
+        $distinct = $this->processDistinct($distinct);
         if ($distinct) {
             $field = $distinct;
         } else {
-            $field = $this->getField($field);
+            $field = $this->processField($field);
         }
-        $join = $this->join($join, $on);
-        $where = $this->getWhere($where);
+        $join = $this->processJoin($join, $on);
+        $where = $this->processWhere($where);
         $this->sql = "select {$type}({$field}) from {$table}{$join}{$where}";
         $result = $this->query($this->sql);
         $data = mysqli_fetch_array($result);
@@ -279,7 +279,7 @@ class MySQLi implements DatabaseIfs {
         return '';
     }
 
-    private function getDistinct($distinct) {
+    private function processDistinct($distinct) {
         if ($distinct) {
             if (is_array($distinct)) {
                 $distinct = implode(',', $distinct);
@@ -295,7 +295,7 @@ class MySQLi implements DatabaseIfs {
      * @param string|array $field
      * @return string
      */
-    private function getField($field) {
+    private function processField($field) {
         if (!$field) {
             $field = '*';
         } else if (is_array($field)) {
@@ -311,9 +311,10 @@ class MySQLi implements DatabaseIfs {
      * @param string $glue
      * @return string
      */
-    private function getWhere(array $array, $glue = 'and') {
+    private function processWhere(array $array, $glue = 'and') {
         $where = [];
         foreach ($array as $value) {
+            if (empty($value)) continue;
             if (is_array($value)) {
                 foreach ($value as $key => $val) {
                     if (is_array($val)) {
@@ -354,7 +355,7 @@ class MySQLi implements DatabaseIfs {
      * @param string $order
      * @return string
      */
-    private function getOrder($order = '') {
+    private function processOrder($order = '') {
         if ($order) {
             $order = ' order by ' . $order;
         }
@@ -367,7 +368,7 @@ class MySQLi implements DatabaseIfs {
      * @param string $limit
      * @return string
      */
-    private function getLimit($limit = '') {
+    private function processLimit($limit = '') {
         if ($limit) {
             if (is_array($limit)) {
                 $limit = ' limit ' . implode(',', $limit);
@@ -385,7 +386,7 @@ class MySQLi implements DatabaseIfs {
      * @param string|array $on
      * @return string
      */
-    public function join($data, $on) {
+    public function processJoin($data, $on) {
         $join = [];
         for ($i = 0; $i < count($data); $i++) {
             if (is_array($on[$i])) {
