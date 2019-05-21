@@ -1,0 +1,13 @@
+{
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    },
+    "require": {
+        "filp/whoops": "2.2",
+        "twig/twig": "2.9",
+        "smarty/smarty": "3.1.19"
+    }
+}

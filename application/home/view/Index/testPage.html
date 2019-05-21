@@ -1,0 +1,7 @@
+{% extends "@base/Common/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+    {% filter escape %}
+        <h1>{{ content }}</h1>
+    {% endfilter %}
+{% endblock %}
