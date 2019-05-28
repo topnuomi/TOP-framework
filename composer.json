@@ -1,4 +1,7 @@
 {
+    "config": {
+      "vendor-dir": "framework/vendor"
+    },
     "repositories": {
         "packagist": {
             "type": "composer",

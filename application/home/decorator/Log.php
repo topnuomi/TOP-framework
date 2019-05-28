@@ -2,8 +2,8 @@
 
 namespace application\home\decorator;
 
-use system\decorator\ifs\DecoratorIfs;
-use system\library\Register;
+use framework\decorator\ifs\DecoratorIfs;
+use framework\library\Register;
 
 class Log implements DecoratorIfs {
 
@@ -13,7 +13,7 @@ class Log implements DecoratorIfs {
 
     /**
      * @param array $data
-     * @throws \system\library\exception\BaseException
+     * @throws \framework\library\exception\BaseException
      */
     public function after($data) {
         // TODO: Implement after() method.

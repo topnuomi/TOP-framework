@@ -2,7 +2,7 @@
 
 namespace application\home\model;
 
-use system\top\Model;
+use framework\library\Model;
 
 class Category extends Model {
 

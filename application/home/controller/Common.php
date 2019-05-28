@@ -2,7 +2,7 @@
 
 namespace application\home\controller;
 
-use system\top\Controller;
+use framework\library\Controller;
 
 class Common extends Controller {
 

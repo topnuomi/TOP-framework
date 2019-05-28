@@ -1,9 +1,9 @@
 <?php
 return [
     'register' => [
-        'Twig' => \system\library\template\Twig::class,
-        // 'Smarty' => \system\library\template\Smarty::class,
-        // 'Top' => \system\library\template\Top::class,
+        'Twig' => \framework\library\template\Twig::class,
+        // 'Smarty' => \framework\library\template\Smarty::class,
+        // 'Top' => \framework\library\template\Top::class,
     ],
     'decorator' => [
         application\home\decorator\Log::class
@@ -26,9 +26,9 @@ return [
         'ext' => 'html',
         'dir' => '../application/home/view/',
         'cacheDir' => './runtime/cache/application/home/',
-        // 'compileDir' => './runtime/compile/application/home/',
-        // 'left' => '{',
-        // 'right' => '}',
-        // 'cacheTime' => 5
+//        'compileDir' => './runtime/compile/application/home/',
+//        'left' => '{',
+//        'right' => '}',
+//        'cacheTime' => 5
     ],
 ];

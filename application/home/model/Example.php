@@ -2,7 +2,7 @@
 
 namespace application\home\model;
 
-use system\top\Model;
+use framework\library\Model;
 
 /**
  * 模型示例
