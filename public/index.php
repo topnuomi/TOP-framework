@@ -7,5 +7,5 @@ define('BASEDIR', __DIR__ . '/..');
 define('APPNS', 'application');
 // 加载框架
 require BASEDIR . '/system/Top.php';
-// 启动应用
+// 启动应用 
 \system\Top::start();
