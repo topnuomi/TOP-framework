@@ -1,5 +1,5 @@
 <?php
-namespace framework\decorator\ifs;
+namespace top\decorator\ifs;
 
 /**
  * 默认装饰器接口

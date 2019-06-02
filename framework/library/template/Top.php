@@ -1,10 +1,10 @@
 <?php
 
-namespace framework\library\template;
+namespace top\library\template;
 
-use framework\library\template\ifs\TemplateIfs;
-use framework\library\Register;
-use framework\library\template\tags\Tags;
+use top\library\template\ifs\TemplateIfs;
+use top\library\Register;
+use top\library\template\tags\Tags;
 
 /**
  * 默认的视图驱动
@@ -32,7 +32,7 @@ class Top implements TemplateIfs {
 
     /**
      * @return $this
-     * @throws \framework\library\exception\BaseException
+     * @throws \Exception
      */
     public function run() {
         // TODO: Implement run() method.
@@ -62,7 +62,7 @@ class Top implements TemplateIfs {
      * @param $file
      * @param $param
      * @return string
-     * @throws \framework\library\exception\BaseException
+     * @throws \Exception
      */
     public function cacheFile($file, $param) {
         if (isset($_SERVER['REQUEST_URI'])) {
@@ -98,8 +98,8 @@ class Top implements TemplateIfs {
      * @param $file
      * @param $param
      * @param $cache
-     * @return mixed|string
-     * @throws \framework\library\exception\BaseException
+     * @return false|mixed|string
+     * @throws \Exception
      */
     public function fetch($file, $param, $cache) {
         // TODO Auto-generated method stub

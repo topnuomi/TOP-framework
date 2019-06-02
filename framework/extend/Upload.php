@@ -2,7 +2,7 @@
 
 namespace framework\extend;
 
-use framework\library\Loader;
+use top\library\Loader;
 
 /**
  * 文件上传类

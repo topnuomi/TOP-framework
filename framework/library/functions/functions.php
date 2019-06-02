@@ -4,8 +4,20 @@
  * 调用请求类
  */
 function request() {
-    $request = \framework\library\http\Request::instance();
+    $request = \top\library\http\Request::instance();
     return $request;
+}
+
+function model($class) {
+    static $model = [];
+    if (!isset($model[$class])) {
+        if (class_exists($class)) {
+            $model[$class] = new $class();
+        } else {
+            $model[$class] = new \top\library\Model($class);
+        }
+    }
+    return $model[$class];
 }
 
 /**
@@ -57,8 +69,9 @@ function get_table_name($classname) {
     $arr = str_split($class);
     for ($i = 0; $i < count($arr); $i++) {
         $ord = ord($arr[$i]);
-        if ($ord > 64 && $ord < 91 && $i != 0)
-            $arr[$i-1] = $arr[$i-1] . '_';
+        if ($ord > 64 && $ord < 91 && $i != 0) {
+            $arr[$i - 1] = $arr[$i - 1] . '_';
+        }
     }
     $table = implode('', $arr);
     return strtolower($table);
@@ -69,7 +82,7 @@ function get_table_name($classname) {
  * @return NULL|number|string
  */
 function get_client_ip() {
-    return \request()->ip();
+    return request()->ip();
 }
 
 /**
@@ -121,12 +134,12 @@ function filter($str) {
  * @param $name
  * @param string $value
  * @return bool
- * @throws \framework\library\exception\BaseException
+ * @throws Exception
  */
 function session($name, $value = '') {
-    $config = \framework\library\Register::get('Config')->get('session');
+    $config = \top\library\Register::get('Config')->get('session');
     if (empty($config) || !$config['prefix']) {
-        $route = \framework\library\Register::get('Route');
+        $route = \top\library\Register::get('Route');
         $prefix = $route->module;
     } else {
         $prefix = $config['prefix'];

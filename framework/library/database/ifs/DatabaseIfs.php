@@ -1,5 +1,5 @@
 <?php
-namespace framework\library\database\ifs;
+namespace top\library\database\ifs;
 
 /**
  * 数据库操作接口

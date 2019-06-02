@@ -1,8 +1,8 @@
 <?php
 
-namespace framework\decorator;
+namespace top\decorator;
 
-use framework\decorator\ifs\DecoratorIfs;
+use top\decorator\ifs\DecoratorIfs;
 
 /**
  * 辅助控制器的装饰器

@@ -1,7 +1,6 @@
 <?php
-namespace framework\library;
 
-use framework\library\Register;
+namespace top\library;
 
 /**
  * 基础控制器
@@ -18,20 +17,22 @@ abstract class Controller {
      * @param int $code
      * @param array $data
      * @param array $ext
-     * @return string
+     * @return false|string
      */
     public function json($msg, $code = 1, $data = [], $ext = []) {
-        return json_encode([
+        $array = [
             'msg' => $msg,
             'code' => $code,
             'data' => $data,
             'ext' => $ext
-        ]);
+        ];
+        return json_encode($array);
     }
-    
+
     /**
      * 缓存页面（具体视图驱动完成此功能）
-     * @param string $status
+     * @param bool $status
+     * @return $this
      */
     public function cache($status = true) {
         Register::get('View')->cache($status);
@@ -40,8 +41,8 @@ abstract class Controller {
 
     /**
      * 赋值到视图
-     * @param string $name
-     * @param int|string|array $value
+     * @param $name
+     * @param $value
      */
     public function param($name, $value) {
         Register::get('View')->param($name, $value);
@@ -51,8 +52,8 @@ abstract class Controller {
      * 渲染视图
      * @param string $file
      * @param array $param
-     * @param string $cache
-     * @return unknown
+     * @param bool $cache
+     * @return mixed
      */
     public function fetch($file = '', $param = [], $cache = false) {
         return Register::get('View')->fetch($file, $param, $cache);
@@ -68,10 +69,10 @@ abstract class Controller {
 
     /**
      * 显示提示页面
-     * @param string $message
+     * @param $message
      * @param string $url
-     * @param number $sec
-     * @return string|\system\top\unknown
+     * @param int $sec
+     * @return false|mixed|string
      */
     public function tips($message, $url = '', $sec = 3) {
         if (request()->isAjax()) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace framework\library;
+namespace top\library;
 
 /**
  * 注册器
@@ -11,6 +11,14 @@ class Register {
 
     // 存放类的变量
     public static $register;
+
+
+    private function __construct() {
+    }
+
+    private function __clone() {
+        // TODO: Implement __clone() method.
+    }
 
     /**
      * 注册类

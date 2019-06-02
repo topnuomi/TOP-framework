@@ -2,7 +2,7 @@
 
 namespace system\extend;
 
-use framework\library\Register;
+use top\library\Register;
 
 /**
  * 分页类

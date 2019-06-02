@@ -1,6 +1,6 @@
 <?php
 
-namespace framework\library\template\ifs;
+namespace top\library\template\ifs;
 
 /**
  * 模板接口

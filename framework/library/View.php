@@ -1,6 +1,6 @@
 <?php
 
-namespace framework\library;
+namespace top\library;
 
 /**
  * 基础视图类
@@ -36,6 +36,10 @@ class View {
         $this->config = Register::get('Config')->get('view');
         $driver = Register::get($this->config['engine']);
         $this->template = Template::instance($driver);
+    }
+
+    private function __clone() {
+        // TODO: Implement __clone() method.
     }
 
     /**

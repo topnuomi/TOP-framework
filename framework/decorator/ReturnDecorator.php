@@ -1,9 +1,9 @@
 <?php
 
-namespace framework\decorator;
+namespace top\decorator;
 
-use framework\decorator\ifs\DecoratorIfs;
-use framework\library\Register;
+use top\decorator\ifs\DecoratorIfs;
+use top\library\Register;
 
 /**
  * 辅助控制器的装饰器
@@ -19,7 +19,7 @@ class ReturnDecorator implements DecoratorIfs {
     /**
      * 布尔或数组则显示视图
      * @param array $data
-     * @throws \framework\library\exception\BaseException
+     * @throws \top\library\exception\BaseException
      */
     public function after($data) {
         // TODO Auto-generated method stub

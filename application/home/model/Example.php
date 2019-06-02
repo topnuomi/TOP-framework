@@ -1,13 +1,13 @@
 <?php
 
-namespace application\home\model;
+namespace app\home\model;
 
-use framework\library\Model;
+use top\library\Model;
 
 /**
  * 模型示例
  * Class Example
- * @package application\home\model
+ * @package app\home\model
  */
 class Example extends Model {
 

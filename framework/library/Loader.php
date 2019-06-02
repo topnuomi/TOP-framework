@@ -1,55 +1,61 @@
 <?php
 
-namespace framework\library;
+namespace top\library;
 
 class Loader {
 
-    // 已加载的文件
-    private static $files;
+    protected $prefixes = [];
 
-    // 模型类实例
-    private static $classInstance = [];
-
-    /**
-     * 文件自动加载
-     */
-    public static function register() {
-        $autoload = function ($className = '') {
-            // 文件从未被加载过
-            if (!isset(self::$files[$className])) {
-                $classPath = str_replace('\\', '/', $className);
-                $file = BASEDIR . '/' . $classPath . '.php';
-                if (file_exists($file)) {
-                    // 文件存在
-                    self::$files[$className] = $file;
-                    require $file;
-                } else if (file_exists(BASEDIR . '/composer.json')) {
-                    self::$files[$className] = $file;
-                } else {
-                    return false;
-                }
-            }
-            return true;
-        };
-        spl_autoload_register($autoload);
+    public function register() {
+        spl_autoload_register([$this, 'loadClass']);
     }
 
-    /**
-     * 手动加载模型
-     * @param $name
-     * @param string $module
-     * @return mixed
-     */
-    public static function model($name, $module = '') {
-        (!$module) && $module = Register::get('Router')->module;
-        if (!isset(self::$classInstance[$module . $name])) {
-            $className = '\\' . APPNS . '\\' . $module . '\\model\\' . $name;
-            if (class_exists($className)) {
-                self::$classInstance[$module . $name] = new $className();
-            } else {
-                self::$classInstance[$module . $name] = new Model($name);
+    public function set($name, $path) {
+        if (isset($this->prefixes[$name])) {
+            array_push($this->prefixes[$name], $path);
+        } else {
+            $this->prefixes[$name] = [$path];
+        }
+    }
+
+    protected function loadClass($class) {
+        // 首次，将前缀等于当前类名
+        $prefix = $class;
+        // 从最后一个反斜杠开始分割前缀与类名
+        while (($pos = strrpos($prefix, '\\')) !== false) {
+            // 取出当前位置反斜杠分割的前缀
+            $prefix = substr($class, 0, $pos + 1);
+            // 取出分割出的实际类名
+            $className = substr($class, $pos + 1);
+            // 尝试去加载文件
+            $loadFile = $this->loadFile($prefix, $className);
+            if ($loadFile) {
+                return true;
+            }
+            $prefix = rtrim($prefix, '\\');
+        }
+        // 未找到文件
+        return false;
+    }
+
+    protected function loadFile($prefix, $class) {
+        // echo $class . '<br>';
+        $prefix = trim($prefix, '\\');
+        // 如果存在此前缀
+        if (isset($this->prefixes[$prefix])) {
+            // 遍历当前前缀下的目录
+            foreach ($this->prefixes[$prefix] as $key => $value) {
+                // 拼接文件名
+                $file = str_replace('\\', '/', $value . $class) . '.php';
+                /*echo '<br>';
+                echo $file . '<br>';*/
+                // 如果文件存在则加载文件
+                if (file_exists($file)) {
+                    require $file;
+                    return true;
+                }
             }
         }
-        return self::$classInstance[$module . $name];
+        return false;
     }
 }

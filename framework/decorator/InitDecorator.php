@@ -1,11 +1,11 @@
 <?php
 
-namespace framework\decorator;
+namespace top\decorator;
 
-use framework\decorator\ifs\DecoratorIfs;
-use framework\library\Register;
-use framework\library\View;
-use framework\library\cache\FileCache;
+use top\decorator\ifs\DecoratorIfs;
+use top\library\Register;
+use top\library\View;
+use top\library\cache\FileCache;
 
 /**
  * 初始化
@@ -16,24 +16,29 @@ class InitDecorator implements DecoratorIfs {
 
     /**
      * 注册一些可能会用到的类
-     * @throws \framework\library\exception\BaseException
+     * @throws \Exception
      */
     public function before() {
         $route = Register::get('Router');
+
         $sessionConfig = Register::get('Config')->get('session');
-        if (!empty($sessionConfig) && $sessionConfig['open'] === true)
+        if (!empty($sessionConfig) && $sessionConfig['open'] === true) {
             session_start();
+        }
+
         // 数据库驱动
         $config = Register::get('Config')->get('db');
         $driver = $config['driver'] ? $config['driver'] : 'MySQLi';
         Register::set('DBDriver', function () use ($driver) {
-            $class = '\\framework\\library\\database\\driver\\' . $driver;
+            $class = '\\top\\library\\database\\driver\\' . $driver;
             return $class::instance();
         });
+
         // 视图文件缓存
         Register::set('ViewCache', function () {
             return FileCache::instance();
         });
+
         // 配置文件中配置的注册
         $initRegister = Register::get('Config')->get('register');
         if (!empty($initRegister)) {
@@ -43,14 +48,17 @@ class InitDecorator implements DecoratorIfs {
                 });
             }
         }
+
         // 注册视图
         Register::set('View', function () {
             return View::instance();
         });
+
         // 加载系统函数库
-        require BASEDIR . '/framework/library/functions/functions.php';
+        require FRAMEWORK_PATH . 'library/functions/functions.php';
+
         // 加载用户函数库
-        $funcFile = BASEDIR . '/' . APPNS . '/' . $route->module . '/functions.php';
+        $funcFile = APP_PATH . $route->module . '/functions.php';
         if (file_exists($funcFile)) {
             require $funcFile;
         }

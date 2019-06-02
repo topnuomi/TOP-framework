@@ -1,8 +1,8 @@
 <?php
 
-namespace application\home\controller;
+namespace app\home\controller;
 
-use framework\library\Controller;
+use top\library\Controller;
 
 class Common extends Controller {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace system\extend;
+namespace top\extend;
 
 /**
  * 水印处理类

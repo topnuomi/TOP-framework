@@ -1,5 +1,5 @@
 <?php
-namespace framework\library\cache\ifs;
+namespace top\library\cache\ifs;
 
 interface CacheIfs {
 

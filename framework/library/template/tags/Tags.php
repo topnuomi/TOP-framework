@@ -1,7 +1,7 @@
 <?php
-namespace framework\library\template\tags;
+namespace top\library\template\tags;
 
-use framework\library\Register;
+use top\library\Register;
 
 /**
  * 模板标签处理类

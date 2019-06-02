@@ -1,7 +1,7 @@
 <?php
-namespace framework\library\route;
+namespace top\library\route;
 
-use framework\library\route\ifs\RouteIfs;
+use top\library\route\ifs\RouteIfs;
 
 class Command implements RouteIfs {
 

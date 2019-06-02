@@ -1,8 +1,8 @@
 <?php
 
-namespace framework\library\error;
+namespace top\library\error;
 
-use framework\library\exception\BaseException;
+use top\library\exception\BaseException;
 use Throwable;
 
 class BaseError extends \Error {

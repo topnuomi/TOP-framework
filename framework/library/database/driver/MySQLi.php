@@ -1,9 +1,9 @@
 <?php
 
-namespace framework\library\database\driver;
+namespace top\library\database\driver;
 
-use framework\library\database\ifs\DatabaseIfs;
-use framework\library\exception\DatabaseException;
+use top\library\database\ifs\DatabaseIfs;
+use top\library\exception\DatabaseException;
 
 /**
  * Mysqli数据库驱动

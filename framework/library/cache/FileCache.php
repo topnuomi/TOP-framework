@@ -1,7 +1,7 @@
 <?php
-namespace framework\library\cache;
+namespace top\library\cache;
 
-use framework\library\cache\ifs\CacheIfs;
+use top\library\cache\ifs\CacheIfs;
 
 class FileCache implements CacheIfs {
 
@@ -22,7 +22,7 @@ class FileCache implements CacheIfs {
      *
      * {@inheritdoc}
      *
-     * @see \system\library\cache\CacheIfs::set()
+     * @see \top\library\cache\CacheIfs::set()
      */
     public function set($name = '', $value = '') {
         // TODO Auto-generated method stub
@@ -42,7 +42,7 @@ class FileCache implements CacheIfs {
      *
      * {@inheritdoc}
      *
-     * @see \system\library\cache\CacheIfs::get()
+     * @see \top\library\cache\CacheIfs::get()
      */
     public function get($name = '') {
         // TODO Auto-generated method stub
@@ -52,7 +52,7 @@ class FileCache implements CacheIfs {
      *
      * {@inheritdoc}
      *
-     * @see \system\library\cache\CacheIfs::_unset()
+     * @see \top\library\cache\CacheIfs::_unset()
      */
     public function _unset($name = '') {
         // TODO Auto-generated method stub

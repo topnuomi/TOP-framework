@@ -1,8 +1,8 @@
 <?php
 
-namespace framework;
+namespace top;
 
-use framework\library\App;
+use top\library\App;
 
 /**
  * 框架入口
@@ -21,14 +21,17 @@ class Framework {
     private static $defaultAddress = 'home';
 
     /**
-     * @throws library\exception\BaseException
+     * 执行
      */
-    public static function start() {
+    public static function startApp() {
         header('content-type: text/html; charset=utf-8');
+
         // 指定时区
         date_default_timezone_set('PRC');
+
         defined('DEBUG') || define('DEBUG', false);
-        require __DIR__.'/library/App.php';
+
+        require 'library/App.php';
         App::start(self::$type, self::$defaultAddress);
     }
 

@@ -1,7 +1,7 @@
 <?php
-namespace framework\library;
+namespace top\library;
 
-use framework\library\template\ifs\TemplateIfs;
+use top\library\template\ifs\TemplateIfs;
 
 /**
  * 模板类
@@ -26,11 +26,15 @@ class Template {
         $this->template = $template->run();
     }
 
+    private function __clone() {
+        // TODO: Implement __clone() method.
+    }
+
     /**
      * 获取实例
      *
      * @param TemplateIfs $template            
-     * @return \system\library\Template
+     * @return \top\library\Template
      */
     public static function instance($template) {
         if (! self::$instance) {

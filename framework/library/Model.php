@@ -1,6 +1,6 @@
 <?php
 
-namespace framework\library;
+namespace top\library;
 
 
 /**
@@ -8,7 +8,7 @@ namespace framework\library;
  *
  * @author topnuomi 2018年11月23日
  */
-class Model {
+abstract class Model {
 
     // 数据库操作实例
     private $db;
@@ -37,9 +37,6 @@ class Model {
     // 自动验证
     protected $validate = [];
 
-    // 当前操作的数据（仅能在insert、update操作后获取到操作的数据，否则请使用模型data方法获取进行验证后的数据）
-    private $data = [];
-
     // 是否为insert操作，决定如何验证数据
     // true：验证模型中配置的全部字段
     // false：仅验证$data中存在的字段
@@ -62,8 +59,8 @@ class Model {
 
     /**
      * 影响的表（仅多表delete）
-     * @param string|array $effect
-     * @return \system\top\Model
+     * @param $effect
+     * @return $this
      */
     public function effect($effect) {
         $this->db->effect($effect);
@@ -72,8 +69,8 @@ class Model {
 
     /**
      * 过滤重复值的字段
-     * @param string|array $field
-     * @return \system\top\Model
+     * @param $field
+     * @return $this
      */
     public function distinct($field) {
         $this->db->distinct($field);
@@ -82,8 +79,8 @@ class Model {
 
     /**
      * 指定字段
-     * @param string|array $field
-     * @return \system\top\Model
+     * @param $field
+     * @return $this
      */
     public function field($field) {
         $this->db->field($field);
@@ -92,7 +89,7 @@ class Model {
 
     /**
      * 查询条件
-     * @return \system\top\Model
+     * @return $this
      */
     public function where() {
         call_user_func_array([
@@ -104,7 +101,7 @@ class Model {
 
     /**
      * 排序
-     * @return \system\top\Model
+     * @return $this
      */
     public function order() {
         call_user_func_array([
@@ -116,7 +113,7 @@ class Model {
 
     /**
      * 限制
-     * @return \system\top\Model
+     * @return $this
      */
     public function limit() {
         call_user_func_array([
@@ -131,7 +128,7 @@ class Model {
      * @param $type
      * @param $table
      * @param $name
-     * @return \system\top\Model
+     * @return $this
      */
     public function join($type, $table, $name) {
         $this->db->join($type, $table, $name);
@@ -141,7 +138,7 @@ class Model {
     /**
      * 多表
      * @param $on
-     * @return \system\top\Model
+     * @return $this
      */
     public function on($on) {
         $this->db->on($on);
@@ -462,7 +459,7 @@ class Model {
      * @param $data
      * @return bool
      */
-    private function validateCallUserFunction($key = '', $validate, $data) {
+    private function validateCallUserFunction($key, $validate, $data) {
         $funcName = $validate[0];
         $tips = end($validate);
         // 将第一个值赋值为将要检查的值
@@ -484,17 +481,16 @@ class Model {
 
     /**
      * 获取表结构
-     *
-     * @return array
+     * @param $table
+     * @return mixed
      */
-    public function tableDesc($table = '') {
+    public function tableDesc($table) {
         return $this->db->tableDesc($table);
     }
 
     /**
      * 获取信息
-     *
-     * @return string|mixed
+     * @return string
      */
     public function getMessage() {
         return $this->message;

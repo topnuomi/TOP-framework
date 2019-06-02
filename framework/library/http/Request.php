@@ -1,6 +1,6 @@
 <?php
 
-namespace framework\library\http;
+namespace top\library\http;
 
 /**
  * 请求类
@@ -11,13 +11,13 @@ class Request {
 
     private $server = [];
 
-    private static $instanct;
+    private static $instance;
 
     public static function instance() {
-        if (!self::$instanct) {
-            self::$instanct = new self();
+        if (!self::$instance) {
+            self::$instance = new self();
         }
-        return self::$instanct;
+        return self::$instance;
     }
 
     private function __construct() {

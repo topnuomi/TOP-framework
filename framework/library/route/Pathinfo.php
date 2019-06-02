@@ -1,11 +1,11 @@
 <?php
 
-namespace framework\library\route;
+namespace top\library\route;
 
-use framework\library\route\ifs\RouteIfs;
+use top\library\route\ifs\RouteIfs;
 
 /**
- * pathinfo（如果运行环境不支持pathinfo则使用兼容模式）
+ * pathinfo模式
  *
  * @author topnuomi 2018年11月19日
  */
@@ -39,14 +39,11 @@ class Pathinfo implements RouteIfs {
     public $param = [];
 
     // 类名
-    public $className = '';
+    public $class = '';
 
     /**
      * 模块名
-     *
-     * {@inheritdoc}
-     *
-     * @see \system\core\route\ifs\RouteIfs::module()
+     * @return string
      */
     public function module() {
         if (isset($this->uriArray[0]) && $this->uriArray[0]) {
@@ -58,10 +55,7 @@ class Pathinfo implements RouteIfs {
 
     /**
      * 控制器名
-     *
-     * {@inheritdoc}
-     *
-     * @see \system\core\route\ifs\RouteIfs::ctrl()
+     * @return string
      */
     public function ctrl() {
         if (isset($this->uriArray[1]) && $this->uriArray[1]) {
@@ -73,10 +67,7 @@ class Pathinfo implements RouteIfs {
 
     /**
      * 具体执行的方法名
-     *
-     * {@inheritdoc}
-     *
-     * @see \system\core\route\ifs\RouteIfs::action()
+     * @return mixed|string
      */
     public function action() {
         if (isset($this->uriArray[2]) && $this->uriArray[2]) {
@@ -95,8 +86,8 @@ class Pathinfo implements RouteIfs {
         unset($this->uriArray[1]);
         unset($this->uriArray[2]);
         $this->uriArray = array_merge($this->uriArray, []);
-        if (!empty($this->uriArray) && class_exists($this->className)) {
-            $paramName = (new \ReflectionMethod($this->className, $this->action))->getParameters();
+        if (!empty($this->uriArray) && class_exists($this->class)) {
+            $paramName = (new \ReflectionMethod($this->class, $this->action))->getParameters();
             $paramNameArray = [];
             for ($i = 0; $i < count($paramName); $i++) {
                 $paramNameArray[$paramName[$i]->name] = '';
@@ -119,8 +110,7 @@ class Pathinfo implements RouteIfs {
 
     /**
      * 处理URI
-     *
-     * @return string
+     * @return mixed|string
      */
     private function getUri() {
         if (isset($_SERVER['PATH_INFO'])) {
@@ -133,7 +123,7 @@ class Pathinfo implements RouteIfs {
         $this->rawUri = $uri;
         $paramArray = explode('/', $uri);
         $name = $paramArray[0];
-        $file = BASEDIR . '/' . APPNS . '/route.php';
+        $file = APP_PATH . 'route.php';
         if (file_exists($file)) {
             $routeConfig = require $file;
             if (isset($routeConfig[$name])) {
@@ -165,7 +155,6 @@ class Pathinfo implements RouteIfs {
 
     /**
      * 根据URI得到带参数的数组
-     *
      * @return array
      */
     private function processUriArray() {
@@ -174,13 +163,13 @@ class Pathinfo implements RouteIfs {
 
     /**
      * 返回解析出的数据 home/controller/index
-     * @throws \Exception
+     * @throws \ReflectionException
      */
     public function processing() {
         $this->uriArray = $this->processUriArray();
         $this->module = $this->module();
         $this->ctrl = $this->ctrl();
-        $this->className = '\\' . APPNS . '\\' . $this->module . '\\controller\\' . $this->ctrl;
+        $this->class = '\app\\' . $this->module . '\\controller\\' . $this->ctrl;
         $this->action = $this->action();
         $this->param = $this->param();
         unset($this->uriArray);

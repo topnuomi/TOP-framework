@@ -1,5 +1,5 @@
 <?php
-namespace framework\library;
+namespace top\library;
 
 /**
  * 配置类
@@ -11,8 +11,24 @@ class Config {
     // 已加载的文件
     private static $files;
 
+    private static $instance;
+
     // 保存配置的变量
     private $config = [];
+
+    private function __construct() {
+    }
+
+    private function __clone() {
+        // TODO: Implement __clone() method.
+    }
+
+    public static function instance() {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     /**
      * 添加配置
@@ -25,6 +41,7 @@ class Config {
         $config = [
             $name => $value
         ];
+
         // 与原有的配置项合并
         $this->config = array_merge($this->config, $config);
     }
@@ -36,9 +53,9 @@ class Config {
      * @throws \Exception
      */
     public function get($name = '') {
-        // 加载的文件名
+        // 加载文件
         $module = Register::get('Router')->module;
-        $file = BASEDIR . '/' . APPNS . '/' . $module . '/config/config.php';
+        $file = APP_PATH . $module . '/config/config.php';
         if (! isset(self::$files[$file])) {
             if (file_exists($file)) {
                 $config = require $file;
@@ -47,6 +64,7 @@ class Config {
                 self::$files[$file] = true;
             }
         }
+
         if (empty($this->config)
             || ! isset($this->config)
             || ! $this->config
@@ -55,6 +73,7 @@ class Config {
         ) {
             return [];
         }
+
         return $this->config[$name];
     }
 

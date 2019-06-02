@@ -1,9 +1,9 @@
 <?php
 
-namespace application\home\decorator;
+namespace app\home\decorator;
 
-use framework\decorator\ifs\DecoratorIfs;
-use framework\library\Register;
+use top\decorator\ifs\DecoratorIfs;
+use top\library\Register;
 
 class Log implements DecoratorIfs {
 
@@ -13,7 +13,7 @@ class Log implements DecoratorIfs {
 
     /**
      * @param array $data
-     * @throws \framework\library\exception\BaseException
+     * @throws \Exception
      */
     public function after($data) {
         // TODO: Implement after() method.

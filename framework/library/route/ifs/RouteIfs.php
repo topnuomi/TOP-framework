@@ -1,5 +1,5 @@
 <?php
-namespace framework\library\route\ifs;
+namespace top\library\route\ifs;
 
 /**
  * 路由接口

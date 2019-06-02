@@ -1,12 +1,12 @@
 <?php
 return [
     'register' => [
-        'Twig' => \framework\library\template\Twig::class,
-        // 'Smarty' => \framework\library\template\Smarty::class,
-        // 'Top' => \framework\library\template\Top::class,
+        'Twig' => top\library\template\Twig::class,
+        // 'Smarty' => top\library\template\Smarty::class,
+        // 'Top' => top\library\template\Top::class,
     ],
     'decorator' => [
-        application\home\decorator\Log::class
+        app\home\decorator\Log::class
     ],
     'session' => [
         'open' => true,
@@ -16,9 +16,9 @@ return [
         'driver' => 'MySQLi',
         'host' => '127.0.0.1',
         'user' => 'root',
-        'passwd' => '888888',
-        'dbname' => 'by_zh',
-        'prefix' => 'ot_',
+        'passwd' => 'root',
+        'dbname' => 'hongzheng',
+        'prefix' => 'cms_',
         'charset' => 'utf8'
     ],
     'view' => [
@@ -26,9 +26,9 @@ return [
         'ext' => 'html',
         'dir' => '../application/home/view/',
         'cacheDir' => './runtime/cache/application/home/',
-//        'compileDir' => './runtime/compile/application/home/',
-//        'left' => '{',
-//        'right' => '}',
-//        'cacheTime' => 5
+        'compileDir' => './runtime/compile/application/home/',
+        'left' => '{',
+        'right' => '}',
+        'cacheTime' => 5
     ],
 ];

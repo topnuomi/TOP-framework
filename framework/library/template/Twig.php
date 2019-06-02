@@ -1,9 +1,9 @@
 <?php
 
-namespace framework\library\template;
+namespace top\library\template;
 
-use framework\library\Register;
-use framework\library\template\ifs\TemplateIfs;
+use top\library\Register;
+use top\library\template\ifs\TemplateIfs;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

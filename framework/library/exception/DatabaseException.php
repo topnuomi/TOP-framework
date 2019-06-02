@@ -1,6 +1,6 @@
 <?php
 
-namespace framework\library\exception;
+namespace top\library\exception;
 
 use Throwable;
 
