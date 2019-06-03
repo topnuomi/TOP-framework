@@ -31,13 +31,30 @@ class Framework {
 
         defined('DEBUG') || define('DEBUG', false);
 
+        self::setResourceDir();
+
         require 'library/App.php';
         App::start(self::$type, self::$defaultAddress);
     }
 
     /**
+     * 指定Resource目录
+     * @param string $resourceDir
+     */
+    public static function setResourceDir($resourceDir = '') {
+        if (!defined('RESOURCE')) {
+            if (!$resourceDir && isset($_SERVER['SCRIPT_NAME'])) {
+                $scriptName = $_SERVER['SCRIPT_NAME'];
+                $pos = strrpos($scriptName, '/');
+                $root = substr($scriptName, 0, $pos + 1);
+                $resourceDir = $root . 'resource/';
+            }
+            define('RESOURCE', $resourceDir);
+        }
+    }
+
+    /**
      * 指定默认访问位置
-     *
      * @param string $address
      */
     public static function setDefaultAddress($address) {
@@ -46,7 +63,6 @@ class Framework {
 
     /**
      * 指定程序运行方式
-     *
      * @param int $type
      */
     public static function setRunType($type) {
