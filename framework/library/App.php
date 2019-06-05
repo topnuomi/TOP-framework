@@ -21,7 +21,7 @@ class App {
         $loader->register();
 
         // composer自动加载
-        $composerLoadFile = FRAMEWORK_PATH . '/vendor/autoload.php';
+        $composerLoadFile = FRAMEWORK_PATH . 'vendor/autoload.php';
         if (file_exists($composerLoadFile)) {
             require $composerLoadFile;
         }
