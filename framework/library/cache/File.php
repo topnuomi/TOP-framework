@@ -3,11 +3,9 @@ namespace top\library\cache;
 
 use top\library\cache\ifs\CacheIfs;
 
-class FileCache implements CacheIfs {
+class File implements CacheIfs {
 
     private static $instance;
-
-    private $cacheDir = '';
 
     public static function instance() {
         if (! self::$instance) {
@@ -17,6 +15,9 @@ class FileCache implements CacheIfs {
     }
 
     private function __construct() {}
+
+    private function __clone() {
+    }
 
     /**
      *

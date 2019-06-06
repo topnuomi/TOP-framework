@@ -365,7 +365,7 @@ abstract class Model {
      * @param array $data
      * @return array
      */
-    public function inHandle($data) {
+    private function inHandle($data) {
         $replace = ($this->isInsert) ? $this->insertHandle : $this->updateHandle;
         foreach ($replace as $key => $value) {
             $fieldValue = '';

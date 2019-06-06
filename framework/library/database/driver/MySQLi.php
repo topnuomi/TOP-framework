@@ -386,7 +386,7 @@ class MySQLi implements DatabaseIfs {
      * @param string|array $on
      * @return string
      */
-    public function processJoin($data, $on) {
+    private function processJoin($data, $on) {
         $join = [];
         for ($i = 0; $i < count($data); $i++) {
             if (is_array($on[$i])) {
@@ -431,7 +431,7 @@ class MySQLi implements DatabaseIfs {
         return $value;
     }
 
-    public function writeLogs($result, $query) {
+    private function writeLogs($result, $query) {
         if (DEBUG) {
             $error = '';
             if (!$result) {

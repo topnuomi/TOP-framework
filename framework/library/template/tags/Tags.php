@@ -117,7 +117,7 @@ class Tags {
      * @param string $filename            
      * @return string
      */
-    public function processingViewTag($filename) {
+    private function processingViewTag($filename) {
         $tags = [
             'view:name' => '$___view__config = \\framework\\library\\Register::get(\'Config\')->get(\'view\'); require BASEDIR . \'/\' . $___view__config[\'dir\'] . \'name\' . \'.\' . $___view__config[\'ext\'];'
         ];

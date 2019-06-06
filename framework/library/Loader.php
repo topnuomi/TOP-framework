@@ -4,7 +4,7 @@ namespace top\library;
 
 class Loader {
 
-    protected $prefixes = [];
+    private $prefixes = [];
 
     public function register() {
         spl_autoload_register([$this, 'loadClass']);
@@ -18,7 +18,7 @@ class Loader {
         }
     }
 
-    protected function loadClass($class) {
+    private function loadClass($class) {
         // 首次，将前缀等于当前类名
         $prefix = $class;
         // 从最后一个反斜杠开始分割前缀与类名
@@ -38,7 +38,7 @@ class Loader {
         return false;
     }
 
-    protected function loadFile($prefix, $class) {
+    private function loadFile($prefix, $class) {
         // echo $class . '<br>';
         $prefix = trim($prefix, '\\');
         // 如果存在此前缀

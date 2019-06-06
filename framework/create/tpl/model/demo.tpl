@@ -1,7 +1,7 @@
 <?php
-namespace {namespace}\{name}\model;
+namespace app\{name}\model;
 
-use system\top\Model;
+use top\library\Model;
 
 class Demo extends Model {
 

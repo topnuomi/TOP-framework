@@ -19,7 +19,7 @@ abstract class Controller {
      * @param array $ext
      * @return false|string
      */
-    public function json($msg, $code = 1, $data = [], $ext = []) {
+    protected function json($msg, $code = 1, $data = [], $ext = []) {
         $array = [
             'msg' => $msg,
             'code' => $code,
@@ -34,7 +34,7 @@ abstract class Controller {
      * @param bool $status
      * @return $this
      */
-    public function cache($status = true) {
+    protected function cache($status = true) {
         Register::get('View')->cache($status);
         return $this;
     }
@@ -44,7 +44,7 @@ abstract class Controller {
      * @param $name
      * @param $value
      */
-    public function param($name, $value) {
+    protected function param($name, $value) {
         Register::get('View')->param($name, $value);
     }
 
@@ -55,7 +55,7 @@ abstract class Controller {
      * @param bool $cache
      * @return mixed
      */
-    public function fetch($file = '', $param = [], $cache = false) {
+    protected function fetch($file = '', $param = [], $cache = false) {
         return Register::get('View')->fetch($file, $param, $cache);
     }
 
@@ -63,7 +63,7 @@ abstract class Controller {
      * 跳转（非ajax）
      * @param $url
      */
-    public function redirect($url) {
+    protected function redirect($url) {
         return redirect($url);
     }
 
@@ -74,7 +74,7 @@ abstract class Controller {
      * @param int $sec
      * @return false|mixed|string
      */
-    public function tips($message, $url = '', $sec = 3) {
+    protected function tips($message, $url = '', $sec = 3) {
         if (request()->isAjax()) {
             return $this->json($message, '', 'tips', ['url' => $url, 'sec' => $sec]);
         } else {

@@ -35,9 +35,9 @@ class InitDecorator implements DecoratorIfs {
         });
 
         // 视图文件缓存
-        Register::set('ViewCache', function () {
+        /*Register::set('ViewCache', function () {
             return FileCache::instance();
-        });
+        });*/
 
         // 配置文件中配置的注册
         $initRegister = Register::get('Config')->get('register');

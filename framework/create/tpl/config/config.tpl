@@ -1,9 +1,9 @@
 <?php
 return [
     'register' => [
-        'Top' => 'system.library.template.Top',
-        // 'Smarty' => 'system.library.template.Smarty'
-        // 'Twig' => 'system.library.template.Twig',
+        'Twig' => top\library\template\Twig::class,
+        // 'Smarty' => top\library\template\Smarty::class,
+        // 'Top' => top\library\template\Top::class,
     ],
     'decorator' => [],
     'session' => [
@@ -19,11 +19,11 @@ return [
         'charset' => 'utf8'
     ],
     'view' => [
-        'engine' => 'Top',
+        'engine' => 'Twig',
         'ext' => 'html',
-        'dir' => '../{namespace}/{name}/view/',
-        'cacheDir' => './runtime/cache/{namespace}/{name}/',
-        'compileDir' => './runtime/compile/{namespace}/{name}/',
+        'dir' => '../application/{name}/view/',
+        'cacheDir' => './runtime/cache/application/{name}/',
+        'compileDir' => './runtime/compile/application/{name}/',
         'left' => '{',
         'right' => '}',
         'cacheTime' => 5

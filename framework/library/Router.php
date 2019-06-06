@@ -17,14 +17,14 @@ use top\library\route\ifs\RouteIfs;
 class Router {
 
     // 路由实例
-    public $route;
+    private $route;
 
     // 装饰器
-    public $decorator = [];
+    private $decorator = [];
 
     public $module = '';
 
-    public $className = '';
+    public $class = '';
 
     public $ctrl = '';
 
@@ -64,14 +64,14 @@ class Router {
      * 指定装饰器
      * @param DecoratorIfs $decorator
      */
-    public function decorator(DecoratorIfs $decorator) {
+    private function decorator(DecoratorIfs $decorator) {
         $this->decorator[] = $decorator;
     }
 
     /**
      * 装饰器前置方法
      */
-    public function beforeRoute() {
+    private function beforeRoute() {
         foreach ($this->decorator as $decorator) {
             $decorator->before();
         }
@@ -81,7 +81,7 @@ class Router {
      * 装饰器后置方法
      * @param $data
      */
-    public function afterRoute($data) {
+    private function afterRoute($data) {
         $this->decorator = array_reverse($this->decorator);
         foreach ($this->decorator as $decorator) {
             $decorator->after($data);
@@ -92,7 +92,7 @@ class Router {
      * 执行前进行必要检查
      * @throws RouteException
      */
-    public function check() {
+    private function check() {
         // 检查模块是否存在
         if (!is_dir(APP_PATH . $this->module)) {
             throw new RouteException('模块' . $this->module . '不存在');
