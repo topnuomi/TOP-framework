@@ -17,8 +17,8 @@ class Framework {
     // 程序运行方式
     private static $type = 1;
 
-    // 默认访问位置
-    private static $defaultAddress = 'home';
+    // 默认访问模块
+    private static $defaultModule = 'home';
 
     /**
      * 执行
@@ -29,43 +29,80 @@ class Framework {
         // 指定时区
         date_default_timezone_set('PRC');
 
-        defined('DEBUG') || define('DEBUG', false);
-
-        self::setResourceDir();
+        self::debug();
+        self::frameworkPath();
+        self::appPath();
+        self::resourcePath();
 
         require 'library/App.php';
-        App::start(self::$type, self::$defaultAddress);
+        App::start(self::$type, self::$defaultModule);
+    }
+
+    /**
+     * 是否开启DEBUG
+     * @param bool $status
+     */
+    public static function debug($status = false) {
+        if (!defined('DEBUG')) {
+            define('DEBUG', $status);
+        }
+    }
+
+    /**
+     * 指定框架目录
+     * @param string $path
+     */
+    public static function frameworkPath($path = '') {
+        if (!defined('FRAMEWORK_PATH')) {
+            if (!$path) {
+                $path = __DIR__ . '/';
+            }
+            define('FRAMEWORK_PATH', $path);
+        }
+    }
+
+    /**
+     * 应用目录
+     * @param string $path
+     */
+    public static function appPath($path = '') {
+        if (!defined('APP_PATH')) {
+            if (!$path) {
+                $path = './application/';
+            }
+            define('APP_PATH', $path);
+        }
     }
 
     /**
      * 指定Resource目录
-     * @param string $resourceDir
+     * @param string $path
      */
-    public static function setResourceDir($resourceDir = '') {
+    public static function resourcePath($path = '') {
         if (!defined('RESOURCE')) {
-            if (!$resourceDir && isset($_SERVER['SCRIPT_NAME'])) {
+            if (!$path && isset($_SERVER['SCRIPT_NAME'])) {
                 $scriptName = $_SERVER['SCRIPT_NAME'];
                 $pos = strrpos($scriptName, '/');
                 $root = substr($scriptName, 0, $pos + 1);
-                $resourceDir = $root . 'resource/';
+                $path = $root . 'resource/';
             }
-            define('RESOURCE', $resourceDir);
+            define('RESOURCE', $path);
         }
     }
 
     /**
      * 指定默认访问位置
-     * @param string $address
+     * @param string $module
      */
-    public static function setDefaultAddress($address) {
-        self::$defaultAddress = $address;
+    public static function defaultModule($module) {
+        self::$defaultModule = $module;
     }
 
     /**
      * 指定程序运行方式
      * @param int $type
      */
-    public static function setRunType($type) {
+    public static function runType($type) {
         self::$type = $type;
     }
 }

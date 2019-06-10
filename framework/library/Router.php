@@ -109,7 +109,6 @@ class Router {
 
     /**
      * 调用方法并执行程序
-     * @throws \Exception
      */
     public function handler() {
         $userDecorators = Register::get('Config')->get('decorator');

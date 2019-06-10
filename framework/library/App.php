@@ -9,10 +9,9 @@ class App {
 
     /**
      * @param int $type
-     * @param string $defaultAddress
-     * @throws exception\RouteException
+     * @param string $defaultModule
      */
-    public static function start($type = 1, $defaultAddress = 'home') {
+    public static function start($type = 1, $defaultModule = 'home') {
         // 注册框架自动加载
         require 'Loader.php';
         $loader = new Loader();
@@ -51,7 +50,6 @@ class App {
             }
         }
         // 实例化路由
-        $route = new Router($routeDriver, $defaultAddress);
-        $route->handler();
+        (new Router($routeDriver, $defaultModule))->handler();
     }
 }
