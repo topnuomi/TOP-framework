@@ -122,14 +122,13 @@ class Router {
         $this->beforeRoute();
 
         $object = new $this->class();
-        if (method_exists($object, '_init')) {
+        $reflectionClass = new \ReflectionClass($this->class);
+        if ($reflectionClass->hasMethod('_init')) {
             $data = $object->_init();
         }
         if (!isset($data) || $data == null) {
-            $data = call_user_func_array([
-                $object,
-                $this->action
-            ], $this->param);
+            $reflectionMethod = new \ReflectionMethod($this->class, $this->action);
+            $data = $reflectionMethod->invokeArgs($object, $this->param);
         }
 
         $this->afterRoute($data);

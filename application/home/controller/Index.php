@@ -6,6 +6,10 @@ use app\home\model\Job;
 
 class Index extends Common {
 
+    public function _init() {
+        echo 1;
+    }
+
     public function index() {
         $model = model(Job::class);
         return [

@@ -64,7 +64,7 @@ class Database {
         $this->config = $config = Register::get('Config')->get('db');
         $this->table = $config['prefix'] . $table;
         $this->pk = $pk;
-        $this->setDriver($driver, Register::get('Config')->get('db'));
+        $this->setDriver($driver, $this->config);
     }
 
     private function __clone() {
