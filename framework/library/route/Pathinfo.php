@@ -169,7 +169,7 @@ class Pathinfo implements RouteIfs {
         $this->uriArray = $this->processUriArray();
         $this->module = $this->module();
         $this->ctrl = $this->ctrl();
-        $this->class = '\app\\' . $this->module . '\\controller\\' . $this->ctrl;
+        $this->class = '\\' . APP_NS . '\\' . $this->module . '\\controller\\' . $this->ctrl;
         $this->action = $this->action();
         $this->param = $this->param();
         unset($this->uriArray);

@@ -23,16 +23,21 @@ class Framework {
     /**
      * 执行
      */
-    public static function startApp() {
+    public static function startApp($callable = '') {
         header('content-type: text/html; charset=utf-8');
+
+        if (is_callable($callable)) {
+            $callable(self::class);
+        }
 
         // 指定时区
         date_default_timezone_set('PRC');
 
         self::debug();
-        self::frameworkPath();
         self::appPath();
+        self::appNameSpace();
         self::resourcePath();
+        self::frameworkPath();
 
         require 'library/App.php';
         App::start(self::$type, self::$defaultModule);
@@ -71,6 +76,15 @@ class Framework {
                 $path = './application/';
             }
             define('APP_PATH', $path);
+        }
+    }
+
+    public static function appNameSpace($namespace = '') {
+        if (!defined('APP_NS')) {
+            if (!$namespace) {
+                $namespace = 'app';
+            }
+            define('APP_NS', $namespace);
         }
     }
 

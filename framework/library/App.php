@@ -16,7 +16,7 @@ class App {
         require 'Loader.php';
         $loader = new Loader();
         $loader->set('top', FRAMEWORK_PATH);
-        $loader->set('app', APP_PATH);
+        $loader->set(APP_NS, APP_PATH);
         $loader->register();
 
         // composer自动加载
