@@ -1,5 +1,5 @@
 <?php
-namespace top\library\template\tags;
+namespace top\library\template\driver\tags;
 
 use top\library\Register;
 

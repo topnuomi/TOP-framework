@@ -1,10 +1,10 @@
 <?php
 
-namespace top\library\template;
+namespace top\library\template\driver;
 
 use top\library\template\ifs\TemplateIfs;
 use top\library\Register;
-use top\library\template\tags\Tags;
+use top\library\template\driver\tags\Tags;
 
 /**
  * 默认的视图驱动

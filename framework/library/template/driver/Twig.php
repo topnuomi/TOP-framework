@@ -1,6 +1,6 @@
 <?php
 
-namespace top\library\template;
+namespace top\library\template\driver;
 
 use top\library\Register;
 use top\library\template\ifs\TemplateIfs;
