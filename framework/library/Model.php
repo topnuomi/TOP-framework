@@ -8,7 +8,7 @@ namespace top\library;
  *
  * @author topnuomi 2018年11月23日
  */
-abstract class Model {
+class Model {
 
     // 数据库操作实例
     private $db;
