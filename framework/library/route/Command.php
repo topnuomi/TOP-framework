@@ -4,7 +4,8 @@ namespace top\library\route;
 
 use top\library\route\ifs\RouteIfs;
 
-class Command implements RouteIfs {
+class Command implements RouteIfs
+{
 
     // 模块
     public $module = '';
@@ -24,7 +25,8 @@ class Command implements RouteIfs {
     /**
      * 暂时就这样吧（逃...
      */
-    public function processing() {
+    public function processing()
+    {
         // TODO Auto-generated method stub
         $this->module = $this->module();
         $this->ctrl = $this->ctrl();
@@ -36,7 +38,8 @@ class Command implements RouteIfs {
     /**
      *
      */
-    public function module() {
+    public function module()
+    {
         // TODO Auto-generated method stub
         return 'home';
     }
@@ -44,7 +47,8 @@ class Command implements RouteIfs {
     /**
      *
      */
-    public function ctrl() {
+    public function ctrl()
+    {
         // TODO Auto-generated method stub
         return 'Index';
     }
@@ -52,7 +56,8 @@ class Command implements RouteIfs {
     /**
      *
      */
-    public function action() {
+    public function action()
+    {
         // TODO Auto-generated method stub
         return 'index';
     }
@@ -60,7 +65,8 @@ class Command implements RouteIfs {
     /**
      *
      */
-    public function param() {
+    public function param()
+    {
         // TODO Auto-generated method stub
         return [];
     }

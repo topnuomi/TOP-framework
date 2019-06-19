@@ -6,10 +6,10 @@ use top\library\database\ifs\DatabaseIfs;
 
 /**
  * 数据库操作类
- *
  * @author topnuomi 2018年11月21日
  */
-class Database {
+class Database
+{
 
     // 数据库驱动
     private static $driver;
@@ -59,7 +59,8 @@ class Database {
      * @param $table
      * @param $pk
      */
-    private function __construct($table, $pk) {
+    private function __construct($table, $pk)
+    {
         $driver = Register::get('DBDriver');
         $this->config = $config = Register::get('Config')->get('db');
         $this->table = $config['prefix'] . $table;
@@ -67,7 +68,8 @@ class Database {
         $this->setDriver($driver, $this->config);
     }
 
-    private function __clone() {
+    private function __clone()
+    {
         // TODO: Implement __clone() method.
     }
 
@@ -77,7 +79,8 @@ class Database {
      * @param DatabaseIfs $driver
      * @param array $config
      */
-    private function setDriver(DatabaseIfs $driver, $config) {
+    private function setDriver(DatabaseIfs $driver, $config)
+    {
         self::$driver = $driver->connect($config);
     }
 
@@ -87,7 +90,8 @@ class Database {
      * @param string $pk
      * @return mixed
      */
-    public static function table($table, $pk = '') {
+    public static function table($table, $pk = '')
+    {
         if (!isset(self::$instance[$table])) {
             self::$instance[$table] = new self($table, $pk);
         }
@@ -99,7 +103,8 @@ class Database {
      * @param $effect
      * @return \top\library\Database
      */
-    public function effect($effect) {
+    public function effect($effect)
+    {
         $this->effect = $effect;
         return $this;
     }
@@ -108,7 +113,8 @@ class Database {
      * @param $field
      * @return \top\library\Database
      */
-    public function distinct($field) {
+    public function distinct($field)
+    {
         $this->distinct = $field;
         return $this;
     }
@@ -118,7 +124,8 @@ class Database {
      * @param $field
      * @return \top\library\Database
      */
-    public function field($field) {
+    public function field($field)
+    {
         $this->field = $field;
         return $this;
     }
@@ -127,7 +134,8 @@ class Database {
      * 设置条件
      * @return \top\library\Database
      */
-    public function where() {
+    public function where()
+    {
         $where = func_get_args();
         if (!empty($where)) {
             switch (count($where)) {
@@ -156,7 +164,8 @@ class Database {
      * 设置排序
      * @return \top\library\Database
      */
-    public function order() {
+    public function order()
+    {
         $order = func_get_args();
         if (!empty($order)) {
             if (count($order) > 1) {
@@ -172,7 +181,8 @@ class Database {
      * 设置记录范围
      * @return \top\library\Database
      */
-    public function limit() {
+    public function limit()
+    {
         $limit = func_get_args();
         if (!empty($limit)) {
             if (count($limit) > 1) {
@@ -192,7 +202,8 @@ class Database {
      * @param string $name
      * @return \top\library\Database
      */
-    public function join($type, $table, $name) {
+    public function join($type, $table, $name)
+    {
         $this->join[] = [
             $type,
             $this->config['prefix'] . $table,
@@ -206,7 +217,8 @@ class Database {
      * @param string $on
      * @return \top\library\Database
      */
-    public function on($on) {
+    public function on($on)
+    {
         $this->on[] = $on;
         return $this;
     }
@@ -217,7 +229,8 @@ class Database {
      * @param array $data
      * @return int|boolean
      */
-    public function insert($data) {
+    public function insert($data)
+    {
         $result = self::$driver->insert($this->table, $data);
         return $result;
     }
@@ -227,7 +240,8 @@ class Database {
      * @param bool $param
      * @return object
      */
-    public function find($param = false) {
+    public function find($param = false)
+    {
         if (is_callable($param))
             $param($this);
         $field = $this->getPk();
@@ -248,7 +262,8 @@ class Database {
      * @param callable|string|bool $param
      * @return array|boolean
      */
-    public function select($param = false) {
+    public function select($param = false)
+    {
         if (is_callable($param))
             $param($this);
         $field = $this->getPk();
@@ -272,7 +287,8 @@ class Database {
      * @param callable|string|bool $param
      * @return int|boolean
      */
-    public function update($data, $param = false) {
+    public function update($data, $param = false)
+    {
         if (is_callable($param))
             $param($this);
         $field = $this->getPk();
@@ -293,7 +309,8 @@ class Database {
      * @param callable|string|bool $param
      * @return int|boolean
      */
-    public function delete($param = false) {
+    public function delete($param = false)
+    {
         if (is_callable($param)) {
             $param($this);
         }
@@ -318,7 +335,8 @@ class Database {
      * @param $type
      * @return mixed
      */
-    public function common($param, $type) {
+    public function common($param, $type)
+    {
         if (is_callable($param)) {
             $param($this);
         }
@@ -340,7 +358,8 @@ class Database {
      * @param string $table
      * @return mixed
      */
-    public function tableDesc($table = '') {
+    public function tableDesc($table = '')
+    {
         $table = ($table) ? $table : $this->table;
         if (!isset(self::$tableDesc[$table])) {
             self::$tableDesc[$table] = self::$driver->tableDesc($table);
@@ -355,7 +374,8 @@ class Database {
      * @param string $query
      * @return resource|bool
      */
-    public function query($query) {
+    public function query($query)
+    {
         $result = self::$driver->query($query);
         return $result;
     }
@@ -365,14 +385,16 @@ class Database {
      *
      * @return string
      */
-    public function _sql() {
+    public function _sql()
+    {
         return self::$driver->sql();
     }
 
     /**
      * 重置查询条件
      */
-    private function _reset() {
+    private function _reset()
+    {
         $this->effect = '';
         $this->distinct = '';
         $this->field = '';
@@ -389,7 +411,8 @@ class Database {
      *
      * @return string
      */
-    private function getPk() {
+    private function getPk()
+    {
         if (!$this->pk) {
             $tableInfo = $this->tableDesc();
             $pk = '';

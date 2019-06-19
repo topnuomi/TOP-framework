@@ -12,7 +12,8 @@ use top\library\App;
  * [] 为可选参数
  * @author topnuomi 2018年11月19日
  */
-class Framework {
+class Framework
+{
 
     // 程序运行方式
     private static $type = 1;
@@ -24,7 +25,8 @@ class Framework {
      * 执行
      * @param string $callable
      */
-    public static function startApp($callable = '') {
+    public static function startApp($callable = '')
+    {
         header('content-type: text/html; charset=utf-8');
 
         if (is_callable($callable)) {
@@ -48,7 +50,8 @@ class Framework {
      * 是否开启DEBUG
      * @param bool $status
      */
-    public static function debug($status = false) {
+    public static function debug($status = false)
+    {
         if (!defined('DEBUG')) {
             define('DEBUG', $status);
         }
@@ -58,7 +61,8 @@ class Framework {
      * 指定框架目录
      * @param string $path
      */
-    public static function frameworkPath($path = '') {
+    public static function frameworkPath($path = '')
+    {
         if (!defined('FRAMEWORK_PATH')) {
             if (!$path) {
                 $path = __DIR__ . '/';
@@ -71,7 +75,8 @@ class Framework {
      * 应用目录
      * @param string $path
      */
-    public static function appPath($path = '') {
+    public static function appPath($path = '')
+    {
         if (!defined('APP_PATH')) {
             if (!$path) {
                 $path = './application/';
@@ -80,7 +85,8 @@ class Framework {
         }
     }
 
-    public static function appNameSpace($namespace = '') {
+    public static function appNameSpace($namespace = '')
+    {
         if (!defined('APP_NS')) {
             if (!$namespace) {
                 $namespace = 'app';
@@ -93,7 +99,8 @@ class Framework {
      * 指定Resource目录
      * @param string $path
      */
-    public static function resourcePath($path = '') {
+    public static function resourcePath($path = '')
+    {
         if (!defined('RESOURCE')) {
             if (!$path && isset($_SERVER['SCRIPT_NAME'])) {
                 $scriptName = $_SERVER['SCRIPT_NAME'];
@@ -109,7 +116,8 @@ class Framework {
      * 指定默认访问位置
      * @param string $module
      */
-    public static function defaultModule($module) {
+    public static function defaultModule($module)
+    {
         self::$defaultModule = $module;
     }
 
@@ -117,7 +125,8 @@ class Framework {
      * 指定程序运行方式
      * @param int $type
      */
-    public static function runType($type) {
+    public static function runType($type)
+    {
         self::$type = $type;
     }
 }

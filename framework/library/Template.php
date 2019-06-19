@@ -1,14 +1,15 @@
 <?php
+
 namespace top\library;
 
 use top\library\template\ifs\TemplateIfs;
 
 /**
  * 模板类
- *
  * @author topnuomi 2018年11月22日
  */
-class Template {
+class Template
+{
 
     // 操作的具体实现
     private $template;
@@ -20,24 +21,26 @@ class Template {
 
     /**
      *
-     * @param TemplateIfs $template            
+     * @param TemplateIfs $template
      */
-    private function __construct(TemplateIfs $template) {
+    private function __construct(TemplateIfs $template)
+    {
         $this->template = $template->run();
     }
 
-    private function __clone() {
+    private function __clone()
+    {
         // TODO: Implement __clone() method.
     }
 
     /**
      * 获取实例
-     *
-     * @param TemplateIfs $template            
+     * @param TemplateIfs $template
      * @return \top\library\Template
      */
-    public static function instance($template) {
-        if (! self::$instance) {
+    public static function instance($template)
+    {
+        if (!self::$instance) {
             self::$instance = new self($template);
         }
         return self::$instance;
@@ -47,7 +50,8 @@ class Template {
      * 是否开启页面静态缓存
      * @param $status
      */
-    public function cache($status) {
+    public function cache($status)
+    {
         $this->template->cache($status);
     }
 
@@ -56,7 +60,8 @@ class Template {
      * @param $name
      * @param $value
      */
-    public function param($name, $value) {
+    public function param($name, $value)
+    {
         $this->param[$name] = $value;
     }
 
@@ -67,7 +72,8 @@ class Template {
      * @param $cache
      * @return mixed
      */
-    public function fetch($file, $param, $cache) {
+    public function fetch($file, $param, $cache)
+    {
         $param = array_merge($param, $this->param);
         return $this->template->fetch($file, $param, $cache);
     }

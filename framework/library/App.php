@@ -5,13 +5,16 @@ namespace top\library;
 use top\library\route\Command;
 use top\library\route\Pathinfo;
 
-class App {
+class App
+{
 
     /**
+     * 执行
      * @param int $type
      * @param string $defaultModule
      */
-    public static function start($type = 1, $defaultModule = 'home') {
+    public static function start($type = 1, $defaultModule = 'home')
+    {
         // 注册框架自动加载
         require 'Loader.php';
         $loader = new Loader();

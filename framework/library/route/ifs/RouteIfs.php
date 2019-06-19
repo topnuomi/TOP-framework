@@ -1,12 +1,13 @@
 <?php
+
 namespace top\library\route\ifs;
 
 /**
  * 路由接口
- *
  * @author topnuomi 2018年11月19日
  */
-interface RouteIfs {
+interface RouteIfs
+{
 
     /**
      * 处理路由

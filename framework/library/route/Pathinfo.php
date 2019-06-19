@@ -6,10 +6,10 @@ use top\library\route\ifs\RouteIfs;
 
 /**
  * pathinfo模式
- *
  * @author topnuomi 2018年11月19日
  */
-class Pathinfo implements RouteIfs {
+class Pathinfo implements RouteIfs
+{
 
     // 链接数组
     private $uriArray = [];
@@ -45,7 +45,8 @@ class Pathinfo implements RouteIfs {
      * 模块名
      * @return string
      */
-    public function module() {
+    public function module()
+    {
         if (isset($this->uriArray[0]) && $this->uriArray[0]) {
             // 模块名小写
             return strtolower($this->uriArray[0]);
@@ -57,7 +58,8 @@ class Pathinfo implements RouteIfs {
      * 控制器名
      * @return string
      */
-    public function ctrl() {
+    public function ctrl()
+    {
         if (isset($this->uriArray[1]) && $this->uriArray[1]) {
             // 类名首字母大写
             return ucfirst($this->uriArray[1]);
@@ -69,7 +71,8 @@ class Pathinfo implements RouteIfs {
      * 具体执行的方法名
      * @return mixed|string
      */
-    public function action() {
+    public function action()
+    {
         if (isset($this->uriArray[2]) && $this->uriArray[2]) {
             return $this->uriArray[2];
         }
@@ -81,7 +84,8 @@ class Pathinfo implements RouteIfs {
      * @return array
      * @throws \ReflectionException
      */
-    public function param() {
+    public function param()
+    {
         unset($this->uriArray[0]);
         unset($this->uriArray[1]);
         unset($this->uriArray[2]);
@@ -112,7 +116,8 @@ class Pathinfo implements RouteIfs {
      * 处理URI
      * @return mixed|string
      */
-    private function getUri() {
+    private function getUri()
+    {
         if (isset($_SERVER['PATH_INFO'])) {
             $pathinfo = ltrim($_SERVER['PATH_INFO'], '/');
             $uri = ($pathinfo != '') ? $pathinfo : $this->default;
@@ -157,7 +162,8 @@ class Pathinfo implements RouteIfs {
      * 根据URI得到带参数的数组
      * @return array
      */
-    private function processUriArray() {
+    private function processUriArray()
+    {
         return explode('/', $this->getUri());
     }
 
@@ -165,7 +171,8 @@ class Pathinfo implements RouteIfs {
      * 返回解析出的数据 home/controller/index
      * @throws \ReflectionException
      */
-    public function processing() {
+    public function processing()
+    {
         $this->uriArray = $this->processUriArray();
         $this->module = $this->module();
         $this->ctrl = $this->ctrl();

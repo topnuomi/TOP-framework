@@ -4,10 +4,10 @@ namespace top\library\template\ifs;
 
 /**
  * 模板接口
- *
  * @author topnuomi 2018年11月22日
  */
-interface TemplateIfs {
+interface TemplateIfs
+{
 
     public function run();
 

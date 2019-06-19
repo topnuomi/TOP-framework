@@ -4,12 +4,14 @@ namespace top\library;
 
 /**
  * 基础控制器
- *
  * @author topnuomi 2018年11月23日
  */
-abstract class Controller {
+abstract class Controller
+{
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * 输出JSON数据
@@ -19,7 +21,8 @@ abstract class Controller {
      * @param array $ext
      * @return false|string
      */
-    protected function json($msg, $code = 1, $data = [], $ext = []) {
+    protected function json($msg, $code = 1, $data = [], $ext = [])
+    {
         $array = [
             'msg' => $msg,
             'code' => $code,
@@ -34,7 +37,8 @@ abstract class Controller {
      * @param bool $status
      * @return $this
      */
-    protected function cache($status = true) {
+    protected function cache($status = true)
+    {
         Register::get('View')->cache($status);
         return $this;
     }
@@ -44,7 +48,8 @@ abstract class Controller {
      * @param $name
      * @param $value
      */
-    protected function param($name, $value) {
+    protected function param($name, $value)
+    {
         Register::get('View')->param($name, $value);
     }
 
@@ -55,7 +60,8 @@ abstract class Controller {
      * @param bool $cache
      * @return mixed
      */
-    protected function fetch($file = '', $param = [], $cache = false) {
+    protected function fetch($file = '', $param = [], $cache = false)
+    {
         return Register::get('View')->fetch($file, $param, $cache);
     }
 
@@ -63,7 +69,8 @@ abstract class Controller {
      * 跳转（非ajax）
      * @param $url
      */
-    protected function redirect($url) {
+    protected function redirect($url)
+    {
         return redirect($url);
     }
 
@@ -74,7 +81,8 @@ abstract class Controller {
      * @param int $sec
      * @return false|mixed|string
      */
-    protected function tips($message, $url = '', $sec = 3) {
+    protected function tips($message, $url = '', $sec = 3)
+    {
         if (request()->isAjax()) {
             return $this->json($message, '', 'tips', ['url' => $url, 'sec' => $sec]);
         } else {

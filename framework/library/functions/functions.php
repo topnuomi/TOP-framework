@@ -3,12 +3,14 @@
 /**
  * 调用请求类
  */
-function request() {
+function request()
+{
     $request = \top\library\http\Request::instance();
     return $request;
 }
 
-function model($class) {
+function model($class)
+{
     static $model = [];
     if (!isset($model[$class])) {
         if (class_exists($class)) {
@@ -24,7 +26,8 @@ function model($class) {
  * print_r
  * @param array|string|int|object $value
  */
-function p($value) {
+function p($value)
+{
     echo '<pre>';
     print_r($value);
     echo '</pre>';
@@ -34,7 +37,8 @@ function p($value) {
  * var_dump
  * @param array|string|int|object $value
  */
-function v($value) {
+function v($value)
+{
     echo '<pre>';
     var_dump($value);
     echo '</pre>';
@@ -46,7 +50,8 @@ function v($value) {
  * @param string|int $param
  * @return string
  */
-function u($url, $param = '') {
+function u($url, $param = '')
+{
     if (!empty($param) || is_numeric($param)) {
         if (is_array($param)) {
             $param = '/' . implode('/', $param);
@@ -63,7 +68,8 @@ function u($url, $param = '') {
  * @param $classname
  * @return string
  */
-function get_table_name($classname) {
+function get_table_name($classname)
+{
     $arr = explode('\\', $classname);
     $class = end($arr);
     $arr = str_split($class);
@@ -81,7 +87,8 @@ function get_table_name($classname) {
  * 获取客户端IP
  * @return NULL|number|string
  */
-function get_client_ip() {
+function get_client_ip()
+{
     return request()->ip();
 }
 
@@ -89,7 +96,8 @@ function get_client_ip() {
  * 页面跳转
  * @param $url
  */
-function redirect($url) {
+function redirect($url)
+{
     header('location: ' . u($url));
     exit;
 }
@@ -98,7 +106,8 @@ function redirect($url) {
  * 删除目录（包括子目录）
  * @param string $dirName
  */
-function remove_dir($dirName) {
+function remove_dir($dirName)
+{
     $handle = @opendir($dirName);
     if ($handle) {
         while (false !== ($item = readdir($handle))) {
@@ -120,7 +129,8 @@ function remove_dir($dirName) {
  * @param string $str
  * @return string
  */
-function filter($str) {
+function filter($str)
+{
     $replaceArr = array(
         "/select\b|insert\b|update\b|delete\b|drop\b|;|\"|\'|\/\*|\*|\.\.\/|\.\/|union|into|load_file|outfile|dump/is"
     );
@@ -136,7 +146,8 @@ function filter($str) {
  * @return bool
  * @throws Exception
  */
-function session($name, $value = '') {
+function session($name, $value = '')
+{
     $config = \top\library\Register::get('Config')->get('session');
     if (empty($config) || !$config['prefix']) {
         $route = \top\library\Register::get('Route');
@@ -162,7 +173,8 @@ function session($name, $value = '') {
  * @param $key
  * @return mixed
  */
-function assoc_unique($arr, $key) {
+function assoc_unique($arr, $key)
+{
     $tmp_arr = [];
     foreach ($arr as $k => $v) {
         if (in_array($v[$key], $tmp_arr)) {//搜索$v[$key]是否在$tmp_arr数组中存在，若存在返回true
@@ -184,7 +196,8 @@ function assoc_unique($arr, $key) {
  * @param bool $isCut
  * @return string
  */
-function resize_image($imgSrc, $resize_width, $resize_height, $newName = '', $isCut = false) {
+function resize_image($imgSrc, $resize_width, $resize_height, $newName = '', $isCut = false)
+{
     $im = @imagecreatefromstring(file_get_contents($imgSrc));
     $exif = exif_read_data($imgSrc);
     if (!empty($exif['Orientation'])) {
@@ -245,7 +258,8 @@ function resize_image($imgSrc, $resize_width, $resize_height, $newName = '', $is
  * 判断是否是移动端
  * @return bool
  */
-function is_mobile() {
+function is_mobile()
+{
     // 如果有HTTP_X_WAP_PROFILE则一定是移动设备
     if (isset($_SERVER['HTTP_X_WAP_PROFILE'])) {
         return true;
@@ -315,7 +329,8 @@ function is_mobile() {
  * @param string|array $value
  * @return boolean
  */
-function notNull($value) {
+function notNull($value)
+{
     if (is_array($value)) {
         if (empty($value)) {
             return false;
@@ -334,7 +349,8 @@ function notNull($value) {
  * @param $value1
  * @return bool
  */
-function notEqual($value, $value1) {
+function notEqual($value, $value1)
+{
     if ($value == $value1) {
         return false;
     }
@@ -349,7 +365,8 @@ function notEqual($value, $value1) {
  * @param int $max
  * @return boolean
  */
-function isBetween($value, $min, $max) {
+function isBetween($value, $min, $max)
+{
     $length = mb_strlen($value, 'utf8');
     if ($length < $min || $length > $max) {
         return false;

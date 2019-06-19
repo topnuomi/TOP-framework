@@ -6,7 +6,8 @@ namespace top\extend;
  * 水印处理类
  * @author TOP糯米
  */
-class Water {
+class Water
+{
     /**
      * 错误信息
      * @var int|string|boolean
@@ -19,14 +20,16 @@ class Water {
      */
     private $waterPath = '';
 
-    public function __construct() {
+    public function __construct()
+    {
     }
 
     /**
      * 获取错误信息
      * @return int|string|boolean 错误信息
      */
-    public function getError() {
+    public function getError()
+    {
         return $this->error;
     }
 
@@ -34,7 +37,8 @@ class Water {
      * 指定水印文件
      * @param  string $file [description]
      */
-    public function waterFile($file = '') {
+    public function waterFile($file = '')
+    {
         $this->waterPath = $file;
     }
 
@@ -44,7 +48,8 @@ class Water {
      * @param  boolean $cover 是否覆盖原始图片
      * @return string         文件名
      */
-    private function addWater($file, $cover) {
+    private function addWater($file, $cover)
+    {
         if ($this->waterPath == '') {
             $this->error = '请先调用waterFile方法来指定水印文件';
             return false;
@@ -103,7 +108,8 @@ class Water {
      * @param  boolean $cover 是否覆盖原始图片，默认覆盖
      * @return boolean        成功|失败
      */
-    public function handler($file = '', $cover = true) {
+    public function handler($file = '', $cover = true)
+    {
         if ($file == '') {
             $this->error = '请指定要处理的图片文件';
             return false;

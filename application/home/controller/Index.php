@@ -13,7 +13,7 @@ class Index extends Common {
     public function index() {
         $model = model(Job::class);
         return [
-            'title' => '测试模型高级操作',
+            'title' => '测试',
             'lists' => $model->select(),
             'query' => $model->sql
         ];

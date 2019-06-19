@@ -8,14 +8,16 @@ use top\library\Loader;
  * 文件上传类
  * @author TOP糯米
  */
-class Upload {
+class Upload
+{
     private static $instance;
     private static $fileType;
     private static $dirName;
     private $image;
     private $error;
 
-    private function __construct() {
+    private function __construct()
+    {
     }
 
     /**
@@ -24,7 +26,8 @@ class Upload {
      * @param string $fileType
      * @return Upload
      */
-    public static function init($dirName, $fileType = '') {
+    public static function init($dirName, $fileType = '')
+    {
         if (!self::$instance) {
             self::$instance = new self();
         }
@@ -37,11 +40,13 @@ class Upload {
      * 获取错误信息
      * @return string
      */
-    public function getError() {
+    public function getError()
+    {
         return $this->error;
     }
 
-    public function uploadPicture($fileName = '', $width = 0, $height = 0, $waterFile = '') {
+    public function uploadPicture($fileName = '', $width = 0, $height = 0, $waterFile = '')
+    {
         if (!empty($_FILES)) {
             $data = [];
             $picture = Loader::model('Picture');

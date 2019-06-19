@@ -16,8 +16,8 @@ return [
         'driver' => 'MySQLi',
         'host' => '127.0.0.1',
         'user' => 'root',
-        'passwd' => 'root',
-        'dbname' => 'hongzheng',
+        'passwd' => '',
+        'dbname' => '',
         'prefix' => 'cms_',
         'charset' => 'utf8'
     ],

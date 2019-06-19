@@ -11,10 +11,10 @@ use top\library\route\ifs\RouteIfs;
 
 /**
  * 路由类
- *
  * @author topnuomi 2018年11月19日
  */
-class Router {
+class Router
+{
 
     // 路由实例
     private $route;
@@ -39,7 +39,8 @@ class Router {
      * @param $default
      * @throws RouteException
      */
-    public function __construct(RouteIfs $route, $default) {
+    public function __construct(RouteIfs $route, $default)
+    {
         $this->route = $route;
         $this->route->default = $default;
         $this->route->processing();
@@ -64,14 +65,16 @@ class Router {
      * 指定装饰器
      * @param DecoratorIfs $decorator
      */
-    private function decorator(DecoratorIfs $decorator) {
+    private function decorator(DecoratorIfs $decorator)
+    {
         $this->decorator[] = $decorator;
     }
 
     /**
      * 装饰器前置方法
      */
-    private function beforeRoute() {
+    private function beforeRoute()
+    {
         foreach ($this->decorator as $decorator) {
             $decorator->before();
         }
@@ -81,7 +84,8 @@ class Router {
      * 装饰器后置方法
      * @param $data
      */
-    private function afterRoute($data) {
+    private function afterRoute($data)
+    {
         $this->decorator = array_reverse($this->decorator);
         foreach ($this->decorator as $decorator) {
             $decorator->after($data);
@@ -92,7 +96,8 @@ class Router {
      * 执行前进行必要检查
      * @throws RouteException
      */
-    private function check() {
+    private function check()
+    {
         // 检查模块是否存在
         if (!is_dir(APP_PATH . $this->module)) {
             throw new RouteException('模块' . $this->module . '不存在');
@@ -110,7 +115,8 @@ class Router {
     /**
      * 调用方法并执行程序
      */
-    public function handler() {
+    public function handler()
+    {
         $userDecorators = Register::get('Config')->get('decorator');
         $systemDecorators = [InitDecorator::class, ReturnDecorator::class, StringDecorator::class];
 

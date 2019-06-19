@@ -1,7 +1,9 @@
 <?php
+
 namespace top\library\cache\ifs;
 
-interface CacheIfs {
+interface CacheIfs
+{
 
     public function set($name = '', $value = '');
 

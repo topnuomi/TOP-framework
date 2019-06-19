@@ -4,9 +4,11 @@ namespace top\library\exception;
 
 use Throwable;
 
-class BaseException extends \Exception {
+class BaseException extends \Exception
+{
 
-    public function __construct($message = "", $code = 0, Throwable $previous = null, $file = '', $line = '') {
+    public function __construct($message = "", $code = 0, Throwable $previous = null, $file = '', $line = '')
+    {
         if ($file)
             $this->file = $file;
         if ($line) {
@@ -15,7 +17,8 @@ class BaseException extends \Exception {
         parent::__construct($message, $code, $previous);
     }
 
-    public function syntaxHighlight($code) {
+    public function syntaxHighlight($code)
+    {
         $code = preg_replace('/"(.*?)"/U', '"<span style="color: #007F00">$1</span>"', $code);
         $code = preg_replace('/(\s)\b(.*?)((\b|\s)\()/U', '$1<span style="color: #aa0">$2</span>$3', $code);
         $code = preg_replace('/(class)(.+)\s/', '<span style="color: #aa0;">$0</span>', $code);
@@ -33,7 +36,8 @@ class BaseException extends \Exception {
      * @param $line
      * @return string
      */
-    private function readErrorFile($filename, $line) {
+    private function readErrorFile($filename, $line)
+    {
         $file = file($filename);
         $totalLine = count($file);
         $offset = 10;
@@ -52,7 +56,8 @@ class BaseException extends \Exception {
     /**
      * @param \Exception|null $exception
      */
-    public function handler($exception = null) {
+    public function handler($exception = null)
+    {
         if (DEBUG) {
             $message = htmlspecialchars($exception->getMessage());
             $file = $exception->getFile();
@@ -242,7 +247,8 @@ EOF;
         exit;
     }
 
-    public function translateMessage($message) {
+    public function translateMessage($message)
+    {
         $message = str_ireplace(
             ['Undefined variable', 'Undefined offset', 'Undefined index', 'syntax error,', 'Use of undefined constant'],
             ['未定义变量', '未定义数组下标', '未定义数组索引', '语法错误:', '使用未定义常量:'],

@@ -12,13 +12,15 @@ use top\library\cache\FileCache;
  *
  * @author topnuomi 2018年11月20日
  */
-class InitDecorator implements DecoratorIfs {
+class InitDecorator implements DecoratorIfs
+{
 
     /**
      * 注册一些可能会用到的类
      * @throws \Exception
      */
-    public function before() {
+    public function before()
+    {
         $route = Register::get('Router');
 
         $sessionConfig = Register::get('Config')->get('session');
@@ -67,7 +69,8 @@ class InitDecorator implements DecoratorIfs {
     /**
      * @param array $data
      */
-    public function after($data) {
+    public function after($data)
+    {
         // TODO Auto-generated method stub
     }
 }

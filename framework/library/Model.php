@@ -2,13 +2,12 @@
 
 namespace top\library;
 
-
 /**
  * 基础模型
- *
  * @author topnuomi 2018年11月23日
  */
-class Model {
+class Model
+{
 
     // 数据库操作实例
     private $db;
@@ -47,7 +46,8 @@ class Model {
      * Model constructor.
      * @param string $table
      */
-    public function __construct($table = '') {
+    public function __construct($table = '')
+    {
         if ($table) {
             $this->table = $table;
         } else if (!$this->table) {
@@ -62,7 +62,8 @@ class Model {
      * @param $effect
      * @return $this
      */
-    public function effect($effect) {
+    public function effect($effect)
+    {
         $this->db->effect($effect);
         return $this;
     }
@@ -72,7 +73,8 @@ class Model {
      * @param $field
      * @return $this
      */
-    public function distinct($field) {
+    public function distinct($field)
+    {
         $this->db->distinct($field);
         return $this;
     }
@@ -82,7 +84,8 @@ class Model {
      * @param $field
      * @return $this
      */
-    public function field($field) {
+    public function field($field)
+    {
         $this->db->field($field);
         return $this;
     }
@@ -91,7 +94,8 @@ class Model {
      * 查询条件
      * @return $this
      */
-    public function where() {
+    public function where()
+    {
         call_user_func_array([
             $this->db,
             'where'
@@ -103,7 +107,8 @@ class Model {
      * 排序
      * @return $this
      */
-    public function order() {
+    public function order()
+    {
         call_user_func_array([
             $this->db,
             'order'
@@ -115,7 +120,8 @@ class Model {
      * 限制
      * @return $this
      */
-    public function limit() {
+    public function limit()
+    {
         call_user_func_array([
             $this->db,
             'limit'
@@ -130,7 +136,8 @@ class Model {
      * @param $name
      * @return $this
      */
-    public function join($type, $table, $name) {
+    public function join($type, $table, $name)
+    {
         $this->db->join($type, $table, $name);
         return $this;
     }
@@ -140,7 +147,8 @@ class Model {
      * @param $on
      * @return $this
      */
-    public function on($on) {
+    public function on($on)
+    {
         $this->db->on($on);
         return $this;
     }
@@ -150,7 +158,8 @@ class Model {
      * @param array $data
      * @return bool
      */
-    public function insert($data = []) {
+    public function insert($data = [])
+    {
         $this->isInsert = true;
         $data = $this->processData($data);
         if ($data) {
@@ -167,7 +176,8 @@ class Model {
      * @param string|bool $param
      * @return number|boolean
      */
-    public function delete($param = false) {
+    public function delete($param = false)
+    {
         return $this->db->delete($param);
     }
 
@@ -177,7 +187,8 @@ class Model {
      * @param string|bool $param
      * @return bool
      */
-    public function update($data, $param = false) {
+    public function update($data, $param = false)
+    {
         $this->isInsert = false;
         $data = $this->processData($data);
         if ($data) {
@@ -195,7 +206,8 @@ class Model {
      * @param bool $notRaw
      * @return array
      */
-    public function find($param = false, $notRaw = true) {
+    public function find($param = false, $notRaw = true)
+    {
         $result = $this->db->find($param);
         if ($notRaw) {
             if (is_array($result)) {
@@ -211,7 +223,8 @@ class Model {
      * @param bool $notRaw
      * @return array
      */
-    public function select($param = false, $notRaw = true) {
+    public function select($param = false, $notRaw = true)
+    {
         $result = $this->db->select($param);
         if ($notRaw) {
             if (is_array($result)) {
@@ -226,7 +239,8 @@ class Model {
      * @param string $param
      * @return mixed
      */
-    public function count($param = '') {
+    public function count($param = '')
+    {
         return $this->db->common($param, 'count');
     }
 
@@ -235,7 +249,8 @@ class Model {
      * @param string $param
      * @return mixed
      */
-    public function avg($param = '') {
+    public function avg($param = '')
+    {
         return $this->db->common($param, 'avg');
     }
 
@@ -244,7 +259,8 @@ class Model {
      * @param string $param
      * @return mixed
      */
-    public function max($param = '') {
+    public function max($param = '')
+    {
         return $this->db->common($param, 'max');
     }
 
@@ -253,7 +269,8 @@ class Model {
      * @param string $param
      * @return mixed
      */
-    public function min($param = '') {
+    public function min($param = '')
+    {
         return $this->db->common($param, 'min');
     }
 
@@ -262,7 +279,8 @@ class Model {
      * @param string $param
      * @return mixed
      */
-    public function sum($param = '') {
+    public function sum($param = '')
+    {
         return $this->db->common($param, 'sum');
     }
 
@@ -271,7 +289,8 @@ class Model {
      * @param $query
      * @return mixed
      */
-    public function query($query) {
+    public function query($query)
+    {
         return $this->db->query($query);
     }
 
@@ -280,7 +299,8 @@ class Model {
      *
      * @return string
      */
-    public function _sql() {
+    public function _sql()
+    {
         return $this->db->_sql();
     }
 
@@ -290,7 +310,8 @@ class Model {
      * @param bool $notRaw
      * @return array|bool
      */
-    public function data($data = [], $notRaw = true) {
+    public function data($data = [], $notRaw = true)
+    {
         $mapData = $this->processMapped($data);
         if ($mapData) { // 如果正确处理字段映射并且数据验证通过
             if (!$notRaw) {
@@ -318,7 +339,8 @@ class Model {
      * @param array $data
      * @return array|bool
      */
-    private function processMapped($data = []) {
+    private function processMapped($data = [])
+    {
         $data = (empty($data)) ? $_POST : $data;
         foreach ($data as $key => $value) {
             foreach ($this->map as $k => $v) {
@@ -340,7 +362,8 @@ class Model {
      * @param $data
      * @return array|bool
      */
-    private function processData($data) {
+    private function processData($data)
+    {
         if (is_callable($data)) {
             // 如果$data是匿名函数，则处理$this->data()处理post的数据
             $modelData = $this->data();
@@ -365,7 +388,8 @@ class Model {
      * @param array $data
      * @return array
      */
-    private function inHandle($data) {
+    private function inHandle($data)
+    {
         $replace = ($this->isInsert) ? $this->insertHandle : $this->updateHandle;
         foreach ($replace as $key => $value) {
             $fieldValue = '';
@@ -405,7 +429,8 @@ class Model {
      * @param array $data
      * @return array
      */
-    private function outHandle($data) {
+    private function outHandle($data)
+    {
         foreach ($this->outHandle as $key => $value) {
             if (count($data) == count($data, 1)) {
                 if (array_key_exists($key, $data)) {
@@ -431,7 +456,8 @@ class Model {
      * @param $data
      * @return bool
      */
-    private function validate($data) {
+    private function validate($data)
+    {
         foreach ($this->validate as $key => $value) {
             if (is_array($value)) {
                 if (count($value) == count($value, 1)) {
@@ -459,7 +485,8 @@ class Model {
      * @param $data
      * @return bool
      */
-    private function validateCallUserFunction($key, $validate, $data) {
+    private function validateCallUserFunction($key, $validate, $data)
+    {
         $funcName = $validate[0];
         $tips = end($validate);
         // 将第一个值赋值为将要检查的值
@@ -484,7 +511,8 @@ class Model {
      * @param $table
      * @return mixed
      */
-    public function tableDesc($table) {
+    public function tableDesc($table)
+    {
         return $this->db->tableDesc($table);
     }
 
@@ -492,7 +520,8 @@ class Model {
      * 获取信息
      * @return string
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
@@ -501,7 +530,8 @@ class Model {
      * @param $name
      * @return array|mixed|null
      */
-    public function __get($name){
+    public function __get($name)
+    {
         $data = null;
         switch ($name) {
             case 'one':

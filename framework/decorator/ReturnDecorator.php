@@ -10,18 +10,20 @@ use top\library\Register;
  *
  * @author topnuomi 2018年11月22日
  */
-class ReturnDecorator implements DecoratorIfs {
+class ReturnDecorator implements DecoratorIfs
+{
 
-    public function before() {
+    public function before()
+    {
         // TODO Auto-generated method stub
     }
 
     /**
      * 布尔或数组则显示视图
      * @param array $data
-     * @throws \top\library\exception\BaseException
      */
-    public function after($data) {
+    public function after($data)
+    {
         // TODO Auto-generated method stub
         if (is_bool($data) && $data === true)
             $data = [];

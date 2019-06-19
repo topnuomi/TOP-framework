@@ -4,10 +4,10 @@ namespace top\library;
 
 /**
  * 基础视图类
- *
  * @author topnuomi 2018年11月22日
  */
-class View {
+class View
+{
 
     private static $instance;
 
@@ -18,10 +18,12 @@ class View {
     private $template;
 
     /**
+     * 获取实例
      * @return View
      * @throws \Exception
      */
-    public static function instance() {
+    public static function instance()
+    {
         if (!self::$instance) {
             self::$instance = new self();
         }
@@ -32,13 +34,15 @@ class View {
      * View constructor.
      * @throws \Exception
      */
-    private function __construct() {
+    private function __construct()
+    {
         $this->config = Register::get('Config')->get('view');
         $driver = Register::get($this->config['engine']);
         $this->template = Template::instance($driver);
     }
 
-    private function __clone() {
+    private function __clone()
+    {
         // TODO: Implement __clone() method.
     }
 
@@ -47,7 +51,8 @@ class View {
      * @param $name
      * @param $value
      */
-    public function param($name, $value) {
+    public function param($name, $value)
+    {
         $this->template->param($name, $value);
     }
 
@@ -55,7 +60,8 @@ class View {
      * 页面静态缓存，直接调用默认为开启
      * @param bool $status
      */
-    public function cache($status = true) {
+    public function cache($status = true)
+    {
         $this->template->cache($status);
     }
 
@@ -67,7 +73,8 @@ class View {
      * @return mixed
      * @throws \Exception
      */
-    public function fetch($file = '', $param = [], $cache = false) {
+    public function fetch($file = '', $param = [], $cache = false)
+    {
         if (!$file) {
             $route = Register::get('Router');
             $file = $route->ctrl . '/' . $route->action;

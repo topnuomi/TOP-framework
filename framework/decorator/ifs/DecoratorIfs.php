@@ -1,4 +1,5 @@
 <?php
+
 namespace top\decorator\ifs;
 
 /**
@@ -6,7 +7,8 @@ namespace top\decorator\ifs;
  *
  * @author topnuomi 2018年11月22日
  */
-interface DecoratorIfs {
+interface DecoratorIfs
+{
 
     /**
      * 前置操作
@@ -15,8 +17,7 @@ interface DecoratorIfs {
 
     /**
      * 后置操作
-     * 
-     * @param array $data            
+     * @param array $data
      */
     public function after($data);
 }

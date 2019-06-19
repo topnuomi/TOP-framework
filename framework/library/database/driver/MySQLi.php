@@ -7,10 +7,10 @@ use top\library\exception\DatabaseException;
 
 /**
  * Mysqli数据库驱动
- *
  * @author topnuomi 2018年11月20日
  */
-class MySQLi implements DatabaseIfs {
+class MySQLi implements DatabaseIfs
+{
 
     private static $instance;
 
@@ -18,14 +18,16 @@ class MySQLi implements DatabaseIfs {
 
     private $sql;
 
-    public static function instance() {
+    public static function instance()
+    {
         if (!self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    private function __construct() {
+    private function __construct()
+    {
     }
 
     /**
@@ -34,7 +36,8 @@ class MySQLi implements DatabaseIfs {
      * @return $this
      * @throws \Exception
      */
-    public function connect($config) {
+    public function connect($config)
+    {
         $link = $this->link = @mysqli_connect($config['host'], $config['user'], $config['passwd'], $config['dbname']);
         if ($link === false) {
             throw new DatabaseException(mysqli_connect_error());
@@ -44,12 +47,14 @@ class MySQLi implements DatabaseIfs {
     }
 
     /**
+     * 插入
      * @param string $table
      * @param array $data
      * @return int|string
      * @throws \Exception
      */
-    public function insert($table, $data) {
+    public function insert($table, $data)
+    {
         // TODO Auto-generated method stub
         if (count($data) == count($data, 1)) { // 一维数组
             $query = 'insert into ' . $table;
@@ -72,6 +77,7 @@ class MySQLi implements DatabaseIfs {
     }
 
     /**
+     * 更新
      * @param string $table
      * @param array $join
      * @param array|string $on
@@ -82,7 +88,8 @@ class MySQLi implements DatabaseIfs {
      * @return int
      * @throws \Exception
      */
-    public function update($table, $join, $on, $where, $order, $limit, $data) {
+    public function update($table, $join, $on, $where, $order, $limit, $data)
+    {
         // TODO Auto-generated method stub
         $join = $this->processJoin($join, $on);
         $where = $this->processWhere($where);
@@ -104,6 +111,7 @@ class MySQLi implements DatabaseIfs {
     }
 
     /**
+     * 查询一条记录
      * @param string $table
      * @param $distinct
      * @param array|string $field
@@ -114,7 +122,8 @@ class MySQLi implements DatabaseIfs {
      * @return array|null
      * @throws \Exception
      */
-    public function find($table, $distinct, $field, $join, $on, $where, $order) {
+    public function find($table, $distinct, $field, $join, $on, $where, $order)
+    {
         // TODO Auto-generated method stub
         $join = $this->processJoin($join, $on);
         $distinct = $this->processDistinct($distinct);
@@ -131,6 +140,7 @@ class MySQLi implements DatabaseIfs {
     }
 
     /**
+     * 查询所有记录
      * @param string $table
      * @param $distinct
      * @param array|string $field
@@ -142,7 +152,8 @@ class MySQLi implements DatabaseIfs {
      * @return array|null
      * @throws \Exception
      */
-    public function select($table, $distinct, $field, $join, $on, $where, $order, $limit) {
+    public function select($table, $distinct, $field, $join, $on, $where, $order, $limit)
+    {
         // TODO Auto-generated method stub
         $join = $this->processJoin($join, $on);
         $distinct = $this->processDistinct($distinct);
@@ -160,6 +171,7 @@ class MySQLi implements DatabaseIfs {
     }
 
     /**
+     * 删除
      * @param array|string $effect
      * @param string $table
      * @param array $join
@@ -170,7 +182,8 @@ class MySQLi implements DatabaseIfs {
      * @return int
      * @throws \Exception
      */
-    public function delete($effect, $table, $join, $on, $where, $order, $limit) {
+    public function delete($effect, $table, $join, $on, $where, $order, $limit)
+    {
         // TODO Auto-generated method stub
         $effect = $this->effect($effect);
         $join = $this->processJoin($join, $on);
@@ -188,7 +201,8 @@ class MySQLi implements DatabaseIfs {
      * @return array|bool|null
      * @throws \Exception
      */
-    public function tableDesc($table) {
+    public function tableDesc($table)
+    {
         $sql = 'desc ' . $table;
         if (!$result = $this->query($sql)) {
             return false;
@@ -198,6 +212,7 @@ class MySQLi implements DatabaseIfs {
     }
 
     /**
+     * 计数
      * @param $table
      * @param $field
      * @param $join
@@ -206,7 +221,8 @@ class MySQLi implements DatabaseIfs {
      * @return mixed
      * @throws \Exception
      */
-    public function count($table, $field, $join, $on, $where) {
+    public function count($table, $field, $join, $on, $where)
+    {
         $field = $this->processField($field);
         $join = $this->processJoin($join, $on);
         $where = $this->processWhere($where);
@@ -227,7 +243,8 @@ class MySQLi implements DatabaseIfs {
      * @return bool
      * @throws \Exception
      */
-    public function common($table, $distinct, $field, $join, $on, $where, $type) {
+    public function common($table, $distinct, $field, $join, $on, $where, $type)
+    {
         $distinct = $this->processDistinct($distinct);
         if ($distinct) {
             $field = $distinct;
@@ -252,7 +269,8 @@ class MySQLi implements DatabaseIfs {
      * @return bool|\mysqli_result
      * @throws \Exception
      */
-    public function query($query) {
+    public function query($query)
+    {
         $result = mysqli_query($this->link, $query);
         if (!$result)
             throw new DatabaseException(mysqli_error($this->link));
@@ -265,11 +283,13 @@ class MySQLi implements DatabaseIfs {
      *
      * @return string
      */
-    public function sql() {
+    public function sql()
+    {
         return trim($this->sql, ' ');
     }
 
-    public function effect($effect) {
+    public function effect($effect)
+    {
         if ($effect) {
             if (is_array($effect)) {
                 $effect = implode(',', $effect);
@@ -279,7 +299,8 @@ class MySQLi implements DatabaseIfs {
         return '';
     }
 
-    private function processDistinct($distinct) {
+    private function processDistinct($distinct)
+    {
         if ($distinct) {
             if (is_array($distinct)) {
                 $distinct = implode(',', $distinct);
@@ -291,11 +312,11 @@ class MySQLi implements DatabaseIfs {
 
     /**
      * 组合字段
-     *
      * @param string|array $field
      * @return string
      */
-    private function processField($field) {
+    private function processField($field)
+    {
         if (!$field) {
             $field = '*';
         } else if (is_array($field)) {
@@ -306,12 +327,12 @@ class MySQLi implements DatabaseIfs {
 
     /**
      * 组合where条件
-     *
      * @param array $array
      * @param string $glue
      * @return string
      */
-    private function processWhere(array $array, $glue = 'and') {
+    private function processWhere(array $array, $glue = 'and')
+    {
         $where = [];
         foreach ($array as $value) {
             if (empty($value)) continue;
@@ -351,11 +372,11 @@ class MySQLi implements DatabaseIfs {
 
     /**
      * 组合order
-     *
      * @param string $order
      * @return string
      */
-    private function processOrder($order = '') {
+    private function processOrder($order = '')
+    {
         if ($order) {
             $order = ' order by ' . $order;
         }
@@ -364,11 +385,11 @@ class MySQLi implements DatabaseIfs {
 
     /**
      * 组合limit
-     *
      * @param string $limit
      * @return string
      */
-    private function processLimit($limit = '') {
+    private function processLimit($limit = '')
+    {
         if ($limit) {
             if (is_array($limit)) {
                 $limit = ' limit ' . implode(',', $limit);
@@ -381,12 +402,12 @@ class MySQLi implements DatabaseIfs {
 
     /**
      * 链接多表（join on）
-     *
      * @param array $data
      * @param string|array $on
      * @return string
      */
-    private function processJoin($data, $on) {
+    private function processJoin($data, $on)
+    {
         $join = [];
         for ($i = 0; $i < count($data); $i++) {
             if (is_array($on[$i])) {
@@ -408,11 +429,11 @@ class MySQLi implements DatabaseIfs {
 
     /**
      * 检查并处理空值
-     *
-     * @param array|string $array
-     * @return array
+     * @param $value
+     * @return array|string
      */
-    private function checkNull($value) {
+    private function checkNull($value)
+    {
         if (is_array($value)) {
             foreach ($value as $k => $v) {
                 if (!is_numeric($v) && !$v) {
@@ -431,7 +452,8 @@ class MySQLi implements DatabaseIfs {
         return $value;
     }
 
-    private function writeLogs($result, $query) {
+    private function writeLogs($result, $query)
+    {
         if (DEBUG) {
             $error = '';
             if (!$result) {
@@ -448,7 +470,8 @@ EOF;
     /**
      * 关闭数据库连接
      */
-    public function close() {
+    public function close()
+    {
         if ($this->link) {
             if (mysqli_close($this->link)) {
                 return true;
@@ -460,7 +483,8 @@ EOF;
 
     /**
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->close();
     }
 }

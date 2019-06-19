@@ -4,27 +4,30 @@ namespace top\library\http;
 
 /**
  * 请求类
- *
  * @author topnuomi 2018年11月23日
  */
-class Request {
+class Request
+{
 
     private $server = [];
 
     private static $instance;
 
-    public static function instance() {
+    public static function instance()
+    {
         if (!self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    private function __construct() {
+    private function __construct()
+    {
         $this->server = (!empty($_SERVER)) ? $_SERVER : [];
     }
 
-    public function method() {
+    public function method()
+    {
         return (isset($this->server['REQUEST_METHOD']) && $this->server['REQUEST_METHOD'] != '') ? $this->server['REQUEST_METHOD'] : '';
     }
 
@@ -33,7 +36,8 @@ class Request {
      *
      * @return boolean
      */
-    public function isPost() {
+    public function isPost()
+    {
         return $this->method() == 'POST';
     }
 
@@ -42,7 +46,8 @@ class Request {
      *
      * @return boolean
      */
-    public function isGet() {
+    public function isGet()
+    {
         return $this->method() == 'GET';
     }
 
@@ -51,7 +56,8 @@ class Request {
      *
      * @return boolean
      */
-    public function isPut() {
+    public function isPut()
+    {
         return $this->method() == 'PUT';
     }
 
@@ -60,7 +66,8 @@ class Request {
      *
      * @return boolean
      */
-    public function isDelete() {
+    public function isDelete()
+    {
         return $this->method() == 'DELETE';
     }
 
@@ -69,7 +76,8 @@ class Request {
      *
      * @return boolean
      */
-    public function isHead() {
+    public function isHead()
+    {
         return $this->method() == 'HEAD';
     }
 
@@ -78,7 +86,8 @@ class Request {
      *
      * @return boolean
      */
-    public function isPatch() {
+    public function isPatch()
+    {
         return $this->method() == 'PATCH';
     }
 
@@ -87,7 +96,8 @@ class Request {
      *
      * @return boolean
      */
-    public function isOptions() {
+    public function isOptions()
+    {
         return $this->method() == 'OPTIONS';
     }
 
@@ -96,7 +106,8 @@ class Request {
      *
      * @return boolean
      */
-    public function isAjax() {
+    public function isAjax()
+    {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
     }
 
@@ -108,7 +119,8 @@ class Request {
      * @param array $header
      * @return boolean
      */
-    public function create($url, $data = [], $header = []) {
+    public function create($url, $data = [], $header = [])
+    {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         if (!empty($data)) {
@@ -129,12 +141,12 @@ class Request {
 
     /**
      * 获取客户端IP
-     *
-     * @param number $type
-     * @param string $client
-     * @return NULL|string|number
+     * @param int $type
+     * @param bool $client
+     * @return mixed
      */
-    public function ip($type = 0, $client = true) {
+    public function ip($type = 0, $client = true)
+    {
         $type = $type ? 1 : 0;
         static $ip = NULL;
         if ($ip !== NULL)
@@ -165,17 +177,20 @@ class Request {
         return $ip[$type];
     }
 
-    public function post($name) {
+    public function post($name)
+    {
         $data = (isset($_POST[$name])) ? $_POST[$name] : '';
         return $this->checkData($data);
     }
 
-    public function get($name) {
+    public function get($name)
+    {
         $data = (isset($_GET[$name])) ? $_GET[$name] : '';
         return $this->checkData($data);
     }
 
-    public function checkData($data) {
+    public function checkData($data)
+    {
         if (is_array($data)) {
             foreach ($data as $k => $v)
                 $data[$k] = filter($v);
@@ -185,6 +200,7 @@ class Request {
         return $data;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
     }
 }

@@ -2,15 +2,26 @@
 
 namespace top\library;
 
-class Loader {
+class Loader
+{
 
     private $prefixes = [];
 
-    public function register() {
+    /**
+     * 注册自动加载
+     */
+    public function register()
+    {
         spl_autoload_register([$this, 'loadClass']);
     }
 
-    public function set($name, $path) {
+    /**
+     * 添加命名空间映射
+     * @param $name
+     * @param $path
+     */
+    public function set($name, $path)
+    {
         if (isset($this->prefixes[$name])) {
             array_push($this->prefixes[$name], $path);
         } else {
@@ -18,7 +29,13 @@ class Loader {
         }
     }
 
-    private function loadClass($class) {
+    /**
+     * 尝试根据前缀和类名加载文件
+     * @param $class
+     * @return bool
+     */
+    private function loadClass($class)
+    {
         // 首次，将前缀等于当前类名
         $prefix = $class;
         // 从最后一个反斜杠开始分割前缀与类名
@@ -38,7 +55,14 @@ class Loader {
         return false;
     }
 
-    private function loadFile($prefix, $class) {
+    /**
+     * 加载文件
+     * @param $prefix
+     * @param $class
+     * @return bool
+     */
+    private function loadFile($prefix, $class)
+    {
         // echo $class . '<br>';
         $prefix = trim($prefix, '\\');
         // 如果存在此前缀

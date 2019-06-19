@@ -1,6 +1,7 @@
 <?php
 
-class Create {
+class Create
+{
 
     private $name;
 
@@ -14,7 +15,8 @@ class Create {
 
     private $projectPath;
 
-    public function __construct($start, $namespace, $name) {
+    public function __construct($start, $namespace, $name)
+    {
         $this->name = $name;
         $this->dir = __DIR__ . '/';
         $this->namespace = $namespace;
@@ -25,7 +27,8 @@ class Create {
         $this->create();
     }
 
-    public function replaceContent($content) {
+    public function replaceContent($content)
+    {
         return str_replace([
             '{namespace}',
             '{name}'
@@ -35,7 +38,8 @@ class Create {
         ], $content);
     }
 
-    public function createStartFile() {
+    public function createStartFile()
+    {
         if ($this->start && !file_exists($this->start)) {
             $content = file_get_contents($this->dir . 'tpl/index.tpl');
             $content = $this->replaceContent($content);
@@ -47,7 +51,8 @@ class Create {
         return true;
     }
 
-    public function createConfig() {
+    public function createConfig()
+    {
         $configPath = $this->projectPath . 'config/';
         $configFile = $configPath . 'config.php';
         $tagsFile = $configPath . 'tags.php';
@@ -71,7 +76,8 @@ class Create {
         return true;
     }
 
-    public function createMVC() {
+    public function createMVC()
+    {
         $dirArray = [
             'controller',
             'model',
@@ -110,7 +116,8 @@ class Create {
         }
     }
 
-    public function createFunctions() {
+    public function createFunctions()
+    {
         $file = $this->projectPath . 'functions.php';
         if (!file_exists($file)) {
             if (!file_put_contents($file, "<?php\r\n")) {
@@ -119,7 +126,8 @@ class Create {
         }
     }
 
-    public function createRoute() {
+    public function createRoute()
+    {
         $file = $this->projectPath . '../route.php';
         if (!file_exists($file)) {
             if (!file_put_contents($file, "<?php \r\nreturn [];")) {
@@ -128,7 +136,8 @@ class Create {
         }
     }
 
-    public function create() {
+    public function create()
+    {
         $this->createStartFile();
         $this->createConfig();
         $this->createMVC();

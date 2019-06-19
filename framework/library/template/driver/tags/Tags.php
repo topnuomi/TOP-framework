@@ -1,14 +1,15 @@
 <?php
+
 namespace top\library\template\driver\tags;
 
 use top\library\Register;
 
 /**
  * 模板标签处理类
- *
  * @author topnuomi 2018年11月21日
  */
-class Tags {
+class Tags
+{
 
     public static $instance;
 
@@ -58,8 +59,9 @@ class Tags {
      * @return Tags
      * @throws \Exception
      */
-    public static function instance() {
-        if (! self::$instance) {
+    public static function instance()
+    {
+        if (!self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
@@ -69,7 +71,8 @@ class Tags {
      * Tags constructor.
      * @throws \Exception
      */
-    private function __construct() {
+    private function __construct()
+    {
         $config = Register::get('Config')->get('view');
         $this->left = (isset($config['left']) && $config['left']) ? $config['left'] : '{';
         $this->right = (isset($config['right']) && $config['right']) ? $config['right'] : '}';
@@ -78,10 +81,10 @@ class Tags {
 
     /**
      * 设置模板标签
-     *
-     * @param array $array            
+     * @param array $array
      */
-    private function setTags($array) {
+    private function setTags($array)
+    {
         foreach ($array as $key => $value) {
             $tagsInfo = explode(':', $key);
             $tag = $tagsInfo[0];
@@ -92,7 +95,7 @@ class Tags {
                     $attrArr = explode(',', $tagsInfo[1]);
                     // 拼接正则表达式
                     $processingArr = [];
-                    for ($i = 0; $i < count($attrArr); $i ++) {
+                    for ($i = 0; $i < count($attrArr); $i++) {
                         $processingArr[$attrArr[$i]] = '\\' . ($i + 1);
                         $tag .= '\s' . $attrArr[$i] . '="(.*?)"';
                     }
@@ -113,11 +116,11 @@ class Tags {
 
     /**
      * 预处理引入视图标签（为了保证require进来的文件中的模板标签可用，必须先进行预处理）
-     *
-     * @param string $filename            
+     * @param string $filename
      * @return string
      */
-    private function processingViewTag($filename) {
+    private function processingViewTag($filename)
+    {
         $tags = [
             'view:name' => '$___view__config = \\framework\\library\\Register::get(\'Config\')->get(\'view\'); require BASEDIR . \'/\' . $___view__config[\'dir\'] . \'name\' . \'.\' . $___view__config[\'ext\'];'
         ];
@@ -125,7 +128,7 @@ class Tags {
         $content = file_get_contents($filename);
         $result = preg_replace($this->tags, $this->processing, $content);
         $tempFileName = $this->compileDir . md5($filename) . '_temp.php';
-        if (! is_dir($this->compileDir)) {
+        if (!is_dir($this->compileDir)) {
             mkdir($this->compileDir, 0777, true);
         }
         // 创建临时文件
@@ -146,7 +149,8 @@ class Tags {
      * @return string
      * @throws \Exception
      */
-    public function processing($filename) {
+    public function processing($filename)
+    {
         $content = $this->processingViewTag($filename);
         // 加载预设模板标签
         $this->setTags($this->selfTags);
@@ -158,7 +162,7 @@ class Tags {
             $this->setTags($tags);
         }
         $result = preg_replace($this->tags, $this->processing, $content);
-        if (! is_dir($this->compileDir)) {
+        if (!is_dir($this->compileDir)) {
             mkdir($this->compileDir, 0777, true);
         }
         // 最终过滤内容中?\>与<?php中间的内容

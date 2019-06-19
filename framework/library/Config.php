@@ -1,12 +1,13 @@
 <?php
+
 namespace top\library;
 
 /**
  * 配置类
- *
  * @author topnuomi 2018年11月20日
  */
-class Config {
+class Config
+{
 
     // 已加载的文件
     private static $files;
@@ -16,14 +17,17 @@ class Config {
     // 保存配置的变量
     private $config = [];
 
-    private function __construct() {
+    private function __construct()
+    {
     }
 
-    private function __clone() {
+    private function __clone()
+    {
         // TODO: Implement __clone() method.
     }
 
-    public static function instance() {
+    public static function instance()
+    {
         if (!self::$instance) {
             self::$instance = new self();
         }
@@ -33,10 +37,11 @@ class Config {
     /**
      * 添加配置
      *
-     * @param string $name            
-     * @param string $value            
+     * @param string $name
+     * @param string $value
      */
-    public function set($name, $value) {
+    public function set($name, $value)
+    {
         // 组合为数组
         $config = [
             $name => $value
@@ -52,11 +57,12 @@ class Config {
      * @return array|mixed
      * @throws \Exception
      */
-    public function get($name = '') {
+    public function get($name = '')
+    {
         // 加载文件
         $module = Register::get('Router')->module;
         $file = APP_PATH . $module . '/config/config.php';
-        if (! isset(self::$files[$file])) {
+        if (!isset(self::$files[$file])) {
             if (file_exists($file)) {
                 $config = require $file;
                 // 与原有的配置项合并
@@ -66,10 +72,10 @@ class Config {
         }
 
         if (empty($this->config)
-            || ! isset($this->config)
-            || ! $this->config
-            || ! isset($this->config[$name])
-            || ! $this->config[$name]
+            || !isset($this->config)
+            || !$this->config
+            || !isset($this->config[$name])
+            || !$this->config[$name]
         ) {
             return [];
         }
@@ -79,10 +85,10 @@ class Config {
 
     /**
      * 从配置中删除某项
-     *
-     * @param string $name            
+     * @param string $name
      */
-    public function _unset($name) {
+    public function _unset($name)
+    {
         unset($this->config[$name]);
     }
 }

@@ -8,10 +8,10 @@ use top\library\template\driver\tags\Tags;
 
 /**
  * 默认的视图驱动
- *
  * @author topnuomi 2018年11月22日
  */
-class Top implements TemplateIfs {
+class Top implements TemplateIfs
+{
 
     private static $instance;
 
@@ -23,7 +23,8 @@ class Top implements TemplateIfs {
 
     private $cacheStatus = false;
 
-    public static function instance() {
+    public static function instance()
+    {
         if (!self::$instance) {
             self::$instance = new self();
         }
@@ -34,14 +35,16 @@ class Top implements TemplateIfs {
      * @return $this
      * @throws \Exception
      */
-    public function run() {
+    public function run()
+    {
         // TODO: Implement run() method.
         $this->tags = Tags::instance();
         $this->config = Register::get('Config')->get('view');
         return $this;
     }
 
-    private function __construct() {
+    private function __construct()
+    {
     }
 
     /**
@@ -49,7 +52,8 @@ class Top implements TemplateIfs {
      * @param $file
      * @return string
      */
-    private function processing($file) {
+    private function processing($file)
+    {
         $compileFileName = $this->config['compileDir'] . md5($file) . '.php';
         if (!file_exists($compileFileName) || DEBUG === true) {
             $compileFileName = $this->tags->processing($file);
@@ -64,7 +68,8 @@ class Top implements TemplateIfs {
      * @return string
      * @throws \Exception
      */
-    public function cacheFile($file, $param) {
+    public function cacheFile($file, $param)
+    {
         if (isset($_SERVER['REQUEST_URI'])) {
             $fileIdent = md5($_SERVER['REQUEST_URI']);
         } else {
@@ -89,7 +94,8 @@ class Top implements TemplateIfs {
      * 是否开启页面静态缓存
      * @param bool $status
      */
-    public function cache($status) {
+    public function cache($status)
+    {
         $this->cacheStatus = $status;
     }
 
@@ -101,7 +107,8 @@ class Top implements TemplateIfs {
      * @return false|mixed|string
      * @throws \Exception
      */
-    public function fetch($file, $param, $cache) {
+    public function fetch($file, $param, $cache)
+    {
         // TODO Auto-generated method stub
         $filename = $this->config['dir'] . $file . '.' . $this->config['ext'];
         if (file_exists($filename)) {
