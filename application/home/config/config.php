@@ -1,7 +1,7 @@
 <?php
 return [
     'register' => [
-        'Twig' => top\library\template\Twig::class,
+        'Twig' => \top\library\template\driver\Twig::class,
         // 'Smarty' => top\library\template\Smarty::class,
         // 'Top' => top\library\template\Top::class,
     ],
