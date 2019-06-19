@@ -26,6 +26,12 @@ require '../framework/Framework.php';
 // Framework::resourcePath('/resource/');
 // 可使用常量RESOURCE取得该值
 
+// 当前入口文件默认模块，缺省值：home
+// Framework::defaultModule('home');
+
+// 路由模式，缺省值：1（pathinfo和兼容模式）
+// Framework::runType(1);
+
 Framework::appPath('../application/');
 
 // 执行程序

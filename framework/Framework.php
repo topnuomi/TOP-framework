@@ -22,6 +22,7 @@ class Framework {
 
     /**
      * 执行
+     * @param string $callable
      */
     public static function startApp($callable = '') {
         header('content-type: text/html; charset=utf-8');
