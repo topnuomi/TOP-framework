@@ -122,7 +122,7 @@ class Tags
     private function processingViewTag($filename)
     {
         $tags = [
-            'view:name' => '$__view__config = \\framework\\library\\Register::get(\'Config\')->get(\'view\'); require BASEDIR . \'/\' . $__view__config[\'dir\'] . \'name\' . \'.\' . $__view__config[\'ext\'];'
+            'view:name' => '$__view__config = \\top\\library\\Register::get(\'Config\')->get(\'view\'); require \'./\' . $__view__config[\'dir\'] . \'name\' . \'.\' . $__view__config[\'ext\'];'
         ];
         $this->setTags($tags);
         $content = file_get_contents($filename);
@@ -156,7 +156,7 @@ class Tags
         $this->setTags($this->selfTags);
         // 加载自定义模板标签
         // 文件位置固定
-        $tagsFile = BASEDIR . '/' . Register::get('Router')->module . '/config/tags.php';
+        $tagsFile = APP_PATH . Register::get('Router')->module . '/config/tags.php';
         if (file_exists($tagsFile)) {
             $tags = require $tagsFile;
             $this->setTags($tags);
@@ -168,7 +168,7 @@ class Tags
         // 最终过滤内容中?\>与<?php中间的内容
         $result = preg_replace('#\?>([\r|\n|\s]*?)<\?php#', '', $result);
         $filename = $this->compileDir . md5($filename) . '.php';
-        file_put_contents($filename, "<?php /* topnuomi */ (!defined('BASEDIR')) && exit(0); ?>" . $result);
+        file_put_contents($filename, "<?php /* topnuomi */ (!defined('APP_PATH')) && exit(0); ?>" . $result);
         return $filename;
     }
 }

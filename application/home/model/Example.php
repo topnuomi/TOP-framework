@@ -11,7 +11,7 @@ use top\library\Model;
 class Example extends Model
 {
 
-    protected $table = 'users';
+    protected $table = 'example';
     protected $pk = 'id';
     protected $map = [
         'type' => 'user_type'

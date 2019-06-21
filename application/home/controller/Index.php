@@ -2,27 +2,23 @@
 
 namespace app\home\controller;
 
-use app\home\model\Job;
+use app\home\model\Users;
 
 class Index extends Common
 {
 
     public function index()
     {
-        $model = model(Job::class);
-
+        $model = model(Users::class);
+        $lists = $model->all;
         return [
-            'title' => 'test',
-            'lists' => $model->order('id desc')->select(),
-            'query' => $model->sql
+            'lists' => $lists
         ];
     }
 
-    public function testPage()
+    public function hello()
     {
-        return $this->fetch('', [
-            'a' => '测试页面',
-        ]);
+        // return $this->fetch();
+        return true;
     }
-
 }

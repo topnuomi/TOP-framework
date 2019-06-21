@@ -1,13 +1,11 @@
 <?php
 return [
     'register' => [
-        'Twig' => \top\library\template\driver\Twig::class,
-        // 'Smarty' => top\library\template\Smarty::class,
-        // 'Top' => top\library\template\Top::class,
+        // 'Twig' => \top\library\template\driver\Twig::class,
+        // 'Smarty' => \top\library\template\driver\Smarty::class,
+        'Top' => \top\library\template\driver\Top::class,
     ],
-    'decorator' => [
-        \app\home\decorator\Log::class
-    ],
+    'decorator' => [],
     'session' => [
         'open' => true,
         'prefix' => 'home',
@@ -15,14 +13,14 @@ return [
     'db' => [
         'driver' => 'MySQLi',
         'host' => '127.0.0.1',
-        'user' => 'root',
+        'user' => '',
         'passwd' => '',
         'dbname' => '',
-        'prefix' => 't_',
+        'prefix' => '',
         'charset' => 'utf8'
     ],
     'view' => [
-        'engine' => 'Twig',
+        'engine' => 'Top',
         'ext' => 'html',
         'dir' => '../application/home/view/',
         'cacheDir' => './runtime/cache/application/home/',

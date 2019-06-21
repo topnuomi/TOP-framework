@@ -4,7 +4,7 @@ namespace app\home\model;
 
 use top\library\Model;
 
-class Job extends Model
+class Users extends Model
 {
 
 }
