@@ -22,7 +22,7 @@ class Framework
     private static $defaultModule = 'home';
 
     /**
-     * 执行
+     * 框架入口
      * @param string $callable
      */
     public static function startApp($callable = '')
@@ -37,13 +37,32 @@ class Framework
         date_default_timezone_set('PRC');
 
         self::debug();
-        self::appPath();
-        self::appNameSpace();
-        self::resourcePath();
-        self::frameworkPath();
+        // 强制在入口文件指定应用目录
+        if (defined('APP_PATH')) {
+            // self::appPath();
+            self::appNameSpace();
+            self::resourcePath();
+            self::frameworkPath();
 
-        require 'library/App.php';
-        App::start(self::$type, self::$defaultModule);
+            require 'library/App.php';
+            App::start(self::$type, self::$defaultModule);
+        } else {
+            echo '请使用Framework::appPath()指定应用目录';
+        }
+    }
+
+    /**
+     * 应用目录
+     * @param string $path
+     */
+    public static function appPath($path = '')
+    {
+        if (!defined('APP_PATH')) {
+            if (!$path) {
+                $path = './application/';
+            }
+            define('APP_PATH', $path);
+        }
     }
 
     /**
@@ -68,20 +87,6 @@ class Framework
                 $path = __DIR__ . '/';
             }
             define('FRAMEWORK_PATH', $path);
-        }
-    }
-
-    /**
-     * 应用目录
-     * @param string $path
-     */
-    public static function appPath($path = '')
-    {
-        if (!defined('APP_PATH')) {
-            if (!$path) {
-                $path = './application/';
-            }
-            define('APP_PATH', $path);
         }
     }
 
