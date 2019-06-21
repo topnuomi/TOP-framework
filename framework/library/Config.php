@@ -23,7 +23,6 @@ class Config
 
     private function __clone()
     {
-        // TODO: Implement __clone() method.
     }
 
     public static function instance()
@@ -36,7 +35,6 @@ class Config
 
     /**
      * 添加配置
-     *
      * @param string $name
      * @param string $value
      */

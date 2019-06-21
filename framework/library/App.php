@@ -9,7 +9,7 @@ class App
 {
 
     /**
-     * 执行
+     * start
      * @param int $type
      * @param string $defaultModule
      */

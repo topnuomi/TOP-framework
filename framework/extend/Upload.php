@@ -6,14 +6,13 @@ use top\library\Loader;
 
 /**
  * 文件上传类
- * @author TOP糯米
+ * @author topnuomi
  */
 class Upload
 {
     private static $instance;
     private static $fileType;
     private static $dirName;
-    private $image;
     private $error;
 
     private function __construct()

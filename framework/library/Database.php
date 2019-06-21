@@ -70,7 +70,6 @@ class Database
 
     private function __clone()
     {
-        // TODO: Implement __clone() method.
     }
 
     /**

@@ -4,7 +4,7 @@ namespace top\extend;
 
 /**
  * 水印处理类
- * @author TOP糯米
+ * @author topnuomi
  */
 class Water
 {

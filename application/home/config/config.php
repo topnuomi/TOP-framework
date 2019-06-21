@@ -6,7 +6,7 @@ return [
         // 'Top' => top\library\template\Top::class,
     ],
     'decorator' => [
-        app\home\decorator\Log::class
+        \app\home\decorator\Log::class
     ],
     'session' => [
         'open' => true,
@@ -18,7 +18,7 @@ return [
         'user' => 'root',
         'passwd' => '',
         'dbname' => '',
-        'prefix' => 'cms_',
+        'prefix' => 't_',
         'charset' => 'utf8'
     ],
     'view' => [

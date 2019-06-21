@@ -21,6 +21,7 @@ class ReturnDecorator implements DecoratorIfs
     /**
      * 布尔或数组则显示视图
      * @param array $data
+     * @throws \Exception
      */
     public function after($data)
     {

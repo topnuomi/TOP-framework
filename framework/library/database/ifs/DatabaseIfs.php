@@ -36,24 +36,28 @@ interface DatabaseIfs
 
     /**
      * 查找一条记录
-     * @param string $table
-     * @param string|array $field
-     * @param array $join
-     * @param string|array $on
-     * @param string|array $where
-     * @param string $order
+     * @param $table
+     * @param $distinct
+     * @param $field
+     * @param $join
+     * @param $on
+     * @param $where
+     * @param $order
+     * @return mixed
      */
     public function find($table, $distinct, $field, $join, $on, $where, $order);
 
     /**
      * 查找全部
-     * @param string $table
-     * @param string|array $field
-     * @param array $join
-     * @param string|array $on
-     * @param string|array $where
-     * @param string $order
-     * @param string $limit
+     * @param $table
+     * @param $distinct
+     * @param $field
+     * @param $join
+     * @param $on
+     * @param $where
+     * @param $order
+     * @param $limit
+     * @return mixed
      */
     public function select($table, $distinct, $field, $join, $on, $where, $order, $limit);
 

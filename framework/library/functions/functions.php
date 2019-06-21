@@ -9,6 +9,11 @@ function request()
     return $request;
 }
 
+/**
+ * 调用模型
+ * @param $class
+ * @return mixed
+ */
 function model($class)
 {
     static $model = [];

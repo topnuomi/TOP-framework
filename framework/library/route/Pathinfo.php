@@ -86,9 +86,7 @@ class Pathinfo implements RouteIfs
      */
     public function param()
     {
-        unset($this->uriArray[0]);
-        unset($this->uriArray[1]);
-        unset($this->uriArray[2]);
+        unset($this->uriArray[0], $this->uriArray[1], $this->uriArray[2]);
         $this->uriArray = array_merge($this->uriArray, []);
         if (!empty($this->uriArray) && class_exists($this->class)) {
             $paramName = (new \ReflectionMethod($this->class, $this->action))->getParameters();
@@ -105,8 +103,7 @@ class Pathinfo implements RouteIfs
                     }
                 }
             }
-            unset($paramName);
-            unset($paramNameArray);
+            unset($paramName, $paramNameArray);
             return $param;
         }
         return [];
@@ -152,9 +149,7 @@ class Pathinfo implements RouteIfs
             }
         }
         $this->uri = $uri;
-        // unset($uri);
-        unset($paramArray);
-        unset($name);
+        unset($paramArray, $name);
         return $uri;
     }
 
@@ -168,7 +163,7 @@ class Pathinfo implements RouteIfs
     }
 
     /**
-     * 返回解析出的数据 home/controller/index
+     * 赋值解析出的数据
      * @throws \ReflectionException
      */
     public function processing()

@@ -43,7 +43,6 @@ class View
 
     private function __clone()
     {
-        // TODO: Implement __clone() method.
     }
 
     /**

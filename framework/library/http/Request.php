@@ -26,6 +26,10 @@ class Request
         $this->server = (!empty($_SERVER)) ? $_SERVER : [];
     }
 
+    private function __clone()
+    {
+    }
+
     public function method()
     {
         return (isset($this->server['REQUEST_METHOD']) && $this->server['REQUEST_METHOD'] != '') ? $this->server['REQUEST_METHOD'] : '';

@@ -21,6 +21,7 @@ class Top implements TemplateIfs
     // 视图配置
     private $config;
 
+    // 缓存状态
     private $cacheStatus = false;
 
     public static function instance()

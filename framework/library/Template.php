@@ -20,7 +20,6 @@ class Template
     private $param = [];
 
     /**
-     *
      * @param TemplateIfs $template
      */
     private function __construct(TemplateIfs $template)
@@ -30,7 +29,6 @@ class Template
 
     private function __clone()
     {
-        // TODO: Implement __clone() method.
     }
 
     /**

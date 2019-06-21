@@ -30,6 +30,10 @@ class MySQLi implements DatabaseIfs
     {
     }
 
+    private function __clone()
+    {
+    }
+
     /**
      * 连接数据库
      * @param array $config
@@ -43,6 +47,7 @@ class MySQLi implements DatabaseIfs
             throw new DatabaseException(mysqli_connect_error());
         }
         mysqli_query($link, 'set names ' . $config['charset']);
+
         return $this;
     }
 
@@ -67,7 +72,6 @@ class MySQLi implements DatabaseIfs
             foreach ($data as $key => $value) {
                 $query = 'insert into ' . $table;
                 $allField = ' (' . implode(',', array_keys($value)) . ')';
-                $allValue = array_values($value);
                 $allValue = '(' . implode(',', $this->checkNull($value)) . ')';
                 $this->sql = $query .= $allField . ' values ' . $allValue . ';';
                 $this->query($query);
@@ -272,8 +276,9 @@ class MySQLi implements DatabaseIfs
     public function query($query)
     {
         $result = mysqli_query($this->link, $query);
-        if (!$result)
+        if (!$result) {
             throw new DatabaseException(mysqli_error($this->link));
+        }
         // $this->writeLogs($result, $query);
         return $result;
     }
@@ -463,7 +468,7 @@ class MySQLi implements DatabaseIfs
             $content = <<<EOF
 [{$nowTime}] SQL: {$query} {$error}\n
 EOF;
-            file_put_contents(BASEDIR . '/framework/logs/db_logs.txt', $content, FILE_APPEND);
+            file_put_contents(FRAMEWORK_PATH . '/db_logs.txt', $content, FILE_APPEND);
         }
     }
 
@@ -481,8 +486,6 @@ EOF;
         return true;
     }
 
-    /**
-     */
     public function __destruct()
     {
         $this->close();

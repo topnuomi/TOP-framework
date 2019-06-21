@@ -20,7 +20,6 @@ class Twig implements TemplateIfs
 
     private function __clone()
     {
-        // TODO: Implement __clone() method.
     }
 
     public static function instance()
@@ -33,14 +32,12 @@ class Twig implements TemplateIfs
 
     public function run()
     {
-        // TODO: Implement run() method.
         $this->config = Register::get('Config')->get('view');
         return $this;
     }
 
     public function cache($status)
     {
-        // TODO: Implement cache() method.
         return true;
     }
 

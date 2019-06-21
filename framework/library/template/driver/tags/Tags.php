@@ -122,7 +122,7 @@ class Tags
     private function processingViewTag($filename)
     {
         $tags = [
-            'view:name' => '$___view__config = \\framework\\library\\Register::get(\'Config\')->get(\'view\'); require BASEDIR . \'/\' . $___view__config[\'dir\'] . \'name\' . \'.\' . $___view__config[\'ext\'];'
+            'view:name' => '$__view__config = \\framework\\library\\Register::get(\'Config\')->get(\'view\'); require BASEDIR . \'/\' . $__view__config[\'dir\'] . \'name\' . \'.\' . $__view__config[\'ext\'];'
         ];
         $this->setTags($tags);
         $content = file_get_contents($filename);
@@ -168,7 +168,7 @@ class Tags
         // 最终过滤内容中?\>与<?php中间的内容
         $result = preg_replace('#\?>([\r|\n|\s]*?)<\?php#', '', $result);
         $filename = $this->compileDir . md5($filename) . '.php';
-        file_put_contents($filename, "<?php /* TOP糯米 */ (!defined('BASEDIR')) && exit(0); ?>" . $result);
+        file_put_contents($filename, "<?php /* topnuomi */ (!defined('BASEDIR')) && exit(0); ?>" . $result);
         return $filename;
     }
 }

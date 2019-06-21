@@ -27,8 +27,9 @@ class File implements CacheIfs
 
     /**
      * 设置缓存
-     * {@inheritdoc}
-     * @see \top\library\cache\CacheIfs::set()
+     * @param string $name
+     * @param string $value
+     * @return bool
      */
     public function set($name = '', $value = '')
     {
@@ -47,22 +48,18 @@ class File implements CacheIfs
 
     /**
      * 获取缓存
-     * {@inheritdoc}
-     * @see \top\library\cache\CacheIfs::get()
+     * @param string $name
      */
     public function get($name = '')
     {
-        // TODO Auto-generated method stub
     }
 
     /**
      * 删除缓存
-     * {@inheritdoc}
-     * @see \top\library\cache\CacheIfs::_unset()
+     * @param string $name
      */
     public function _unset($name = '')
     {
-        // TODO Auto-generated method stub
     }
 
     /**

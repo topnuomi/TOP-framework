@@ -6,10 +6,10 @@ use top\library\Model;
 
 /**
  * 模型示例
- * Class Example
  * @package app\home\model
  */
-class Example extends Model {
+class Example extends Model
+{
 
     protected $table = 'users';
     protected $pk = 'id';
@@ -44,11 +44,11 @@ class Example extends Model {
 
     /**
      * 将字符串时间格式化为unix时间戳
-     *
      * @param $param
      * @return false|int
      */
-    public function getIntTime($param) {
+    public function getIntTime($param)
+    {
         return strtotime($param);
     }
 
