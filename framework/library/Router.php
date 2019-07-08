@@ -17,14 +17,34 @@ class Router
      */
     private $driver;
 
+    /**
+     * 模块
+     * @var string
+     */
     public $module = '';
 
+    /**
+     * 完整控制器类名
+     * @var string
+     */
     public $class = '';
 
+    /**
+     * 控制器
+     * @var string
+     */
     public $ctrl = '';
 
-    public $action = '';
+    /**
+     * 方法名称
+     * @var string
+     */
+    public $method = '';
 
+    /**
+     * 请求参数
+     * @var array
+     */
     public $params = [];
 
     /**
@@ -55,7 +75,7 @@ class Router
             throw new RouteException('控制器' . $this->class . '不存在');
         }
         // 检查方法在控制器中是否存在
-        if (!in_array($this->action, get_class_methods($this->class))) {
+        if (!in_array($this->method, get_class_methods($this->class))) {
             throw new RouteException('方法' . $this->action . '在控制器' . $this->ctrl . '中不存在');
         }
     }
@@ -70,7 +90,7 @@ class Router
         $this->module = $this->driver->module;
         $this->class = $this->driver->class;
         $this->ctrl = $this->driver->ctrl;
-        $this->action = $this->driver->action;
+        $this->method = $this->driver->method;
         $this->params = $this->driver->params;
 
         $this->check();

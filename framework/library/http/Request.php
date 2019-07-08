@@ -5,8 +5,8 @@ namespace top\library\http;
 use top\decorator\ifs\DecoratorIfs;
 use top\decorator\InitDecorator;
 use top\library\Register;
-use top\library\route\Command;
-use top\library\route\Pathinfo;
+use top\library\route\driver\Command;
+use top\library\route\driver\Pathinfo;
 use top\library\Router;
 
 /**
@@ -221,7 +221,7 @@ class Request
      */
     public function method()
     {
-        return $this->router->action;
+        return $this->router->method;
     }
 
     /**
@@ -322,7 +322,7 @@ class Request
         $this->beforeRoute();
 
         $ctrl = $this->router->class;
-        $action = $this->router->action;
+        $method = $this->router->method;
         $params = $this->router->params;
 
         $object = new $ctrl();
@@ -331,7 +331,7 @@ class Request
             $data = $object->_init();
         }
         if (!isset($data)) {
-            $reflectionMethod = new \ReflectionMethod($ctrl, $action);
+            $reflectionMethod = new \ReflectionMethod($ctrl, $method);
             $data = $reflectionMethod->invokeArgs($object, $params);
         }
 

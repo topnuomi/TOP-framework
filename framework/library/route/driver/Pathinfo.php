@@ -1,6 +1,6 @@
 <?php
 
-namespace top\library\route;
+namespace top\library\route\driver;
 
 use top\library\route\ifs\RouteIfs;
 
@@ -11,34 +11,64 @@ use top\library\route\ifs\RouteIfs;
 class Pathinfo implements RouteIfs
 {
 
-    // 链接数组
+    /**
+     * 链接数组
+     * @var array
+     */
     private $uriArray = [];
 
-    // 原始链接
+    /**
+     * 原始链接
+     * @var string
+     */
     public $rawUri = '';
 
-    // 链接
+    /**
+     * 链接
+     * @var string
+     */
     public $uri = '';
 
-    // 默认访问位置
+    /**
+     * 默认访问位置
+     * @var string
+     */
     public $default = '';
 
-    // 分隔符
+    /**
+     * 分隔符
+     * @var string
+     */
     public $separator = '/';
 
-    // 模块
+    /**
+     * 模块
+     * @var string
+     */
     public $module = '';
 
-    // 控制器
+    /**
+     * 控制器
+     * @var string
+     */
     public $ctrl = '';
 
-    // 动作
-    public $action = '';
+    /**
+     * 方法
+     * @var string
+     */
+    public $method = '';
 
-    // 参数
+    /**
+     * 参数
+     * @var array
+     */
     public $params = [];
 
-    // 类名
+    /**
+     * 类名
+     * @var string
+     */
     public $class = '';
 
     /**
@@ -71,7 +101,7 @@ class Pathinfo implements RouteIfs
      * 具体执行的方法名
      * @return mixed|string
      */
-    public function action()
+    public function method()
     {
         if (isset($this->uriArray[2]) && $this->uriArray[2]) {
             return $this->uriArray[2];
@@ -172,7 +202,7 @@ class Pathinfo implements RouteIfs
         $this->module = $this->module();
         $this->ctrl = $this->ctrl();
         $this->class = '\\' . APP_NS . '\\' . $this->module . '\\controller\\' . $this->ctrl;
-        $this->action = $this->action();
+        $this->method = $this->method();
         $this->params = $this->params();
         unset($this->uriArray);
     }

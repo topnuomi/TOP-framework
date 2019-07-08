@@ -1,6 +1,6 @@
 <?php
 
-namespace top\library\route;
+namespace top\library\route\driver;
 
 use top\library\route\ifs\RouteIfs;
 
@@ -16,8 +16,8 @@ class Command implements RouteIfs
     // 控制器
     public $ctrl = '';
 
-    // 动作
-    public $action = '';
+    // 方法
+    public $method = '';
 
     // 参数
     public $param = [];
@@ -31,7 +31,7 @@ class Command implements RouteIfs
         $this->module = $this->module();
         $this->ctrl = $this->ctrl();
         $this->class = '\\' . APP_NS . '\\' . $this->module . '\\controller\\' . $this->ctrl;
-        $this->action = $this->action();
+        $this->method = $this->method();
         $this->param = $this->param();
     }
 
@@ -56,7 +56,7 @@ class Command implements RouteIfs
     /**
      *
      */
-    public function action()
+    public function method()
     {
         // TODO Auto-generated method stub
         return 'index';
@@ -65,7 +65,7 @@ class Command implements RouteIfs
     /**
      *
      */
-    public function param()
+    public function params()
     {
         // TODO Auto-generated method stub
         return [];

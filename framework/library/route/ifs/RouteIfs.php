@@ -25,9 +25,9 @@ interface RouteIfs
     public function ctrl();
 
     /**
-     * 动作
+     * 方法
      */
-    public function action();
+    public function method();
 
     /**
      * 解析参数
