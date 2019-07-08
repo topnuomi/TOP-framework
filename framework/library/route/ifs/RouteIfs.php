@@ -32,5 +32,5 @@ interface RouteIfs
     /**
      * 解析参数
      */
-    public function param();
+    public function params();
 }

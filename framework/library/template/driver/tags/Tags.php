@@ -156,7 +156,7 @@ class Tags
         $this->setTags($this->selfTags);
         // 加载自定义模板标签
         // 文件位置固定
-        $tagsFile = APP_PATH . Register::get('Router')->module . '/config/tags.php';
+        $tagsFile = APP_PATH . request()->module() . '/config/tags.php';
         if (file_exists($tagsFile)) {
             $tags = require $tagsFile;
             $this->setTags($tags);

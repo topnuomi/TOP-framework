@@ -2,10 +2,6 @@
 
 namespace top\library;
 
-use top\decorator\ifs\DecoratorIfs;
-use top\decorator\InitDecorator;
-use top\decorator\ReturnDecorator;
-use top\decorator\StringDecorator;
 use top\library\exception\RouteException;
 use top\library\route\ifs\RouteIfs;
 
@@ -15,12 +11,11 @@ use top\library\route\ifs\RouteIfs;
  */
 class Router
 {
-
-    // 路由实例
-    private $route;
-
-    // 装饰器
-    private $decorator = [];
+    /**
+     * 路由实现
+     * @var RouteIfs
+     */
+    private $driver;
 
     public $module = '';
 
@@ -30,66 +25,19 @@ class Router
 
     public $action = '';
 
-    public $param = [];
+    public $params = [];
 
     /**
      * 实例化时注入具体路由实现和默认位置
-     * Route constructor.
-     * @param RouteIfs $route
+     * Router constructor.
+     * @param RouteIfs $driver
      * @param $default
-     * @throws RouteException
      */
-    public function __construct(RouteIfs $route, $default)
+    public function __construct(RouteIfs $driver, $default)
     {
-        $this->route = $route;
-        $this->route->default = $default;
-        $this->route->processing();
-
-        $this->module = $this->route->module;
-        $this->class = $this->route->class;
-        $this->ctrl = $this->route->ctrl;
-        $this->action = $this->route->action;
-        $this->param = $this->route->param;
-
-        $this->check();
-
-        Register::set('Router', function () {
-            return $this->route;
-        });
-        Register::set('Config', function () {
-            return Config::instance();
-        });
-    }
-
-    /**
-     * 指定装饰器
-     * @param DecoratorIfs $decorator
-     */
-    private function decorator(DecoratorIfs $decorator)
-    {
-        $this->decorator[] = $decorator;
-    }
-
-    /**
-     * 装饰器前置方法
-     */
-    private function beforeRoute()
-    {
-        foreach ($this->decorator as $decorator) {
-            $decorator->before();
-        }
-    }
-
-    /**
-     * 装饰器后置方法
-     * @param $data
-     */
-    private function afterRoute($data)
-    {
-        $this->decorator = array_reverse($this->decorator);
-        foreach ($this->decorator as $decorator) {
-            $decorator->after($data);
-        }
+        $this->driver = $driver;
+        $this->driver->default = $default;
+        $this->driver->processing();
     }
 
     /**
@@ -113,30 +61,24 @@ class Router
     }
 
     /**
-     * 调用方法并执行程序
+     * 处理结果返回
+     * @return $this
+     * @throws RouteException
      */
     public function handler()
     {
-        $userDecorators = Register::get('Config')->get('decorator');
-        $systemDecorators = [InitDecorator::class, ReturnDecorator::class, StringDecorator::class];
+        $this->module = $this->driver->module;
+        $this->class = $this->driver->class;
+        $this->ctrl = $this->driver->ctrl;
+        $this->action = $this->driver->action;
+        $this->params = $this->driver->params;
 
-        $decorators = array_merge($systemDecorators, $userDecorators);
-        foreach ($decorators as $key => $value) {
-            $this->decorator(new $value());
-        }
+        $this->check();
 
-        $this->beforeRoute();
+        Register::set('Config', function () {
+            return Config::instance();
+        });
 
-        $object = new $this->class();
-        $reflectionClass = new \ReflectionClass($this->class);
-        if ($reflectionClass->hasMethod('_init')) {
-            $data = $object->_init();
-        }
-        if (!isset($data) || $data == null) {
-            $reflectionMethod = new \ReflectionMethod($this->class, $this->action);
-            $data = $reflectionMethod->invokeArgs($object, $this->param);
-        }
-
-        $this->afterRoute($data);
+        return $this;
     }
 }

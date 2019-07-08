@@ -33,6 +33,4 @@ require '../framework/Framework.php';
 // Framework::runType(1);
 
 Framework::appPath('../application/');
-
-// 执行程序
 Framework::startApp();

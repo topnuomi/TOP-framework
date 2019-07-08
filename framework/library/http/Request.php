@@ -2,6 +2,13 @@
 
 namespace top\library\http;
 
+use top\decorator\ifs\DecoratorIfs;
+use top\decorator\InitDecorator;
+use top\library\Register;
+use top\library\route\Command;
+use top\library\route\Pathinfo;
+use top\library\Router;
+
 /**
  * 请求类
  * @author topnuomi 2018年11月23日
@@ -9,10 +16,57 @@ namespace top\library\http;
 class Request
 {
 
+    /**
+     * 当前实例
+     * @var null
+     */
+    private static $instance = null;
+
+    /**
+     * 保存$_SERVER变量
+     * @var array
+     */
     private $server = [];
 
-    private static $instance;
+    /**
+     * 装饰器
+     * @var array
+     */
+    private $decorator = [];
 
+    /**
+     * 路由实例
+     * @var null
+     */
+    private $router = null;
+
+    /**
+     * 模块名
+     * @var string
+     */
+    private $module = '';
+
+    /**
+     * 控制器完整类名
+     * @var string
+     */
+    private $class = '';
+
+    /**
+     * 控制器名
+     * @var string
+     */
+    private $ctrl = '';
+
+    /**
+     * 请求参数
+     * @var array
+     */
+    private $params = [];
+
+    /**
+     * @return null|Request
+     */
     public static function instance()
     {
         if (!self::$instance) {
@@ -30,84 +84,80 @@ class Request
     {
     }
 
-    public function method()
+    /**
+     * 当前请求方式
+     * @return mixed|string
+     */
+    private function requestMethod()
     {
         return (isset($this->server['REQUEST_METHOD']) && $this->server['REQUEST_METHOD'] != '') ? $this->server['REQUEST_METHOD'] : '';
     }
 
     /**
      * POST
-     *
      * @return boolean
      */
     public function isPost()
     {
-        return $this->method() == 'POST';
+        return $this->requestMethod() == 'POST';
     }
 
     /**
      * GET
-     *
      * @return boolean
      */
     public function isGet()
     {
-        return $this->method() == 'GET';
+        return $this->requestMethod() == 'GET';
     }
 
     /**
      * PUT
-     *
      * @return boolean
      */
     public function isPut()
     {
-        return $this->method() == 'PUT';
+        return $this->requestMethod() == 'PUT';
     }
 
     /**
      * DELETE
-     *
      * @return boolean
      */
     public function isDelete()
     {
-        return $this->method() == 'DELETE';
+        return $this->requestMethod() == 'DELETE';
     }
 
     /**
      * HEAD
-     *
      * @return boolean
      */
     public function isHead()
     {
-        return $this->method() == 'HEAD';
+        return $this->requestMethod() == 'HEAD';
     }
 
     /**
      * HEAD
-     *
      * @return boolean
      */
     public function isPatch()
     {
-        return $this->method() == 'PATCH';
+        return $this->requestMethod() == 'PATCH';
     }
 
     /**
      * HEAD
-     *
      * @return boolean
      */
     public function isOptions()
     {
-        return $this->method() == 'OPTIONS';
+        return $this->requestMethod() == 'OPTIONS';
     }
 
     /**
      * AJAX
-     *
      * @return boolean
      */
     public function isAjax()
@@ -117,7 +167,6 @@ class Request
 
     /**
      * 创建一个请求（post或get取决于data是否有值且不为空或空数组）
-     *
      * @param string $url
      * @param array $data
      * @param array $header
@@ -125,22 +174,7 @@ class Request
      */
     public function create($url, $data = [], $header = [])
     {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        if (!empty($data)) {
-            curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        }
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, $header);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        $res = curl_exec($curl);
-        curl_close($curl);
-        if ($res) {
-            return $res;
-        }
-        return false;
+        return create_http_request($url, $data, $header);
     }
 
     /**
@@ -151,56 +185,158 @@ class Request
      */
     public function ip($type = 0, $client = true)
     {
-        $type = $type ? 1 : 0;
-        static $ip = NULL;
-        if ($ip !== NULL)
-            return $ip[$type];
-        if ($client) {
-            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-                $pos = array_search('unknown', $arr);
-                if (false !== $pos)
-                    unset($arr[$pos]);
-                $ip = trim($arr[0]);
-            } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-                $ip = $_SERVER['HTTP_CLIENT_IP'];
-            } elseif (isset($_SERVER['REMOTE_ADDR'])) {
-                $ip = $_SERVER['REMOTE_ADDR'];
-            }
-        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
-            $ip = $_SERVER['REMOTE_ADDR'];
+        return get_client_ip($type, $client);
+    }
+
+    /**
+     * 模块名称
+     * @return mixed
+     */
+    public function module()
+    {
+        return $this->router->module;
+    }
+
+    /**
+     * 控制器完整类名
+     * @return mixed
+     */
+    public function classname()
+    {
+        return $this->router->class;
+    }
+
+    /**
+     * 控制器名称
+     * @return mixed
+     */
+    public function controller()
+    {
+        return $this->router->ctrl;
+    }
+
+    /**
+     * 方法名称
+     * @return mixed
+     */
+    public function method()
+    {
+        return $this->router->action;
+    }
+
+    /**
+     * 参数
+     * @return mixed
+     */
+    public function params()
+    {
+        return $this->router->params;
+    }
+
+    /**
+     * 指定装饰器
+     * @param DecoratorIfs $decorator
+     */
+    private function decorator(DecoratorIfs $decorator)
+    {
+        $this->decorator[] = $decorator;
+    }
+
+    /**
+     * 装饰器前置方法
+     */
+    private function beforeRoute()
+    {
+        foreach ($this->decorator as $decorator) {
+            $decorator->before();
         }
-        $long = sprintf("%u", ip2long($ip));
-        $ip = $long ? [
-            $ip,
-            $long
-        ] : [
-            '0.0.0.0',
-            0
-        ];
-        return $ip[$type];
     }
 
-    public function post($name)
+    /**
+     * 装饰器后置方法
+     * @param $data
+     */
+    private function afterRoute($data)
     {
-        $data = (isset($_POST[$name])) ? $_POST[$name] : '';
-        return $this->checkData($data);
+        $this->decorator = array_reverse($this->decorator);
+        foreach ($this->decorator as $decorator) {
+            $decorator->after($data);
+        }
     }
 
-    public function get($name)
+    /**
+     * 指定路由驱动
+     * @param $type
+     * @return string|Command|Pathinfo
+     */
+    private function routeDriver($type)
     {
-        $data = (isset($_GET[$name])) ? $_GET[$name] : '';
-        return $this->checkData($data);
-    }
-
-    public function checkData($data)
-    {
-        if (is_array($data)) {
-            foreach ($data as $k => $v)
-                $data[$k] = filter($v);
+        $routeDriver = '';
+        if (php_sapi_name() == 'cli') {
+            // 命令行运行程序
+            $routeDriver = new Command();
         } else {
-            $data = filter($data);
+            // 其他方式
+            switch ($type) {
+                case 1:
+                    $routeDriver = new Pathinfo();
+                    break;
+                default:
+                    // 其他
+            }
         }
+        return $routeDriver;
+    }
+
+    /**
+     * 设置路由并执行程序
+     * @param $type
+     * @param $defaultModule
+     * @return mixed
+     * @throws \top\library\exception\RouteException
+     */
+    public function execute($type, $defaultModule)
+    {
+        // 实例化路由，并执行对应方法
+        $routeDriver = $this->routeDriver($type);
+        $this->router = (new Router($routeDriver, $defaultModule))->handler();
+        $data = $this->runAction();
+        return $data;
+    }
+
+    /**
+     * 调用对应方法
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    private function runAction()
+    {
+        $userDecorators = Register::get('Config')->get('decorator');
+        $systemDecorators = [InitDecorator::class];
+
+        $decorators = array_merge($systemDecorators, $userDecorators);
+        foreach ($decorators as $key => $value) {
+            $this->decorator(new $value());
+        }
+
+        $this->beforeRoute();
+
+        $ctrl = $this->router->class;
+        $action = $this->router->action;
+        $params = $this->router->params;
+
+        $object = new $ctrl();
+        $reflectionClass = new \ReflectionClass($ctrl);
+        if ($reflectionClass->hasMethod('_init')) {
+            $data = $object->_init();
+        }
+        if (!isset($data)) {
+            $reflectionMethod = new \ReflectionMethod($ctrl, $action);
+            $data = $reflectionMethod->invokeArgs($object, $params);
+        }
+
+        $this->afterRoute($data);
+
         return $data;
     }
 

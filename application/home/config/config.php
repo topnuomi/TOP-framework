@@ -22,7 +22,7 @@ return [
     'view' => [
         'engine' => 'Top',
         'ext' => 'html',
-        'dir' => '../application/home/view/',
+        'dir' => APP_PATH . 'home/view/',
         'cacheDir' => './runtime/cache/application/home/',
         'compileDir' => './runtime/compile/application/home/',
         'left' => '{',

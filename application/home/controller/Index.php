@@ -2,23 +2,25 @@
 
 namespace app\home\controller;
 
-use app\home\model\Users;
+use top\blocks\Json;
 
 class Index extends Common
 {
+    use Json;
 
     public function index()
     {
-        $model = model(Users::class);
-        $lists = $model->all;
-        return [
-            'lists' => $lists
-        ];
+        return request()->module();
     }
 
     public function hello()
     {
+        return 'hello';
+    }
+
+    public function testPage()
+    {
         // return $this->fetch();
-        return true;
+        return [];
     }
 }

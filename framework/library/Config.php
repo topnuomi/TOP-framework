@@ -2,6 +2,8 @@
 
 namespace top\library;
 
+use top\library\http\Request;
+
 /**
  * 配置类
  * @author topnuomi 2018年11月20日
@@ -58,7 +60,7 @@ class Config
     public function get($name = '')
     {
         // 加载文件
-        $module = Register::get('Router')->module;
+        $module = Request::instance()->module();
         $file = APP_PATH . $module . '/config/config.php';
         if (!isset(self::$files[$file])) {
             if (file_exists($file)) {

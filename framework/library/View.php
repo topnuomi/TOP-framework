@@ -75,8 +75,7 @@ class View
     public function fetch($file = '', $param = [], $cache = false)
     {
         if (!$file) {
-            $route = Register::get('Router');
-            $file = $route->ctrl . '/' . $route->action;
+            $file = request()->controller() . '/' . request()->method();
         }
         return $this->template->fetch($file, $param, $cache);
     }

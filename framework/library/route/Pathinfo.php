@@ -36,7 +36,7 @@ class Pathinfo implements RouteIfs
     public $action = '';
 
     // 参数
-    public $param = [];
+    public $params = [];
 
     // 类名
     public $class = '';
@@ -84,7 +84,7 @@ class Pathinfo implements RouteIfs
      * @return array
      * @throws \ReflectionException
      */
-    public function param()
+    public function params()
     {
         unset($this->uriArray[0], $this->uriArray[1], $this->uriArray[2]);
         $this->uriArray = array_merge($this->uriArray, []);
@@ -94,17 +94,17 @@ class Pathinfo implements RouteIfs
             for ($i = 0; $i < count($paramName); $i++) {
                 $paramNameArray[$paramName[$i]->name] = '';
             }
-            $param = [];
+            $params = [];
             for ($i = 0; $i < count($this->uriArray); $i = $i + 2) {
                 if (isset($this->uriArray[$i + 1]) && $this->uriArray[$i + 1] != '') {
                     $_GET[$this->uriArray[$i]] = $this->uriArray[$i + 1];
                     if (isset($paramNameArray[$this->uriArray[$i]])) {
-                        $param[$this->uriArray[$i]] = $this->uriArray[$i + 1];
+                        $params[$this->uriArray[$i]] = $this->uriArray[$i + 1];
                     }
                 }
             }
             unset($paramName, $paramNameArray);
-            return $param;
+            return $params;
         }
         return [];
     }
@@ -173,7 +173,7 @@ class Pathinfo implements RouteIfs
         $this->ctrl = $this->ctrl();
         $this->class = '\\' . APP_NS . '\\' . $this->module . '\\controller\\' . $this->ctrl;
         $this->action = $this->action();
-        $this->param = $this->param();
+        $this->params = $this->params();
         unset($this->uriArray);
     }
 }

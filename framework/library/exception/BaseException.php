@@ -244,7 +244,6 @@ class BaseException extends \Exception
 EOF;
         header("HTTP/1.1 404 Not Found");
         echo $content;
-        exit;
     }
 
     public function translateMessage($message)

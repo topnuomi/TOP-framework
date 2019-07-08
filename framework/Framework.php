@@ -45,7 +45,7 @@ class Framework
             self::frameworkPath();
 
             require 'library/App.php';
-            App::start(self::$type, self::$defaultModule);
+            App::run(self::$type, self::$defaultModule);
         } else {
             echo '请使用Framework::appPath()指定应用目录';
         }

@@ -21,8 +21,6 @@ class InitDecorator implements DecoratorIfs
      */
     public function before()
     {
-        $route = Register::get('Router');
-
         $sessionConfig = Register::get('Config')->get('session');
         if (!empty($sessionConfig) && $sessionConfig['open'] === true) {
             session_start();
@@ -60,7 +58,7 @@ class InitDecorator implements DecoratorIfs
         require FRAMEWORK_PATH . 'library/functions/functions.php';
 
         // 加载用户函数库
-        $funcFile = APP_PATH . $route->module . '/functions.php';
+        $funcFile = APP_PATH . request()->module() . '/functions.php';
         if (file_exists($funcFile)) {
             require $funcFile;
         }
@@ -71,6 +69,5 @@ class InitDecorator implements DecoratorIfs
      */
     public function after($data)
     {
-        // TODO Auto-generated method stub
     }
 }
