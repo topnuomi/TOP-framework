@@ -119,7 +119,7 @@ class Pathinfo implements RouteIfs
         unset($this->uriArray[0], $this->uriArray[1], $this->uriArray[2]);
         $this->uriArray = array_merge($this->uriArray, []);
         if (!empty($this->uriArray) && class_exists($this->class)) {
-            $paramName = (new \ReflectionMethod($this->class, $this->action))->getParameters();
+            $paramName = (new \ReflectionMethod($this->class, $this->method))->getParameters();
             $paramNameArray = [];
             for ($i = 0; $i < count($paramName); $i++) {
                 $paramNameArray[$paramName[$i]->name] = '';
@@ -127,7 +127,7 @@ class Pathinfo implements RouteIfs
             $params = [];
             for ($i = 0; $i < count($this->uriArray); $i = $i + 2) {
                 if (isset($this->uriArray[$i + 1]) && $this->uriArray[$i + 1] != '') {
-                    $_GET[$this->uriArray[$i]] = $this->uriArray[$i + 1];
+                    // $_GET[$this->uriArray[$i]] = $this->uriArray[$i + 1];
                     if (isset($paramNameArray[$this->uriArray[$i]])) {
                         $params[$this->uriArray[$i]] = $this->uriArray[$i + 1];
                     }
@@ -150,6 +150,7 @@ class Pathinfo implements RouteIfs
             $uri = ($pathinfo != '') ? $pathinfo : $this->default;
         } else {
             $uri = isset($_GET['s']) ? ltrim($_GET['s'], '/') : $this->default;
+            unset($_GET['s']);
         }
         $uri = str_replace('.html', '', $uri);
         $this->rawUri = $uri;

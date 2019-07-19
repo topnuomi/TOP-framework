@@ -1,13 +1,13 @@
 <?php
 
-namespace top\decorator\ifs;
+namespace top\middleware\ifs;
 
 /**
  * 默认装饰器接口
  *
  * @author topnuomi 2018年11月22日
  */
-interface DecoratorIfs
+interface MiddlewareIfs
 {
 
     /**

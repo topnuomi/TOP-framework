@@ -1,18 +1,18 @@
 <?php
 
-namespace top\decorator;
+namespace top\middleware;
 
-use top\decorator\ifs\DecoratorIfs;
+use top\middleware\ifs\MiddlewareIfs;
 use top\library\Register;
 use top\library\View;
-use top\library\cache\FileCache;
+use top\library\cache\File;
 
 /**
  * 初始化
  *
  * @author topnuomi 2018年11月20日
  */
-class InitDecorator implements DecoratorIfs
+class Init implements MiddlewareIfs
 {
 
     /**
@@ -36,7 +36,7 @@ class InitDecorator implements DecoratorIfs
 
         // 视图文件缓存
         /*Register::set('ViewCache', function () {
-            return FileCache::instance();
+            return File::instance();
         });*/
 
         // 配置文件中配置的注册

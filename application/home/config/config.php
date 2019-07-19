@@ -5,7 +5,7 @@ return [
         // 'Smarty' => \top\library\template\driver\Smarty::class,
         'Top' => \top\library\template\driver\Top::class,
     ],
-    'decorator' => [],
+    'middleware' => [],
     'session' => [
         'open' => true,
         'prefix' => 'home',

@@ -2,9 +2,8 @@
 
 namespace top\library\http;
 
-use top\decorator\ifs\DecoratorIfs;
-use top\decorator\InitDecorator;
-use top\library\exception\RequestException;
+use top\middleware\ifs\MiddlewareIfs;
+use top\middleware\Init;
 use top\library\Register;
 use top\library\route\driver\Command;
 use top\library\route\driver\Pathinfo;
@@ -30,10 +29,10 @@ class Request
     private $server = [];
 
     /**
-     * 装饰器
+     * 中间件
      * @var array
      */
-    private $decorator = [];
+    private $middleware = [];
 
     /**
      * 路由实例
@@ -66,7 +65,7 @@ class Request
     private $params = [];
 
     /**
-     * post、get数据移除的值
+     * post、get数据删除的值
      * @var array
      */
     private $except = [];
@@ -241,113 +240,6 @@ class Request
     }
 
     /**
-     * 指定装饰器
-     * @param DecoratorIfs $decorator
-     */
-    private function decorator(DecoratorIfs $decorator)
-    {
-        $this->decorator[] = $decorator;
-    }
-
-    /**
-     * 装饰器前置方法
-     */
-    private function beforeRoute()
-    {
-        foreach ($this->decorator as $decorator) {
-            $decorator->before();
-        }
-    }
-
-    /**
-     * 装饰器后置方法
-     * @param $data
-     */
-    private function afterRoute($data)
-    {
-        $this->decorator = array_reverse($this->decorator);
-        foreach ($this->decorator as $decorator) {
-            $decorator->after($data);
-        }
-    }
-
-    /**
-     * 指定路由驱动
-     * @param $type
-     * @return string|Command|Pathinfo
-     */
-    private function routeDriver($type)
-    {
-        $routeDriver = '';
-        if (php_sapi_name() == 'cli') {
-            // 命令行运行程序
-            $routeDriver = new Command();
-        } else {
-            // 其他方式
-            switch ($type) {
-                case 1:
-                    $routeDriver = new Pathinfo();
-                    break;
-                default:
-                    // 其他
-            }
-        }
-        return $routeDriver;
-    }
-
-    /**
-     * 设置路由并执行程序
-     * @param $type
-     * @param $defaultModule
-     * @return mixed
-     * @throws \top\library\exception\RouteException
-     */
-    public function execute($type, $defaultModule)
-    {
-        // 实例化路由，并执行对应方法
-        $routeDriver = $this->routeDriver($type);
-        $this->router = (new Router($routeDriver, $defaultModule))->handler();
-        $data = $this->runAction();
-        return $data;
-    }
-
-    /**
-     * 调用对应方法
-     * @return mixed
-     * @throws \ReflectionException
-     */
-    private function runAction()
-    {
-        $userDecorators = Register::get('Config')->get('decorator');
-        $systemDecorators = [InitDecorator::class];
-
-        $decorators = array_merge($systemDecorators, $userDecorators);
-        foreach ($decorators as $key => $value) {
-            $this->decorator(new $value());
-        }
-
-        $this->beforeRoute();
-
-        $ctrl = $this->router->class;
-        $method = $this->router->method;
-        $params = $this->router->params;
-
-        $object = new $ctrl();
-        $reflectionClass = new \ReflectionClass($ctrl);
-        if ($reflectionClass->hasMethod('_init')) {
-            $data = $object->_init();
-        }
-        if (!isset($data)) {
-            $reflectionMethod = new \ReflectionMethod($ctrl, $method);
-            $data = $reflectionMethod->invokeArgs($object, $params);
-        }
-
-        $this->afterRoute($data);
-
-        return $data;
-    }
-
-    /**
      * 移除值
      * @param $field
      * @return $this
@@ -424,6 +316,113 @@ class Request
         } else {
             return $data;
         }
+    }
+
+    /**
+     * 设置中间件
+     * @param MiddlewareIfs $middleware
+     */
+    private function middleware(MiddlewareIfs $middleware)
+    {
+        $this->middleware[] = $middleware;
+    }
+
+    /**
+     * 中间件前置方法
+     */
+    private function beforeRoute()
+    {
+        foreach ($this->middleware as $middleware) {
+            $middleware->before();
+        }
+    }
+
+    /**
+     * 中间件后置方法
+     * @param $data
+     */
+    private function afterRoute($data)
+    {
+        $this->middleware = array_reverse($this->middleware);
+        foreach ($this->middleware as $middleware) {
+            $middleware->after($data);
+        }
+    }
+
+    /**
+     * 指定路由驱动
+     * @param $type
+     * @return string|Command|Pathinfo
+     */
+    private function routeDriver($type)
+    {
+        $routeDriver = '';
+        if (php_sapi_name() == 'cli') {
+            // 命令行运行程序
+            $routeDriver = new Command();
+        } else {
+            // 其他方式
+            switch ($type) {
+                case 1:
+                    $routeDriver = new Pathinfo();
+                    break;
+                default:
+                    // 其他
+            }
+        }
+        return $routeDriver;
+    }
+
+    /**
+     * 设置路由并执行程序
+     * @param $type
+     * @param $defaultModule
+     * @return mixed
+     * @throws \top\library\exception\RouteException
+     */
+    public function execute($type, $defaultModule)
+    {
+        // 实例化路由，并执行对应方法
+        $routeDriver = $this->routeDriver($type);
+        $this->router = (new Router($routeDriver, $defaultModule))->handler();
+        $data = $this->runAction();
+        return $data;
+    }
+
+    /**
+     * 调用对应方法
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    private function runAction()
+    {
+        $userMiddleware = Register::get('Config')->get('middleware');
+        $systemMiddleware = [Init::class];
+
+        $middleware = array_merge($systemMiddleware, $userMiddleware);
+        foreach ($middleware as $key => $value) {
+            $this->middleware(new $value());
+        }
+
+        $this->beforeRoute();
+
+        $ctrl = $this->router->class;
+        $method = $this->router->method;
+        $params = $this->router->params;
+
+        $object = new $ctrl();
+        $reflectionClass = new \ReflectionClass($ctrl);
+        if ($reflectionClass->hasMethod('_init')) {
+            $data = $object->_init();
+        }
+        if (!isset($data)) {
+            $reflectionMethod = new \ReflectionMethod($ctrl, $method);
+            $data = $reflectionMethod->invokeArgs($object, $params);
+        }
+
+        $this->afterRoute($data);
+
+        return $data;
     }
 
     public function __destruct()
