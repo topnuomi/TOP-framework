@@ -1,6 +1,24 @@
 <?php
 
 /**
+ * 过滤数组
+ * @param array $array
+ * @param array $except
+ * @param string $filter
+ * @param array $result
+ */
+function filterArray($array = [], $except = [], $filter = 'filter', &$result = [])
+{
+    foreach ($array as $key => $value) {
+        if (is_array($value)) {
+            $this->processArray($value, $result[$key]);
+        } else {
+            $result[$key] = (in_array($key, $except) || !$filter) ? $value : $filter($value);
+        }
+    }
+}
+
+/**
  * 调用请求类
  */
 function request()

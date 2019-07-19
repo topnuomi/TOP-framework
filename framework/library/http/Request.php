@@ -4,6 +4,7 @@ namespace top\library\http;
 
 use top\decorator\ifs\DecoratorIfs;
 use top\decorator\InitDecorator;
+use top\library\exception\RequestException;
 use top\library\Register;
 use top\library\route\driver\Command;
 use top\library\route\driver\Pathinfo;
@@ -63,6 +64,12 @@ class Request
      * @var array
      */
     private $params = [];
+
+    /**
+     * post、get数据移除的值
+     * @var array
+     */
+    private $except = [];
 
     /**
      * @return null|Request
@@ -338,6 +345,85 @@ class Request
         $this->afterRoute($data);
 
         return $data;
+    }
+
+    /**
+     * 移除值
+     * @param $field
+     * @return $this
+     */
+    public function except($field = null)
+    {
+        if (is_array($field)) {
+            $this->except = array_merge($field, $this->except);
+        } elseif ($field) {
+            $this->except[] = $field;
+        }
+        return $this;
+    }
+
+    /**
+     * GET数据
+     * @param null $name
+     * @param array $except
+     * @param string $filter
+     * @return null
+     */
+    public function get($name = null, $except = [], $filter = 'filter')
+    {
+        return $this->requestData('get', $name, $except, $filter);
+    }
+
+    /**
+     * POST数据
+     * @param null $name
+     * @param array $except
+     * @param string $filter
+     * @return null
+     */
+    public function post($name = null, $except = [], $filter = 'filter')
+    {
+        return $this->requestData('post', $name, $except, $filter);
+    }
+
+    /**
+     * GET POST公共方法
+     * @param $type
+     * @param $name
+     * @param $except
+     * @param $filter
+     * @return null
+     */
+    private function requestData($type, $name, $except, $filter)
+    {
+        $data = ($type == 'get') ? $_GET : $_POST;
+        $name = ($name == '*') ? null : $name;
+
+        // 过滤数组
+        if (!is_array($except)) {
+            $except = [$except];
+        }
+        filterArray($data, $except, $filter, $data);
+
+        // 移除指定的值
+        foreach ($this->except as $key => $value) {
+            if (isset($data[$value])) {
+                unset($data[$value]);
+            }
+        }
+
+        // 重置except的值
+        $this->except = [];
+
+        if ($name) {
+            if (isset($data[$name])) {
+                return $data[$name];
+            } else {
+                return null;
+            }
+        } else {
+            return $data;
+        }
     }
 
     public function __destruct()
