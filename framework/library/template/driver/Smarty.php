@@ -46,9 +46,9 @@ class Smarty implements TemplateIfs
         return true;
     }
 
-    public function fetch($file, $param, $cache)
+    public function fetch($file, $params, $cache)
     {
-        foreach ($param as $k => $v) {
+        foreach ($params as $k => $v) {
             $this->smarty->assign($k, $v);
         }
         $templateFile = $this->config['dir'] . $file . '.' . $this->config['ext'];

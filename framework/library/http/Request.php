@@ -8,6 +8,7 @@ use top\library\Register;
 use top\library\route\driver\Command;
 use top\library\route\driver\Pathinfo;
 use top\library\Router;
+use top\middleware\View;
 
 /**
  * 请求类
@@ -397,7 +398,7 @@ class Request
     private function runAction()
     {
         $userMiddleware = Register::get('Config')->get('middleware');
-        $systemMiddleware = [Init::class];
+        $systemMiddleware = [Init::class, View::class];
 
         $middleware = array_merge($systemMiddleware, $userMiddleware);
         foreach ($middleware as $key => $value) {

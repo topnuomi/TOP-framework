@@ -35,9 +35,9 @@ class Init implements MiddlewareIfs
         });
 
         // 视图文件缓存
-        /*Register::set('ViewCache', function () {
+        Register::set('FileCache', function () {
             return File::instance();
-        });*/
+        });
 
         // 配置文件中配置的注册
         $initRegister = Register::get('Config')->get('register');

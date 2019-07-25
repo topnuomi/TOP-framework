@@ -25,8 +25,8 @@ return [
         'dir' => APP_PATH . 'home/view/',
         'cacheDir' => './runtime/cache/application/home/',
         'compileDir' => './runtime/compile/application/home/',
-        'left' => '{',
-        'right' => '}',
+        'left' => '<',
+        'right' => '>',
         'cacheTime' => 5
     ],
 ];

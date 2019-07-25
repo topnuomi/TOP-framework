@@ -10,7 +10,7 @@ class Index extends Common
 
     public function index()
     {
-        return request()->module();
+        return [];
     }
 
     public function hello()

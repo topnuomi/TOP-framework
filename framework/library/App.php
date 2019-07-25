@@ -49,8 +49,5 @@ class App
         // 输出内容
         echo $responseData;
 
-        if (function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
-        }
     }
 }

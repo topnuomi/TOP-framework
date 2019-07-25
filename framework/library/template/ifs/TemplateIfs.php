@@ -16,9 +16,9 @@ interface TemplateIfs
     /**
      * 处理模板
      * @param $file
-     * @param $param
+     * @param $params
      * @param $cache
      * @return mixed
      */
-    public function fetch($file, $param, $cache);
+    public function fetch($file, $params, $cache);
 }

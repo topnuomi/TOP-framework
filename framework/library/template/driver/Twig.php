@@ -41,7 +41,7 @@ class Twig implements TemplateIfs
         return true;
     }
 
-    public function fetch($file, $param, $cache)
+    public function fetch($file, $params, $cache)
     {
         $baseViewDir = rtrim($this->config['dir'], '/') . '/';
         $loader = new FilesystemLoader($baseViewDir);
@@ -52,6 +52,6 @@ class Twig implements TemplateIfs
             'debug' => DEBUG
         ]);
         $templateFile = '@base/' . $file . '.' . $this->config['ext'];
-        return $template->render($templateFile, $param);
+        return $template->render($templateFile, $params);
     }
 }

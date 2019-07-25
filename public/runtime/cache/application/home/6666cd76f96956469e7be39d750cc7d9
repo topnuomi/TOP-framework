@@ -8,7 +8,6 @@
 父级模板
 
     BODY
-    <?php echo $num; ?>
-
+    49999985000001
 </body>
 </html>
