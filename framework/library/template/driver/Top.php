@@ -9,18 +9,38 @@ use top\library\template\ifs\TemplateIfs;
 class Top implements TemplateIfs
 {
 
+    /**
+     * @var null 当前实例
+     */
     private static $instance = null;
 
+    /**
+     * @var null 模板引擎实现
+     */
     private $engine = null;
 
+    /**
+     * @var null 模板配置
+     */
     private $config = null;
 
+    /**
+     * @var bool 缓存状态
+     */
     private $cache = false;
 
+    /**
+     * 构造方法
+     * Top constructor.
+     */
     private function __construct()
     {
     }
 
+    /**
+     * 外部获取当前类实例
+     * @return null|Top
+     */
     public static function instance()
     {
         if (!self::$instance) {
@@ -36,6 +56,11 @@ class Top implements TemplateIfs
         return $this;
     }
 
+    /**
+     * 编译文件
+     * @param $filename
+     * @return string
+     */
     private function compile($filename)
     {
         $compileFileName = $this->config['compileDir'] . md5($filename) . '.php';
@@ -51,11 +76,21 @@ class Top implements TemplateIfs
         return $compileFileName;
     }
 
+    /**
+     * @param $status
+     */
     public function cache($status)
     {
         $this->cache = $status;
     }
 
+    /**
+     * 缓存文件
+     * @param $filename
+     * @param $params
+     * @return string
+     * @throws \Exception
+     */
     private function cacheFile($filename, $params)
     {
 
@@ -78,6 +113,14 @@ class Top implements TemplateIfs
         }
     }
 
+    /**
+     * 渲染文件并返回内容
+     * @param $file
+     * @param $params
+     * @param $cache
+     * @return bool|false|mixed|string
+     * @throws \Exception
+     */
     public function fetch($file, $params, $cache)
     {
         $filename = $this->config['dir'] . $file . '.' . $this->config['ext'];
