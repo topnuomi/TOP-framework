@@ -45,6 +45,7 @@ class Top implements TemplateIfs
             }
             $content = file_get_contents($filename);
             $content = $this->engine->compile($content);
+            $content = $this->engine->returnRaw($content);
             file_put_contents($compileFileName, $content);
         }
         return $compileFileName;
