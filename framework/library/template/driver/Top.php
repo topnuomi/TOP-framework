@@ -70,6 +70,12 @@ class Top implements TemplateIfs
             }
             $content = file_get_contents($filename);
             $content = $this->engine->compile($content);
+            if (isset($this->config['tagLib']) && !empty($this->config['tagLib'])) {
+                foreach ($this->config['tagLib'] as $lib) {
+                    $object = new $lib();
+                    $content = $object->parseCustomizeTags($content);
+                }
+            }
             $content = $this->engine->returnRaw($content);
             file_put_contents($compileFileName, $content);
         }

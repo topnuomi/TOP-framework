@@ -21,6 +21,9 @@ return [
     ],
     'view' => [
         'engine' => 'Top',
+        'tagLib' => [
+            \app\home\taglib\Extend::class
+        ],
         'ext' => 'html',
         'dir' => APP_PATH . 'home/view/',
         'cacheDir' => './runtime/cache/application/home/',

@@ -3,4 +3,15 @@
 <block name="body">
     BODY
     {$num}
+    <assign name="b" value="1" />
+    <raw>
+        <volist name="b" id="vo">
+            <if condition="$a == 1">
+                {$a}
+            <else condition="$a == 2" />
+                {$b}
+            </if>
+        </volist>
+    </raw>
+    <include file="Base/a" />
 </block>

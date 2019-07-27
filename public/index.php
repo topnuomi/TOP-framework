@@ -7,7 +7,7 @@ require '../framework/Framework.php';
 // 可能你会使用到下面这些配置
 
 // 调试模式，缺省值：false
-// Framework::debug(true);
+Framework::debug(true);
 // 可使用常量DEBUG取得该值
 
 // 项目目录，缺省值：./application/

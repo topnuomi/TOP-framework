@@ -38,8 +38,14 @@ class Engine
         'if' => ['attr' => 'condition', 'close' => 1],
         'else' => ['attr' => 'condition', 'close' => 0],
         'volist' => ['attr' => 'name,id,key', 'close' => 1],
+        'assign' => ['attr' => 'name,value', 'close' => 0]
     ];
 
+    /**
+     * 构造方法
+     * Engine constructor.
+     * @throws \Exception
+     */
     public function __construct()
     {
         $this->config = Register::get('Config')->get('view');
@@ -187,27 +193,30 @@ class Engine
     private function parseTags($tmpl, $tags)
     {
         foreach ($tags as $name => $item) {
-            $pattern = '#' . $this->left . $name . ' +(.*?)';
-            $pattern .= ((!$item['close']) ? '\/' . $this->right : $this->right) . '#';
-            $tmpl = preg_replace_callback($pattern, function ($matches) use ($name, $item) {
-                $function = '_' . $name . '_start';
-                $pattern = '#(.*?)=[\'"](.*?)[\'"]#';
-                preg_match_all($pattern, $matches[1], $result);
+            $pattern = '#' . $this->left . $name . ' +(.*?)' . ($item['close'] ? $this->right : '\/' . $this->right . '#');
+            if ($item['close']) {
+                $pattern .= '([\s\S]*?)' . $this->left . '\/' . $name . $this->right . '#';
+            }
+            preg_match_all($pattern, $tmpl, $matches);
+            for ($i = 0; $i < count($matches[0]); $i++) {
+                $attrPattern = '#(.*?)=[\'"](.*?)[\'"]#';
+                preg_match_all($attrPattern, $matches[1][$i], $result);
                 $tag = [];
                 if (!empty($result)) {
                     foreach ($result[1] as $key => $value) {
                         $tag[trim($value, ' ')] = $result[2][$key];
                     }
                 }
-                return '<?php ' . $this->{$function}($tag) . ' ?>';
-            }, $tmpl);
-            // 处理闭合标签
-            if ($item['close']) {
-                $pattern = '#' . $this->left . '\/' . $name . '' . $this->right . '#';
-                $tmpl = preg_replace_callback($pattern, function ($matches) use ($name) {
-                    $function = '_' . $name . '_end';
-                    return '<?php ' . $this->{$function}() . ' ?>';
-                }, $tmpl);
+                if ($item['close']) {
+                    $tagContent = $matches[2][$i];
+                    $content = $this->{'_' . $name . '_start'}($tag, $tagContent);
+                    if ($item['close']) {
+                        $content .= $this->{'_' . $name . '_end'}($tag, $tagContent);
+                    }
+                } else {
+                    $content = $this->{'_' . $name . '_start'}($tag);
+                }
+                $tmpl = str_replace($matches[0][$i], $content, $tmpl);
             }
         }
         return preg_replace('#\?>([\r|\n|\s]*?)<\?php#', '', $tmpl);
@@ -255,9 +264,9 @@ class Engine
      * @param $tag
      * @return string
      */
-    private function _if_start($tag)
+    private function _if_start($tag, $content)
     {
-        return 'if (' . $tag['condition'] . '):';
+        return '<?php if (' . $tag['condition'] . '): ?>' . $content;
     }
 
     /**
@@ -266,7 +275,7 @@ class Engine
      */
     private function _if_end()
     {
-        return 'endif;';
+        return '<?php endif; ?>';
     }
 
     /**
@@ -277,11 +286,11 @@ class Engine
     private function _else_start($tag)
     {
         if (isset($tag['condition'])) {
-            $content = 'elseif (' . $tag['condition'] . '):';
+            $parse = '<?php elseif (' . $tag['condition'] . '): ?>';
         } else {
-            $content = 'else:';
+            $parse = '<?php else: ?>';
         }
-        return $content;
+        return $parse;
     }
 
     /**
@@ -289,17 +298,17 @@ class Engine
      * @param $tag
      * @return null|string
      */
-    private function _volist_start($tag)
+    private function _volist_start($tag, $content)
     {
         if (substr($tag['name'], 0, 1) == ':') {
             $name = substr($tag['name'], 1);
         } else {
             $name = '$' . $tag['name'];
         }
-        $str = (empty($tag['key'])) ? null : '$' . $tag['key'] . ' = 0; ';
-        $str .= 'foreach (' . $name . ' as $' . $tag['id'] . '):';
-        $str .= (empty($tag['key']) ? null : '$' . $tag['key'] . '++;');
-        return $str;
+        $parse = (empty($tag['key'])) ? null : '$' . $tag['key'] . ' = 0; ';
+        $parse .= '<?php foreach (' . $name . ' as $' . $tag['id'] . '): ?>' . $content;
+        $parse .= (empty($tag['key']) ? null : '$' . $tag['key'] . '++;');
+        return $parse;
     }
 
     /**
@@ -308,7 +317,16 @@ class Engine
      */
     private function _volist_end()
     {
-        return 'endforeach;';
+        return '<?php endforeach; ?>';
+    }
+    
+    /**
+     * assign标签
+     * @return string
+     */
+    private function _assign_start($tag)
+    {
+        return '<?php $'. $tag['name'] .' = ' . $tag['value'] . '; ?>';
     }
 
     /**
@@ -317,6 +335,7 @@ class Engine
      */
     public function compile($tmpl)
     {
+        // 处理raw标签
         $tmpl = $this->parseRaw($tmpl);
         // 处理模板继承标签
         $tmpl = $this->parseExtend($tmpl);
