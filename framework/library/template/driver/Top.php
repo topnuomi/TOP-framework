@@ -51,7 +51,7 @@ class Top implements TemplateIfs
 
     public function run()
     {
-        $this->engine = new Engine();
+        $this->engine = Engine::instance();
         $this->config = Register::get('Config')->get('view');
         return $this;
     }
@@ -68,14 +68,13 @@ class Top implements TemplateIfs
             if (!is_dir($this->config['compileDir'])) {
                 mkdir($this->config['compileDir'], 0777, true);
             }
-            $content = file_get_contents($filename);
-            $content = $this->engine->compile($content);
             if (isset($this->config['tagLib']) && !empty($this->config['tagLib'])) {
                 foreach ($this->config['tagLib'] as $lib) {
-                    $object = new $lib();
-                    $content = $object->parseCustomizeTags($content);
+                    $this->engine->loadTaglib($lib);
                 }
             }
+            $content = file_get_contents($filename);
+            $content = $this->engine->compile($content);
             $content = $this->engine->returnRaw($content);
             file_put_contents($compileFileName, $content);
         }

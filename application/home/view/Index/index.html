@@ -2,8 +2,8 @@
 
 <block name="body">
     BODY
-    {$num}
     <assign name="b" value="1" />
+    {$b}
     <raw>
         <volist name="b" id="vo">
             <if condition="$a == 1">
@@ -13,5 +13,7 @@
             </if>
         </volist>
     </raw>
+    {:date('Y-m-d H:i:s', time())}
     <include file="Base/a" />
+    <say what="你好" />
 </block>

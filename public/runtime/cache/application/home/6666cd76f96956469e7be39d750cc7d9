@@ -8,8 +8,7 @@
 父级模板
 
     BODY
-    <?php $b = 1;  echo ($b); ?>
-    
+    1    
         <volist name="b" id="vo">
             <if condition="$a == 1">
                 {$a}
@@ -18,10 +17,8 @@
             </if>
         </volist>
     
-    <?php echo (date('Y-m-d H:i:s', time())); ?>
-    a.html
+    2019-07-28 16:22:50    a.html
 b.html
-    <?php echo '你好'; ?>
-
+    你好
 </body>
 </html>

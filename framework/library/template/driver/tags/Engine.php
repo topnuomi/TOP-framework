@@ -12,6 +12,11 @@ use top\library\Register;
 class Engine
 {
     /**
+     * @var null 单一实例
+     */
+    private static $instance = null;
+
+    /**
      * @var string 左定界符
      */
     private $left = '<';
@@ -32,9 +37,20 @@ class Engine
     protected $config = null;
 
     /**
+     * @var null 扩展标签库
+     */
+    private $extend = [];
+
+    /**
+     * @var array 扩展标签库类实例
+     */
+    private $extendInstance = [];
+
+    /**
      * @var array 默认标签定义
      */
     private $defaultTags = [
+        'php' => ['attr' => null, 'close' => 1],
         'if' => ['attr' => 'condition', 'close' => 1],
         'else' => ['attr' => 'condition', 'close' => 0],
         'volist' => ['attr' => 'name,id,key', 'close' => 1],
@@ -46,7 +62,7 @@ class Engine
      * Engine constructor.
      * @throws \Exception
      */
-    public function __construct()
+    private function __construct()
     {
         $this->config = Register::get('Config')->get('view');
         if (isset($this->config['left']) && $this->config['left']) {
@@ -58,12 +74,35 @@ class Engine
     }
 
     /**
-     * 处理模板继承
+     * 获取类单一实例
+     * @return null|Engine
      */
-    private function parseExtend($tmpl)
+    public static function instance()
+    {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * 外部加载扩展标签
+     * @param $lib
+     */
+    public function loadTaglib($lib)
+    {
+        $this->extend[] = $lib;
+    }
+
+    /**
+     * 处理模板继承
+     * @param $template
+     * @return mixed
+     */
+    private function parseExtend($template)
     {
         $pattern = '#' . $this->left . 'extend +file=[\'"](.*?)[\'"] +/' . $this->right . '#';
-        preg_match($pattern, $tmpl, $matches);
+        preg_match($pattern, $template, $matches);
         if (!empty($matches)) {
             $blockPattern = '#' . $this->left . 'block +name=[\'"](.*?)[\'"]' . $this->right;
             $blockPattern .= '([\s\S]*?)' . $this->left . '\/block' . $this->right . '#';
@@ -79,7 +118,7 @@ class Engine
             // 被继承模板中的块
             preg_match_all($blockPattern, $extendFileContent, $extendResult);
             // 继承模板中的块
-            preg_match_all($blockPattern, $tmpl, $templateResult);
+            preg_match_all($blockPattern, $template, $templateResult);
             // 组合搜索的块数组
             $search = [];
             $defaultContent = [];
@@ -103,160 +142,200 @@ class Engine
                     $replaceArray[] = $defaultContent[$key];
                 }
             }
-            $tmpl = str_replace($searchArray, $replaceArray, $extendFileContent);
+            $template = str_replace($searchArray, $replaceArray, $extendFileContent);
         }
-        return $tmpl;
+        return $template;
     }
 
     /**
      * 处理include标签
-     * @return bool
+     * @param $template
+     * @return null|string|string[]
      */
-    private function parseInclude($tmpl)
+    private function parseInclude($template)
     {
         $pattern = '#' . $this->left . 'include +file=[\'"](.*?)[\'"] +/' . $this->right . '#';
-        $tmpl = preg_replace_callback($pattern, function ($result) {
+        $template = preg_replace_callback($pattern, function ($result) {
             $str = null;
             $file = $this->config['dir'] . $result[1] . '.html';
             if (file_exists($file)) {
                 $str = file_get_contents($file);
             }
             return $str;
-        }, $tmpl);
+        }, $template);
         // 处理多层include
-        if ($this->hasInclude($tmpl)) {
-            $tmpl = $this->parseInclude($tmpl);
+        if ($this->hasInclude($template)) {
+            $template = $this->parseInclude($template);
         }
-        return $tmpl;
+        return $template;
     }
 
     /**
      * 检测是否含有include
-     * @param $tmpl
+     * @param $template
      * @return bool
      */
-    private function hasInclude($tmpl)
+    private function hasInclude($template)
     {
         $pattern = '#' . $this->left . 'include +file=[\'"](.*?)[\'"] +/' . $this->right . '#';
-        preg_match($pattern, $tmpl, $matches);
+        preg_match($pattern, $template, $matches);
         return !empty($matches);
     }
 
     /**
      * 分析参数以及函数输出
+     * @param $template
+     * @return mixed
      */
-    private function parseVars($tmpl)
+    private function parseVars($template)
     {
-        preg_match_all('#{(.*?)}#', $tmpl, $matches);
+        preg_match_all('#{(.*?)}#', $template, $matches);
         $search = [];
         $replace = [];
         for ($i = 0; $i < count($matches[0]); $i++) {
             $start = substr($matches[1][$i], 0, 1);
+            $search[] = $matches[0][$i];
             if ($start == '$') {
-                $search[] = $matches[0][$i];
-                $replace[] = '<?php echo ' . $matches[1][$i] . '; ?>';
+                $replace[] = '<?php echo (' . $matches[1][$i] . '); ?>';
             } elseif ($start == ':') {
-                $search[] = $matches[0][$i];
-                $replace[] = '<?php echo ' . ltrim($matches[1][$i], ':') . '; ?>';
+                $replace[] = '<?php echo (' . ltrim($matches[1][$i], ':') . '); ?>';
+            } else {
+                $replace[] = $matches[0][$i];
             }
         }
-        $tmpl = str_replace($search, $replace, $tmpl);
-        return $tmpl;
+        $template = str_replace($search, $replace, $template);
+        return $template;
     }
 
     /**
-     * 处理用户自定义标签
-     * @param $tmpl
+     * 标签处理
+     * @param $template
      * @return null|string|string[]
      */
-    public function parseCustomizeTags($tmpl)
+    private function parseTags($template)
     {
-        return $this->parseTags($tmpl, $this->tags);
+        foreach ($this->extend as $lib) {
+            $this->extendInstance[$lib] = $object = new $lib;
+            foreach ($object->tags as $name => $tag) {
+                if (!isset($this->tags[$name]) && !isset($this->defaultTags[$name])) {
+                    $this->tags[$name] = $tag;
+                }
+            }
+        }
+        $tags = array_merge($this->defaultTags, $this->tags);
+        return $this->_parseTags($template, $tags);
     }
 
     /**
-     * 处理默认的标签
-     * @param $tmpl
-     * @return null|string|string[]
+     * 获取标签处理结果
+     * @param $name
+     * @param $tagContent
+     * @return mixed
      */
-    private function parseDefaultTags($tmpl)
+    private function getTagParseResult($name, $tagContent = [])
     {
-        return $this->parseTags($tmpl, $this->defaultTags);
+        if (method_exists($this, $name)) {
+            return $this->{$name}($tagContent);
+        } else {
+            foreach ($this->extendInstance as $item) {
+                if (method_exists($item, $name)) {
+                    return $item->{$name}($tagContent);
+                }
+            }
+            return null;
+        }
     }
 
     /**
      * 进行标签处理
-     * @param $tmpl
+     * @param $template
      * @param $tags
      * @return null|string|string[]
      */
-    private function parseTags($tmpl, $tags)
+    private function _parseTags($template, $tags)
     {
         foreach ($tags as $name => $item) {
-            $pattern = '#' . $this->left . $name . ' +(.*?)' . ($item['close'] ? $this->right : '\/' . $this->right . '#');
-            if ($item['close']) {
-                $pattern .= '([\s\S]*?)' . $this->left . '\/' . $name . $this->right . '#';
-            }
-            preg_match_all($pattern, $tmpl, $matches);
+            $pattern = '#' . $this->left . $name . '(.*?)' . ($item['close'] ? null : '\/') . $this->right . '#';
+            preg_match_all($pattern, $template, $matches);
             for ($i = 0; $i < count($matches[0]); $i++) {
-                $attrPattern = '#(.*?)=[\'"](.*?)[\'"]#';
-                preg_match_all($attrPattern, $matches[1][$i], $result);
                 $tag = [];
-                if (!empty($result)) {
-                    foreach ($result[1] as $key => $value) {
-                        $tag[trim($value, ' ')] = $result[2][$key];
+                if ($item['attr']) {
+                    $attrPattern = '#(.*?)=[\'"](.*?)[\'"]#';
+                    preg_match_all($attrPattern, $matches[1][$i], $result);
+                    if (isset($result[0]) && !empty($result[0])) {
+                        foreach ($result[1] as $key => $value) {
+                            $tag[trim($value, ' ')] = $result[2][$key];
+                        }
                     }
                 }
-                if ($item['close']) {
-                    $tagContent = $matches[2][$i];
-                    $content = $this->{'_' . $name . '_start'}($tag, $tagContent);
-                    if ($item['close']) {
-                        $content .= $this->{'_' . $name . '_end'}($tag, $tagContent);
-                    }
-                } else {
-                    $content = $this->{'_' . $name . '_start'}($tag);
-                }
-                $tmpl = str_replace($matches[0][$i], $content, $tmpl);
+                $function = ($item['close']) ? '_' . $name . '_start' : '_' . $name;
+                $template = str_replace($matches[0][$i], $this->getTagParseResult($function, $tag), $template);
+            }
+            if ($item['close']) {
+                $closePattern = '#' . $this->left . '\/' . $name . $this->right . '#';
+                $template = preg_replace_callback($closePattern, function () use ($name) {
+                    $function = '_' . $name . '_end';
+                    return $this->getTagParseResult($function);
+                }, $template);
             }
         }
-        return preg_replace('#\?>([\r|\n|\s]*?)<\?php#', '', $tmpl);
+        return preg_replace('#\?>([\r|\n|\s]*?)<\?php#', '', $template);
     }
 
     /**
      * 处理raw标签
-     * @param $tmpl
+     * @param $template
      * @return null|string|string[]
      */
-    private function parseRaw($tmpl)
+    private function parseRaw($template)
     {
         $pattern = '#' . $this->left . 'raw' . $this->right . '([\s\S]*?)';
         $pattern .= $this->left . '\/raw' . $this->right . '#';
-        $tmpl = preg_replace_callback($pattern, function ($matches) {
+        $template = preg_replace_callback($pattern, function ($matches) {
             return str_replace([
                 $this->left, $this->right,
                 '{', '}'
             ], [
                 '<raw!--', '--raw>',
-                '{raw!--', '--raw}'
+                '<-raw!--', '--raw->'
             ], $matches[1]);
-        }, $tmpl);
-        return $tmpl;
+        }, $template);
+        return $template;
     }
 
     /**
      * 还原raw
-     * @param $tmpl
-     * @return null|string|string[]
+     * @param $template
+     * @return mixed
      */
-    public function returnRaw($tmpl)
+    public function returnRaw($template)
     {
-        $pattern = '#[{|<]raw!--([\s\S]*?)--raw[>|}]#';
-        $tmpl = preg_replace_callback($pattern, function ($matches) {
-            $left = substr($matches[0], 0, 1);
-            $right = substr($matches[0], -1);
-            return $left . $matches[1] . $right;
-        }, $tmpl);
-        return $tmpl;
+        $template = str_replace([
+            '<raw!--', '--raw>',
+            '<-raw!--', '--raw->'
+        ], [
+            $this->left, $this->right,
+            '{', '}'
+        ], $template);
+        return $template;
+    }
+
+    /**
+     * php标签开始
+     * @return string
+     */
+    private function _php_start()
+    {
+        return '<?php ';
+    }
+
+    /**
+     * php标签结束
+     * @return string
+     */
+    private function _php_end()
+    {
+        return ' ?>';
     }
 
     /**
@@ -264,9 +343,9 @@ class Engine
      * @param $tag
      * @return string
      */
-    private function _if_start($tag, $content)
+    private function _if_start($tag)
     {
-        return '<?php if (' . $tag['condition'] . '): ?>' . $content;
+        return '<?php if (' . $tag['condition'] . '): ?>';
     }
 
     /**
@@ -296,18 +375,18 @@ class Engine
     /**
      * volist标签
      * @param $tag
-     * @return null|string
+     * @return string
      */
-    private function _volist_start($tag, $content)
+    private function _volist_start($tag)
     {
         if (substr($tag['name'], 0, 1) == ':') {
             $name = substr($tag['name'], 1);
         } else {
             $name = '$' . $tag['name'];
         }
-        $parse = (empty($tag['key'])) ? null : '$' . $tag['key'] . ' = 0; ';
-        $parse .= '<?php foreach (' . $name . ' as $' . $tag['id'] . '): ?>' . $content;
-        $parse .= (empty($tag['key']) ? null : '$' . $tag['key'] . '++;');
+        $key = (empty($tag['key'])) ? null : '$' . $tag['key'] . ' = 0;';
+        $parse = '<?php ' . $key . ' foreach (' . $name . ' as $' . $tag['id'] . '): ';
+        $parse .= ($key ? '$' . $tag['key'] . '++;' : null) . ' ?>';
         return $parse;
     }
 
@@ -319,33 +398,36 @@ class Engine
     {
         return '<?php endforeach; ?>';
     }
-    
+
     /**
      * assign标签
+     * @param $tag
      * @return string
      */
-    private function _assign_start($tag)
+    private function _assign($tag)
     {
-        return '<?php $'. $tag['name'] .' = ' . $tag['value'] . '; ?>';
+        return '<?php $' . $tag['name'] . ' = ' . $tag['value'] . '; ?>';
     }
 
     /**
      * 获取编译后的内容
-     * @return null|string|string[]
+     * @param $template
+     * @return bool|mixed|null|string|string[]
      */
-    public function compile($tmpl)
+    public function compile($template)
     {
         // 处理raw标签
-        $tmpl = $this->parseRaw($tmpl);
+        $template = $this->parseRaw($template);
         // 处理模板继承标签
-        $tmpl = $this->parseExtend($tmpl);
+        $template = $this->parseExtend($template);
         // 处理include标签
-        $tmpl = $this->parseInclude($tmpl);
-        // 处理定义的标签
-        $tmpl = $this->parseDefaultTags($tmpl);
+        $template = $this->parseInclude($template);
         // 处理变量以及函数
-        $tmpl = $this->parseVars($tmpl);
-        return $tmpl;
+        $template = $this->parseVars($template);
+        // 处理定义的标签
+        $template = $this->parseTags($template);
+
+        return $template;
     }
 
 }
