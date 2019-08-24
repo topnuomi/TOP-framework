@@ -4,35 +4,24 @@ namespace top\library\template\driver;
 
 use top\library\Register;
 use top\library\template\ifs\TemplateIfs;
+use top\traits\Instance;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 class Twig implements TemplateIfs
 {
 
-    private static $instance;
+    use Instance;
 
     private $config = [];
-
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     public function run()
     {
         $this->config = Register::get('Config')->get('view');
+        $module = request()->module();
+        (!$this->config['dir']) && $this->config['dir'] = APP_PATH . 'home/view/';
+        (!$this->config['cacheDir']) && $this->config['cacheDir'] = './runtime/cache/application/' . $module . '/';
+        (!$this->config['compileDir']) && $this->config['compileDir'] = './runtime/compile/application/' . $module . '/';
         return $this;
     }
 
@@ -51,7 +40,7 @@ class Twig implements TemplateIfs
             'auto_reload' => true,
             'debug' => DEBUG
         ]);
-        $templateFile = '@base/' . $file . '.' . $this->config['ext'];
+        $templateFile = '@base/' . $file . '.' . ltrim($this->config['ext'], '.');
         return $template->render($templateFile, $params);
     }
 }

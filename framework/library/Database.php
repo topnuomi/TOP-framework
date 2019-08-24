@@ -52,8 +52,6 @@ class Database
     // 关联
     private $on = [];
 
-    private $data = null;
-
     /**
      * Database constructor.
      * @param $table
@@ -66,10 +64,6 @@ class Database
         $this->table = $config['prefix'] . $table;
         $this->pk = $pk;
         $this->setDriver($driver, $this->config);
-    }
-
-    private function __clone()
-    {
     }
 
     /**
@@ -425,4 +419,9 @@ class Database
         }
         return $this->pk;
     }
+
+    private function __clone()
+    {
+    }
+
 }

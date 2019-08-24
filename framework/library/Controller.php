@@ -60,7 +60,7 @@ abstract class Controller
      * @param bool $cache
      * @return mixed
      */
-    protected function fetch($file = '', $param = [], $cache = false)
+    protected function view($file = '', $param = [], $cache = false)
     {
         return Register::get('View')->fetch($file, $param, $cache);
     }
@@ -89,7 +89,7 @@ abstract class Controller
             $viewConfig = Register::get('Config')->get('view');
             $tipsTemplate = $viewConfig['dir'] . 'tips.' . $viewConfig['ext'];
             (!file_exists($tipsTemplate)) && file_put_contents($tipsTemplate, '');
-            return $this->fetch('tips', [
+            return $this->view('tips', [
                 'message' => $message,
                 'url' => $url,
                 'sec' => $sec

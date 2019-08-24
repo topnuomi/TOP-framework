@@ -3,6 +3,7 @@
 namespace top\library;
 
 use top\library\http\Request;
+use top\traits\Instance;
 
 /**
  * 配置类
@@ -11,28 +12,19 @@ use top\library\http\Request;
 class Config
 {
 
+    use Instance;
+
     // 已加载的文件
     private static $files;
-
-    private static $instance;
 
     // 保存配置的变量
     private $config = [];
 
     private function __construct()
     {
-    }
-
-    private function __clone()
-    {
-    }
-
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
+        // 加载默认配置文件
+        $configFile = FRAMEWORK_PATH . 'config/config.php';
+        $this->config = require $configFile;
     }
 
     /**
@@ -59,14 +51,20 @@ class Config
      */
     public function get($name = '')
     {
-        // 加载文件
+        // 加载用户配置文件
         $module = Request::instance()->module();
         $file = APP_PATH . $module . '/config/config.php';
         if (!isset(self::$files[$file])) {
             if (file_exists($file)) {
                 $config = require $file;
-                // 与原有的配置项合并
-                $this->config = array_merge($this->config, $config);
+                // 合并配置项
+                foreach ($config as $key => $value) {
+                    if (array_key_exists($key, $this->config)) {
+                        $this->config[$key] = array_merge($this->config[$key], $config[$key]);
+                    } else {
+                        $this->config[$key] = $value;
+                    }
+                }
                 self::$files[$file] = true;
             }
         }

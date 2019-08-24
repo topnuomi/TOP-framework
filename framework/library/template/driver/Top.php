@@ -5,14 +5,12 @@ namespace top\library\template\driver;
 use top\library\Register;
 use top\library\template\driver\tags\Engine;
 use top\library\template\ifs\TemplateIfs;
+use top\traits\Instance;
 
 class Top implements TemplateIfs
 {
 
-    /**
-     * @var null 当前实例
-     */
-    private static $instance = null;
+    use Instance;
 
     /**
      * @var null 模板引擎实现
@@ -29,30 +27,14 @@ class Top implements TemplateIfs
      */
     private $cache = false;
 
-    /**
-     * 构造方法
-     * Top constructor.
-     */
-    private function __construct()
-    {
-    }
-
-    /**
-     * 外部获取当前类实例
-     * @return null|Top
-     */
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
     public function run()
     {
-        $this->engine = Engine::instance();
         $this->config = Register::get('Config')->get('view');
+        $module = request()->module();
+        (!$this->config['dir']) && $this->config['dir'] = APP_PATH . $module . '/view/';
+        (!$this->config['cacheDir']) && $this->config['cacheDir'] = './runtime/cache/application/' . $module . '/';
+        (!$this->config['compileDir']) && $this->config['compileDir'] = './runtime/compile/application/' . $module . '/';
+        $this->engine = Engine::instance($this->config);
         return $this;
     }
 
@@ -98,7 +80,6 @@ class Top implements TemplateIfs
      */
     private function cacheFile($filename, $params)
     {
-
         if (isset($_SERVER['REQUEST_URI'])) {
             $fileIdent = md5($_SERVER['REQUEST_URI']);
         } else {

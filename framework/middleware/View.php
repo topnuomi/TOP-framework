@@ -22,10 +22,10 @@ class View implements MiddlewareIfs
             $filename = $config['cacheDir'] . $fileIdent;
             $cache = Register::get('FileCache');
             if ($cache->check($filename, $config['cacheTime'])) {
-                echo Response::instance()->dispatch(file_get_contents($filename));
-                exit;
+                return Response::instance()->dispatch(file_get_contents($filename));
             }
         }
+        return true;
     }
 
     public function after($data)

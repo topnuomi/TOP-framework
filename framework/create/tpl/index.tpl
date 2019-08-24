@@ -18,6 +18,10 @@ require '../framework/Framework.php';
 // Framework::appNameSpace('app');
 // 可使用常量APP_NS取得该值
 
+// session保存目录，缺省值：./runtime/session/
+// Framework::sessionPath('./runtime/session/');
+// 可使用常量SESSION_PATH取得该值
+
 // 框架目录，缺省值：Framework.php的绝对路径
 // Framework::frameworkPath('../framework');
 // 可使用常量FRAMEWORK_PATH取得该值

@@ -9,6 +9,7 @@ use top\library\route\driver\Command;
 use top\library\route\driver\Pathinfo;
 use top\library\Router;
 use top\middleware\View;
+use top\traits\Instance;
 
 /**
  * 请求类
@@ -17,11 +18,7 @@ use top\middleware\View;
 class Request
 {
 
-    /**
-     * 当前实例
-     * @var null
-     */
-    private static $instance = null;
+    use Instance;
 
     /**
      * 保存$_SERVER变量
@@ -71,24 +68,9 @@ class Request
      */
     private $except = [];
 
-    /**
-     * @return null|Request
-     */
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
     private function __construct()
     {
         $this->server = (!empty($_SERVER)) ? $_SERVER : [];
-    }
-
-    private function __clone()
-    {
     }
 
     /**
@@ -334,8 +316,13 @@ class Request
     private function beforeRoute()
     {
         foreach ($this->middleware as $middleware) {
-            $middleware->before();
+            $returnData = $middleware->before();
+            if ($returnData !== true) {
+                return $returnData;
+            }
+            unset($returnData);
         }
+        return true;
     }
 
     /**
@@ -386,6 +373,15 @@ class Request
         // 实例化路由，并执行对应方法
         $routeDriver = $this->routeDriver($type);
         $this->router = (new Router($routeDriver, $defaultModule))->handler();
+
+        $userMiddleware = Register::get('Config')->get('middleware');
+        $systemMiddleware = [Init::class, View::class];
+
+        $middleware = array_merge($systemMiddleware, $userMiddleware);
+        foreach ($middleware as $key => $value) {
+            $this->middleware(new $value());
+        }
+
         $data = $this->runAction();
         return $data;
     }
@@ -397,47 +393,43 @@ class Request
      */
     private function runAction()
     {
-        $userMiddleware = Register::get('Config')->get('middleware');
-        $systemMiddleware = [Init::class, View::class];
+        $middlewareData = $this->beforeRoute();
 
-        $middleware = array_merge($systemMiddleware, $userMiddleware);
-        foreach ($middleware as $key => $value) {
-            $this->middleware(new $value());
-        }
+        if ($middlewareData === true) {
+            $ctrl = $this->router->class;
+            $method = $this->router->method;
+            $params = $this->router->params;
 
-        $this->beforeRoute();
-
-        $ctrl = $this->router->class;
-        $method = $this->router->method;
-        $params = $this->router->params;
-
-        $data = null;
-        $object = new $ctrl();
-        $reflectionClass = new \ReflectionClass($ctrl);
-        if ($reflectionClass->hasMethod('_init')) {
-            $data = $object->_init();
-        }
-
-        if ($data === null || $data === '') {
-            // 前置方法
-            $beforeReturnData = null;
-            $beforeMethod = 'before_' . $method;
-            if ($reflectionClass->hasMethod($beforeMethod)) {
-                $beforeReturnData = $object->{$beforeMethod}();
+            $data = null;
+            $object = new $ctrl();
+            $reflectionClass = new \ReflectionClass($ctrl);
+            if ($reflectionClass->hasMethod('_init')) {
+                $data = $object->_init();
             }
 
-            if ($beforeReturnData === null || $beforeReturnData === '') {
-                $reflectionMethod = new \ReflectionMethod($ctrl, $method);
-                $data = $reflectionMethod->invokeArgs($object, $params);
-
-                // 后置方法
-                $afterMethod = 'after_' . $method;
-                if ($reflectionClass->hasMethod($afterMethod)) {
-                    $object->{$afterMethod}();
+            if ($data === null || $data === '') {
+                // 前置方法
+                $beforeReturnData = null;
+                $beforeMethod = 'before_' . $method;
+                if ($reflectionClass->hasMethod($beforeMethod)) {
+                    $beforeReturnData = $object->{$beforeMethod}();
                 }
-            } else {
-                $data = $beforeReturnData;
+
+                if ($beforeReturnData === null || $beforeReturnData === '') {
+                    $reflectionMethod = new \ReflectionMethod($ctrl, $method);
+                    $data = $reflectionMethod->invokeArgs($object, $params);
+
+                    // 后置方法
+                    $afterMethod = 'after_' . $method;
+                    if ($reflectionClass->hasMethod($afterMethod)) {
+                        $object->{$afterMethod}();
+                    }
+                } else {
+                    $data = $beforeReturnData;
+                }
             }
+        } else {
+            $data = $middlewareData;
         }
 
         $this->afterRoute($data);

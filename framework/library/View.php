@@ -2,6 +2,8 @@
 
 namespace top\library;
 
+use top\traits\Instance;
+
 /**
  * 基础视图类
  * @author topnuomi 2018年11月22日
@@ -9,26 +11,13 @@ namespace top\library;
 class View
 {
 
-    private static $instance;
+    use Instance;
 
     // 用户的配置
     private $config = [];
 
     // 视图类实例
     private $template;
-
-    /**
-     * 获取实例
-     * @return View
-     * @throws \Exception
-     */
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     /**
      * View constructor.
@@ -39,10 +28,6 @@ class View
         $this->config = Register::get('Config')->get('view');
         $driver = Register::get($this->config['engine']);
         $this->template = Template::instance($driver);
-    }
-
-    private function __clone()
-    {
     }
 
     /**

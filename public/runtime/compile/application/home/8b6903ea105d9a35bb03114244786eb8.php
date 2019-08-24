@@ -8,7 +8,6 @@
 父级模板
 
     BODY
-    <?php $b = 1;  echo ($b); ?>
     
         <volist name="b" id="vo">
             <if condition="$a == 1">
@@ -22,6 +21,14 @@
     a.html
 b.html
     <?php echo '你好'; ?>
+    cut
+    <?php echo 'one start'; ?>
+        content
+        <?php echo 'two start'; ?>
+            content
+            <?php echo 'three start'; ?>
+                content
+            <?php echo 'three end';  echo 'two end';  echo 'one end'; ?>
 
 </body>
 </html>

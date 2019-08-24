@@ -2,8 +2,8 @@
 
 namespace top\library\http\response;
 
-use top\blocks\Json;
 use top\library\Register;
+use top\traits\Json;
 
 /**
  * 处理响应数据

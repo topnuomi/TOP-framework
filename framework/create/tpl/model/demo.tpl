@@ -10,8 +10,8 @@ class Demo extends Model
     protected $pk = '';
     protected $map = [];
     
-    public function get($id)
+    public function get()
     {
-        return $id;
+        return 'Hello';
     }
 }

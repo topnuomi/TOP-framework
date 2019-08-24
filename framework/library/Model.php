@@ -54,7 +54,16 @@ class Model
             $table = get_table_name(get_called_class());
             $this->table = $table;
         }
-        $this->db = Database::table($this->table, $this->pk);
+        // $this->getDb() = Database::table($this->table, $this->pk);
+    }
+
+    /**
+     * 获取Database实例
+     * @return mixed
+     */
+    private function getDb()
+    {
+        return Database::table($this->table, $this->pk);
     }
 
     /**
@@ -64,7 +73,7 @@ class Model
      */
     public function effect($effect)
     {
-        $this->db->effect($effect);
+        $this->getDb()->effect($effect);
         return $this;
     }
 
@@ -75,7 +84,7 @@ class Model
      */
     public function distinct($field)
     {
-        $this->db->distinct($field);
+        $this->getDb()->distinct($field);
         return $this;
     }
 
@@ -86,7 +95,7 @@ class Model
      */
     public function field($field)
     {
-        $this->db->field($field);
+        $this->getDb()->field($field);
         return $this;
     }
 
@@ -97,7 +106,7 @@ class Model
     public function where()
     {
         call_user_func_array([
-            $this->db,
+            $this->getDb(),
             'where'
         ], func_get_args());
         return $this;
@@ -110,7 +119,7 @@ class Model
     public function order()
     {
         call_user_func_array([
-            $this->db,
+            $this->getDb(),
             'order'
         ], func_get_args());
         return $this;
@@ -123,7 +132,7 @@ class Model
     public function limit()
     {
         call_user_func_array([
-            $this->db,
+            $this->getDb(),
             'limit'
         ], func_get_args());
         return $this;
@@ -138,7 +147,7 @@ class Model
      */
     public function join($type, $table, $name)
     {
-        $this->db->join($type, $table, $name);
+        $this->getDb()->join($type, $table, $name);
         return $this;
     }
 
@@ -149,7 +158,7 @@ class Model
      */
     public function on($on)
     {
-        $this->db->on($on);
+        $this->getDb()->on($on);
         return $this;
     }
 
@@ -166,7 +175,7 @@ class Model
             // 此处取消了数据验证，在$this->>data()方法中验证，减少一次数据库查询
             // 入库时最后的数据处理
             $data = $this->inHandle($data);
-            return $this->db->insert($data);
+            return $this->getDb()->insert($data);
         }
         return false;
     }
@@ -178,7 +187,7 @@ class Model
      */
     public function delete($param = false)
     {
-        return $this->db->delete($param);
+        return $this->getDb()->delete($param);
     }
 
     /**
@@ -195,7 +204,7 @@ class Model
             // 此处取消了数据验证，在$this->data()方法中验证，减少一次数据库查询
             // 入库时最后的数据处理
             $data = $this->inHandle($data);
-            return $this->db->update($data, $param);
+            return $this->getDb()->update($data, $param);
         }
         return false;
     }
@@ -208,7 +217,7 @@ class Model
      */
     public function find($param = false, $notRaw = true)
     {
-        $result = $this->db->find($param);
+        $result = $this->getDb()->find($param);
         if ($notRaw) {
             if (is_array($result)) {
                 $result = $this->outHandle($result);
@@ -225,7 +234,7 @@ class Model
      */
     public function select($param = false, $notRaw = true)
     {
-        $result = $this->db->select($param);
+        $result = $this->getDb()->select($param);
         if ($notRaw) {
             if (is_array($result)) {
                 $result = $this->outHandle($result);
@@ -241,7 +250,7 @@ class Model
      */
     public function count($param = '')
     {
-        return $this->db->common($param, 'count');
+        return $this->getDb()->common($param, 'count');
     }
 
     /**
@@ -251,7 +260,7 @@ class Model
      */
     public function avg($param = '')
     {
-        return $this->db->common($param, 'avg');
+        return $this->getDb()->common($param, 'avg');
     }
 
     /**
@@ -261,7 +270,7 @@ class Model
      */
     public function max($param = '')
     {
-        return $this->db->common($param, 'max');
+        return $this->getDb()->common($param, 'max');
     }
 
     /**
@@ -271,7 +280,7 @@ class Model
      */
     public function min($param = '')
     {
-        return $this->db->common($param, 'min');
+        return $this->getDb()->common($param, 'min');
     }
 
     /**
@@ -281,7 +290,7 @@ class Model
      */
     public function sum($param = '')
     {
-        return $this->db->common($param, 'sum');
+        return $this->getDb()->common($param, 'sum');
     }
 
     /**
@@ -291,7 +300,7 @@ class Model
      */
     public function query($query)
     {
-        return $this->db->query($query);
+        return $this->getDb()->query($query);
     }
 
     /**
@@ -301,7 +310,7 @@ class Model
      */
     public function _sql()
     {
-        return $this->db->_sql();
+        return $this->getDb()->_sql();
     }
 
     /**
@@ -513,7 +522,7 @@ class Model
      */
     public function tableDesc($table)
     {
-        return $this->db->tableDesc($table);
+        return $this->getDb()->tableDesc($table);
     }
 
     /**

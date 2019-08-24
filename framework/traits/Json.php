@@ -1,6 +1,6 @@
 <?php
 
-namespace top\blocks;
+namespace top\traits;
 
 trait Json {
 

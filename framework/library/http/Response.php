@@ -3,6 +3,7 @@
 namespace top\library\http;
 
 use top\library\http\response\ResponseData;
+use top\traits\Instance;
 
 /**
  * 响应类
@@ -12,11 +13,7 @@ use top\library\http\response\ResponseData;
 class Response
 {
 
-    /**
-     * 当前类实例
-     * @var null
-     */
-    private static $instance = null;
+    use Instance;
 
     /**
      * 响应内容
@@ -29,26 +26,6 @@ class Response
      * @var array
      */
     private $header = [];
-
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
-    /**
-     * 获取当前类单例
-     * @return null|Response
-     */
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     /**
      * 设置Header

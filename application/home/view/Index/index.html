@@ -2,8 +2,6 @@
 
 <block name="body">
     BODY
-    <assign name="b" value="1" />
-    {$b}
     <raw>
         <volist name="b" id="vo">
             <if condition="$a == 1">
@@ -16,4 +14,14 @@
     {:date('Y-m-d H:i:s', time())}
     <include file="Base/a" />
     <say what="你好" />
+    cut
+    <lists name="one">
+        content
+        <lists name="two">
+            content
+            <lists name="three">
+                content
+            </lists>
+        </lists>
+    </lists>
 </block>

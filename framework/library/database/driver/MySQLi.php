@@ -4,35 +4,20 @@ namespace top\library\database\driver;
 
 use top\library\database\ifs\DatabaseIfs;
 use top\library\exception\DatabaseException;
+use top\traits\Instance;
 
 /**
- * Mysqli数据库驱动
+ * MySQLi数据库驱动
  * @author topnuomi 2018年11月20日
  */
 class MySQLi implements DatabaseIfs
 {
 
-    private static $instance;
+    use Instance;
 
     private $link;
 
     private $sql;
-
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
 
     /**
      * 连接数据库

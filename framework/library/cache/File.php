@@ -3,35 +3,21 @@
 namespace top\library\cache;
 
 use top\library\cache\ifs\CacheIfs;
+use top\traits\Instance;
 
 class File implements CacheIfs
 {
 
-    private static $instance;
-
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
+    use Instance;
 
     /**
      * 设置缓存
      * @param string $name
      * @param string $value
+     * @param bool $timeout
      * @return bool
      */
-    public function set($name = '', $value = '')
+    public function set($name = '', $value = '', $timeout = 0)
     {
         // TODO Auto-generated method stub
         $dirArray = explode('/', $name);
@@ -58,7 +44,7 @@ class File implements CacheIfs
      * 删除缓存
      * @param string $name
      */
-    public function _unset($name = '')
+    public function remove($name = '')
     {
     }
 

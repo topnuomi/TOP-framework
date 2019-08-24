@@ -55,7 +55,6 @@ class Create
     {
         $configPath = $this->projectPath . 'config/';
         $configFile = $configPath . 'config.php';
-        $tagsFile = $configPath . 'tags.php';
         if (!is_dir($configPath)) {
             mkdir($configPath, 0777, true);
         }
@@ -65,12 +64,6 @@ class Create
             $realConfigFile = $this->base . '/' . $this->namespace . '/' . $this->name . '/config/config.php';
             if (!file_put_contents($configPath . 'config.php', $content)) {
                 exit('error -2');
-            }
-        }
-        if (!file_exists($tagsFile)) {
-            $content = file_get_contents($this->dir . 'tpl/config/tags.tpl');
-            if (!file_put_contents($configPath . 'tags.php', $content)) {
-                exit('error -3');
             }
         }
         return true;
@@ -130,7 +123,7 @@ class Create
     {
         $file = $this->projectPath . '../route.php';
         if (!file_exists($file)) {
-            if (!file_put_contents($file, "<?php \r\nreturn [];")) {
+            if (!file_put_contents($file, file_get_contents($this->dir . 'route.tpl'))) {
                 exit('-8');
             }
         }

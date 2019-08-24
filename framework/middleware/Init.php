@@ -21,6 +21,15 @@ class Init implements MiddlewareIfs
      */
     public function before()
     {
+        // 加载系统函数库
+        require FRAMEWORK_PATH . 'library/functions/functions.php';
+
+        // 加载用户函数库
+        $funcFile = APP_PATH . request()->module() . '/functions.php';
+        if (file_exists($funcFile)) {
+            require $funcFile;
+        }
+
         $sessionConfig = Register::get('Config')->get('session');
         if (!empty($sessionConfig) && $sessionConfig['open'] === true) {
             session_save_path(SESSION_PATH);
@@ -55,14 +64,7 @@ class Init implements MiddlewareIfs
             return View::instance();
         });
 
-        // 加载系统函数库
-        require FRAMEWORK_PATH . 'library/functions/functions.php';
-
-        // 加载用户函数库
-        $funcFile = APP_PATH . request()->module() . '/functions.php';
-        if (file_exists($funcFile)) {
-            require $funcFile;
-        }
+        return true;
     }
 
     /**

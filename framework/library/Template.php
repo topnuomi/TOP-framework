@@ -3,6 +3,7 @@
 namespace top\library;
 
 use top\library\template\ifs\TemplateIfs;
+use top\traits\Instance;
 
 /**
  * 模板类
@@ -11,11 +12,10 @@ use top\library\template\ifs\TemplateIfs;
 class Template
 {
 
+    use Instance;
+
     // 操作的具体实现
     private $template;
-
-    // 当前类的实例
-    private static $instance;
 
     private $param = [];
 
@@ -25,23 +25,6 @@ class Template
     private function __construct(TemplateIfs $template)
     {
         $this->template = $template->run();
-    }
-
-    private function __clone()
-    {
-    }
-
-    /**
-     * 获取实例
-     * @param TemplateIfs $template
-     * @return \top\library\Template
-     */
-    public static function instance($template)
-    {
-        if (!self::$instance) {
-            self::$instance = new self($template);
-        }
-        return self::$instance;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace top\library\template\driver\tags;
 
 use top\library\Register;
+use top\traits\Instance;
 
 /**
  * 模板标签库（支持模板继承）
@@ -11,10 +12,8 @@ use top\library\Register;
  */
 class Engine
 {
-    /**
-     * @var null 单一实例
-     */
-    private static $instance = null;
+
+    use Instance;
 
     /**
      * @var string 左定界符
@@ -60,29 +59,17 @@ class Engine
     /**
      * 构造方法
      * Engine constructor.
-     * @throws \Exception
+     * @param array $config
      */
-    private function __construct()
+    private function __construct($config = [])
     {
-        $this->config = Register::get('Config')->get('view');
+        $this->config = $config;
         if (isset($this->config['left']) && $this->config['left']) {
             $this->left = $this->config['left'];
         }
         if (isset($this->config['right']) && $this->config['right']) {
             $this->right = $this->config['right'];
         }
-    }
-
-    /**
-     * 获取类单一实例
-     * @return null|Engine
-     */
-    public static function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
     }
 
     /**
@@ -98,7 +85,7 @@ class Engine
             $blockPattern = '/' . $this->left . 'block.*?name=[\'"](.*?)[\'"]' . $this->right;
             $blockPattern .= '([\s\S]*?)' . $this->left . '\/block' . $this->right . '/is';
             // 获得被继承的模板内容
-            $file = $this->config['dir'] . $matches[1] . '.html';
+            $file = $this->config['dir'] . $matches[1] . '.' . ltrim($this->config['ext'], '.');
             $extendFileContent = null;
             if (file_exists($file)) {
                 $extendFileContent = file_get_contents($file);
@@ -148,7 +135,7 @@ class Engine
         $pattern = '/' . $this->left . 'include.*?file=[\'"](.*?)[\'"].*?\/' . $this->right . '/is';
         $template = preg_replace_callback($pattern, function ($result) {
             $string = null;
-            $file = $this->config['dir'] . $result[1] . '.html';
+            $file = $this->config['dir'] . $result[1] . '.' . ltrim($this->config['ext'], '.');
             if (file_exists($file)) {
                 $string = file_get_contents($file);
             }
@@ -363,8 +350,8 @@ class Engine
                 $this->left, $this->right,
                 '{', '}'
             ], [
-                '<RAW!--', '--RAW>',
-                '<RAW!--', '--RAW>'
+                '<!RAW--', '--RAW>',
+                '<!PARAM--', '--PARAM>'
             ], $matches[1]);
         }, $template);
         return $template;
@@ -378,8 +365,8 @@ class Engine
     public function returnRaw($template)
     {
         $template = str_replace([
-            '<RAW!--', '--RAW>',
-            '<RAW!--', '--RAW>'
+            '<!RAW--', '--RAW>',
+            '<!PARAM--', '--PARAM>'
         ], [
             $this->left, $this->right,
             '{', '}'
@@ -440,6 +427,12 @@ class Engine
         $parse .= (isset($tag['key']) ? '$' . $tag['key'] . '++;' : '') . ' ?>';
         $parse .= $content;
         $parse .= '<?php endforeach; ?>';
+        return $parse;
+    }
+
+    private function _assign($tag)
+    {
+        $parse = '<?php $' . $tag['name'] . ' = ' . (is_numeric($tag['value']) ? $tag['value'] : '\'' . $tag['value'] . '\'') . '; ?>';
         return $parse;
     }
 

@@ -2,11 +2,10 @@
 
 namespace app\home\controller;
 
-use top\blocks\Json;
+use top\library\cache\Redis;
 
-class Index extends Common
+class Index
 {
-    use Json;
 
     public function index()
     {
@@ -20,7 +19,7 @@ class Index extends Common
 
     public function testPage()
     {
-        // return $this->fetch();
+        // return $this->view();
         return [];
     }
 }
