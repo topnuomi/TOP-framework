@@ -2,8 +2,6 @@
 
 use \top\Framework;
 
-$m1 = microtime(true);
-
 require '../framework/Framework.php';
 
 // 可能你会使用到下面这些配置
@@ -40,7 +38,3 @@ require '../framework/Framework.php';
 
 Framework::appPath('../application/');
 Framework::startApp();
-
-$m2 = microtime(true);
-
-echo $m2 - $m1;
