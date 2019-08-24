@@ -2,6 +2,8 @@
 
 use \top\Framework;
 
+$m1 = microtime(true);
+
 require '../framework/Framework.php';
 
 // 可能你会使用到下面这些配置
@@ -17,6 +19,10 @@ require '../framework/Framework.php';
 // 项目命名空间，缺省值：app
 // Framework::appNameSpace('app');
 // 可使用常量APP_NS取得该值
+
+// session保存目录，缺省值：./runtime/session/
+// Framework::sessionPath('./runtime/session/');
+// 可使用常量SESSION_PATH取得该值
 
 // 框架目录，缺省值：Framework.php的绝对路径
 // Framework::frameworkPath('../framework');
@@ -34,3 +40,7 @@ require '../framework/Framework.php';
 
 Framework::appPath('../application/');
 Framework::startApp();
+
+$m2 = microtime(true);
+
+echo $m2 - $m1;

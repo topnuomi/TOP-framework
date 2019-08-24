@@ -43,6 +43,7 @@ class Framework
             self::appNameSpace();
             self::resourcePath();
             self::frameworkPath();
+            self::sessionPath();
 
             require 'library/App.php';
             App::run(self::$type, self::$defaultModule);
@@ -114,6 +115,23 @@ class Framework
                 $path = $root . 'resource/';
             }
             define('RESOURCE', $path);
+        }
+    }
+
+    /**
+     * 指定session保存目录
+     * @param string $path
+     */
+    public static function sessionPath($path = '')
+    {
+        if (!defined('SESSION_PATH')) {
+            if (!$path) {
+                $path = './runtime/session/';
+            }
+            if (!is_dir($path)) {
+                mkdir($path, 0775, true);
+            }
+            define('SESSION_PATH', $path);
         }
     }
 

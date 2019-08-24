@@ -23,6 +23,7 @@ class Init implements MiddlewareIfs
     {
         $sessionConfig = Register::get('Config')->get('session');
         if (!empty($sessionConfig) && $sessionConfig['open'] === true) {
+            session_save_path(SESSION_PATH);
             session_start();
         }
 
