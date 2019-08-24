@@ -411,14 +411,33 @@ class Request
         $method = $this->router->method;
         $params = $this->router->params;
 
+        $data = null;
         $object = new $ctrl();
         $reflectionClass = new \ReflectionClass($ctrl);
         if ($reflectionClass->hasMethod('_init')) {
             $data = $object->_init();
         }
-        if (!isset($data)) {
-            $reflectionMethod = new \ReflectionMethod($ctrl, $method);
-            $data = $reflectionMethod->invokeArgs($object, $params);
+
+        if ($data === null || $data === '') {
+            // 前置方法
+            $beforeReturnData = null;
+            $beforeMethod = 'before_' . $method;
+            if ($reflectionClass->hasMethod($beforeMethod)) {
+                $beforeReturnData = $object->{$beforeMethod}();
+            }
+
+            if ($beforeReturnData === null || $beforeReturnData === '') {
+                $reflectionMethod = new \ReflectionMethod($ctrl, $method);
+                $data = $reflectionMethod->invokeArgs($object, $params);
+
+                // 后置方法
+                $afterMethod = 'after_' . $method;
+                if ($reflectionClass->hasMethod($afterMethod)) {
+                    $object->{$afterMethod}();
+                }
+            } else {
+                $data = $beforeReturnData;
+            }
         }
 
         $this->afterRoute($data);
