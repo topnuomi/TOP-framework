@@ -123,7 +123,7 @@ class Create
     {
         $file = $this->projectPath . '../route.php';
         if (!file_exists($file)) {
-            if (!file_put_contents($file, file_get_contents($this->dir . 'route.tpl'))) {
+            if (!file_put_contents($file, file_get_contents($this->dir . 'tpl/route.tpl'))) {
                 exit('-8');
             }
         }

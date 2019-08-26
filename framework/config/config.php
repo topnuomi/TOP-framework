@@ -26,9 +26,7 @@ return [
     ],
     'view' => [
         'engine' => 'Top',
-        'tagLib' => [
-            \app\home\taglib\Extend::class
-        ],
+        'tagLib' => [],
         'ext' => 'html',
         'dir' => '',
         'cacheDir' => '',

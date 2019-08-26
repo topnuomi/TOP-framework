@@ -278,6 +278,10 @@ class Engine
                             $attr = $item['attr'] ? $this->getAttr($node['start_str'], explode(',', $item['attr'])) : [];
                             // 得到准备替换的值
                             $replace = explode($cut, $this->getTagParseResult($method, $attr, $cut));
+                            $replace = [
+                                (isset($replace[0])) ? $replace[0] : [],
+                                (isset($replace[1])) ? $replace[1] : [],
+                            ];
                             while ($startArray) {
                                 $begin = end($startArray);
                                 // 如果当前结束位置大于最后一个开始标签的位置，则跳过，直接去替换这个结束标签

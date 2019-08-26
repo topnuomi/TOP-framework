@@ -127,7 +127,7 @@ class Pathinfo implements RouteIfs
             $params = [];
             for ($i = 0; $i < count($this->uriArray); $i = $i + 2) {
                 if (isset($this->uriArray[$i + 1]) && $this->uriArray[$i + 1] != '') {
-                    // $_GET[$this->uriArray[$i]] = $this->uriArray[$i + 1];
+                    $_GET[$this->uriArray[$i]] = $this->uriArray[$i + 1];
                     if (isset($paramNameArray[$this->uriArray[$i]])) {
                         $params[$this->uriArray[$i]] = $this->uriArray[$i + 1];
                     }

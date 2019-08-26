@@ -3,17 +3,16 @@
 /**
  * 过滤数组
  * @param array $array
- * @param array $except
  * @param string $filter
  * @param array $result
  */
-function filterArray($array = [], $except = [], $filter = 'filter', &$result = [])
+function filterArray($array = [], $filter = 'filter', &$result = [])
 {
     foreach ($array as $key => $value) {
         if (is_array($value)) {
-            $this->processArray($value, $result[$key]);
+            filterArray($value, $result[$key]);
         } else {
-            $result[$key] = (in_array($key, $except) || !$filter) ? $value : $filter($value);
+            $result[$key] = (!$filter) ? $value : $filter($value);
         }
     }
 }

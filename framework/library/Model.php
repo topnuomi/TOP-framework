@@ -22,13 +22,13 @@ class Model
     protected $map = [];
 
     // insert值映射
-    protected $insertHandle = [];
+    protected $inReplace = [];
 
     // update值映射
-    protected $updateHandle = [];
+    protected $updateReplace = [];
 
     // 出库值映射
-    protected $outHandle = [];
+    protected $outReplace = [];
 
     // 模型消息（请注意：在方法中赋值会覆盖掉数据验证的message）
     protected $message = '';
@@ -327,7 +327,8 @@ class Model
                 return $mapData;
             } else {
                 $data = [];
-                $tableDesc = $this->tableDesc();
+                $prefix = Config::instance()->get('db')['prefix'];
+                $tableDesc = $this->tableDesc($prefix . $this->table);
                 foreach ($tableDesc as $value) {
                     if (array_key_exists($value['Field'], $mapData)) {
                         // 如果表单值为空则赋值为数据库字段默认值
@@ -399,7 +400,7 @@ class Model
      */
     private function inHandle($data)
     {
-        $replace = ($this->isInsert) ? $this->insertHandle : $this->updateHandle;
+        $replace = ($this->isInsert) ? $this->inReplace : $this->updateReplace;
         foreach ($replace as $key => $value) {
             $fieldValue = '';
             if (!array_key_exists($key, $data)) {
@@ -440,24 +441,41 @@ class Model
      */
     private function outHandle($data)
     {
-        foreach ($this->outHandle as $key => $value) {
+        foreach ($this->outReplace as $key => $value) {
             if (count($data) == count($data, 1)) {
                 if (array_key_exists($key, $data)) {
-                    if (array_key_exists($data[$key], $value)) {
-                        $data[$key] = $value[$data[$key]];
-                    }
+                    $data[$key] = $this->callOutReplaceFunction($data[$key], $value);
                 }
             } else {
                 foreach ($data as $k => $v) {
                     if (array_key_exists($key, $v)) {
-                        if (array_key_exists($v[$key], $value)) {
-                            $data[$k][$key] = $value[$v[$key]];
-                        }
+                        $data[$k][$key] = $this->callOutReplaceFunction($data[$k][$key], $value);
                     }
                 }
             }
         }
         return $data;
+    }
+
+    /**
+     * 调用函数、方法替换值
+     * @param $value
+     * @param $function
+     * @return mixed
+     */
+    private function callOutReplaceFunction($value, $function)
+    {
+        if (is_array($function) && (isset($function[1]) && $function[1] === true)) {
+            $value = $this->{$function[0]}($value);
+        } else {
+            if (is_array($function)) {
+                $function = $function[0];
+            }
+            if (function_exists($function)) {
+                $value = $function($value);
+            }
+        }
+        return $value;
     }
 
     /**

@@ -12,6 +12,6 @@ class Demo extends Model
     
     public function get()
     {
-        return 'Hello';
+        return '模块{name}正在运行...';
     }
 }

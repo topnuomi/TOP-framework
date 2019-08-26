@@ -230,7 +230,7 @@ class Request
     public function except($field = null)
     {
         if (is_array($field)) {
-            $this->except = array_merge($field, $this->except);
+            $this->except = array_merge($this->except, $field);
         } elseif ($field) {
             $this->except[] = $field;
         }
@@ -244,7 +244,7 @@ class Request
      * @param string $filter
      * @return null
      */
-    public function get($name = null, $except = [], $filter = 'filter')
+    public function get($name = '*', $except = [], $filter = 'filter')
     {
         return $this->requestData('get', $name, $except, $filter);
     }
@@ -256,7 +256,7 @@ class Request
      * @param string $filter
      * @return null
      */
-    public function post($name = null, $except = [], $filter = 'filter')
+    public function post($name = '*', $except = [], $filter = 'filter')
     {
         return $this->requestData('post', $name, $except, $filter);
     }
@@ -274,12 +274,11 @@ class Request
         $data = ($type == 'get') ? $_GET : $_POST;
         $name = ($name == '*') ? null : $name;
 
-        // 过滤数组
         if (!is_array($except)) {
-            $except = [$except];
+            $except = explode(',', $except);
         }
-        filterArray($data, $except, $filter, $data);
 
+        $this->except = array_merge($this->except, $except);
         // 移除指定的值
         foreach ($this->except as $key => $value) {
             if (isset($data[$value])) {
@@ -289,6 +288,8 @@ class Request
 
         // 重置except的值
         $this->except = [];
+
+        filterArray($data, $filter, $data);
 
         if ($name) {
             if (isset($data[$name])) {
@@ -415,7 +416,7 @@ class Request
                     $beforeReturnData = $object->{$beforeMethod}();
                 }
 
-                if ($beforeReturnData === null || $beforeReturnData === '') {
+                if ($beforeReturnData === null || $beforeReturnData === '' || $beforeReturnData === true) {
                     $reflectionMethod = new \ReflectionMethod($ctrl, $method);
                     $data = $reflectionMethod->invokeArgs($object, $params);
 

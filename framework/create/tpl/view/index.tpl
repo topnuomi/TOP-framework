@@ -8,6 +8,8 @@
     <title>Document</title>
 </head>
 <body>
-{$hello}
+<h3>{$hello}</h3>
+<hr>
+<p style="color: #666666; text-align: center; font-size: 13px;">TOP-Framework</p>
 </body>
 </html>

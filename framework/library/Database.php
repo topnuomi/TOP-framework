@@ -231,7 +231,7 @@ class Database
     /**
      * 查询一条记录
      * @param bool $param
-     * @return object
+     * @return mixed
      */
     public function find($param = false)
     {
@@ -246,7 +246,7 @@ class Database
             $this->where([$field => $param]);
         $result = self::$driver->find($this->table, $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order);
         $this->_reset();
-        return (object)$result;
+        return $result;
     }
 
     /**
@@ -269,7 +269,7 @@ class Database
         $result = self::$driver->select($this->table, $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order, $this->limit);
         $this->_reset();
         foreach ($result as $k => $v)
-            $result[$k] = (object)$v;
+            $result[$k] = $v;
         return $result;
     }
 
