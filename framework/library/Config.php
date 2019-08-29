@@ -57,12 +57,14 @@ class Config
         if (!isset(self::$files[$file])) {
             if (file_exists($file)) {
                 $config = require $file;
-                // 合并配置项
-                foreach ($config as $key => $value) {
-                    if (array_key_exists($key, $this->config)) {
-                        $this->config[$key] = array_merge($this->config[$key], $config[$key]);
-                    } else {
-                        $this->config[$key] = $value;
+                if (is_array($config) && !empty($config)) {
+                    // 合并配置项
+                    foreach ($config as $key => $value) {
+                        if (array_key_exists($key, $this->config)) {
+                            $this->config[$key] = array_merge($this->config[$key], $config[$key]);
+                        } else {
+                            $this->config[$key] = $value;
+                        }
                     }
                 }
                 self::$files[$file] = true;

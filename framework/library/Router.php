@@ -76,7 +76,7 @@ class Router
         }
         // 检查方法在控制器中是否存在
         if (!in_array($this->method, get_class_methods($this->class))) {
-            throw new RouteException('方法' . $this->action . '在控制器' . $this->ctrl . '中不存在');
+            throw new RouteException('方法' . $this->method . '在控制器' . $this->ctrl . '中不存在');
         }
     }
 
