@@ -20,7 +20,7 @@ class Command implements RouteIfs
     public $method = '';
 
     // 参数
-    public $param = [];
+    public $params = [];
 
     /**
      * 暂时就这样吧（逃...
@@ -32,7 +32,7 @@ class Command implements RouteIfs
         $this->ctrl = $this->ctrl();
         $this->class = '\\' . APP_NS . '\\' . $this->module . '\\controller\\' . $this->ctrl;
         $this->method = $this->method();
-        $this->param = $this->param();
+        $this->params = $this->params();
     }
 
     /**

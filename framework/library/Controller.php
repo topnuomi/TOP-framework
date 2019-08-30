@@ -34,12 +34,12 @@ abstract class Controller
 
     /**
      * 缓存页面（具体视图驱动完成此功能）
-     * @param bool $status
+     * @param bool $param
      * @return $this
      */
-    protected function cache($status = true)
+    protected function cache($param = true)
     {
-        Register::get('View')->cache($status);
+        View::instance()->cache($param);
         return $this;
     }
 
@@ -50,7 +50,7 @@ abstract class Controller
      */
     protected function param($name, $value)
     {
-        Register::get('View')->param($name, $value);
+        View::instance()->param($name, $value);
     }
 
     /**
@@ -62,7 +62,7 @@ abstract class Controller
      */
     protected function view($file = '', $param = [], $cache = false)
     {
-        return Register::get('View')->fetch($file, $param, $cache);
+        return View::instance()->fetch($file, $param, $cache);
     }
 
     /**
@@ -86,7 +86,7 @@ abstract class Controller
         if (request()->isAjax()) {
             return $this->json($message, '', 'tips', ['url' => $url, 'sec' => $sec]);
         } else {
-            $viewConfig = Register::get('Config')->get('view');
+            $viewConfig = Config::instance()->get('view');
             $tipsTemplate = $viewConfig['dir'] . 'tips.' . $viewConfig['ext'];
             (!file_exists($tipsTemplate)) && file_put_contents($tipsTemplate, '');
             return $this->view('tips', [

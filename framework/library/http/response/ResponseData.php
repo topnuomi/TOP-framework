@@ -2,7 +2,7 @@
 
 namespace top\library\http\response;
 
-use top\library\Register;
+use top\library\View;
 use top\traits\Json;
 
 /**
@@ -40,7 +40,7 @@ class ResponseData
             if (request()->isAjax()) {
                 $responseData = $this->returnJson($data);
             } else {
-                $view = Register::get('View');
+                $view = View::instance();
                 $filename = request()->controller() . '/' . request()->method();
                 $responseData = $view->fetch($filename, $data);
                 unset($filename);

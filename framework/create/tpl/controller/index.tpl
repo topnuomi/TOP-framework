@@ -1,4 +1,5 @@
 <?php
+
 namespace app\{name}\controller;
 
 use top\library\Controller;

@@ -494,6 +494,7 @@ $object = new 模型();
 ```
 
 ## 模板
+框架自带一款模板引擎，暂时命名为TOP模板引擎。此外支持扩展其他第三方模板引擎，后面会讲到，先来看看自带模板引擎的基础使用。
 ### 模板继承
 模板继承通过extend标签与block标签配合使用实现。
 一个最简单的继承
@@ -657,6 +658,107 @@ public function _say($tag)
 <say what="Hello world!" />
 ```
 
+### 模板缓存
+#### 关于模板缓存的实现
+在渲染模板后，可选择将渲染结果缓存下来。在框架调用控制器之前有面向控制器的前置操作，在此会判断是否存在模板缓存文件，如果存在并且有效，则会直接使用缓存文件。否则，将会重新渲染模板。
+#### 如何使用模板缓存
+1. 在view方法中使用。第三个参数为缓存控制，传入的参数为true时使用配置文件中设置的全局缓存时间，传入数字则表示当前模板的缓存时间（秒）
+```
+return $this->view('Index/index', [
+    'data' => $data
+], 30);
+```
+2. 直接在控制器中调用cache方法。参数作用参照view方法。
+```
+ $this->cache(30);
+```
+
+### 第三方模板引擎
+文件存放位置 'framework/library/template/driver' 。必须实现TemplateIfs接口。存在以下方法：
+1. run
+
+返回当前类实例，做模板引擎初始化操作。
+
+2. cache
+
+设置缓存状态。
+
+3. fetch
+
+返回模板渲染后的内容。
+
+驱动类编写完成后需要以下两个步骤，方可使用（以TOP模板引擎为例）：
+1. 配置文件中注册
+
+```
+'register' => [
+    'Top' => \top\library\template\driver\Top::class,
+],
+```
+
+2. 模板配置中配置使用
+
+```
+'view' => [
+        'engine' => 'Top',
+]
+```
+
+## 缓存
+缓存类实现了CacheIfs接口，所以至少存在以下四个方法：
+1. set
+
+设置缓存。三个参数，前两个为必须，第三个默认为10（秒），第一个参数为准备缓存数据的key，第二个参数为缓存的具体数据（字符串、数组、对象），第三个为当前缓存的有效时间。
+```
+$cache->set('lists', [0, 1, 2, 3, 4, 5], 30);
+```
+
+2. get
+
+根据key获取缓存内容
+```
+$cache->get('lists');
+```
+
+3. remove
+
+根据key删除缓存
+```
+$cache->remove('lists');
+```
+
+4. exists
+
+根据key判断缓存是否存在/有效
+```
+$cache->exists('lists');
+```
+
+### 文件缓存
+```
+use top\library\cache\driver\File;
+
+$cache = File::instance();
+if (!$cache->exists('data')) {
+    $data = '测试';
+    $cache->set('data', $data);
+}
+$data = $cache->get('data');
+```
+### Redis
+```
+use top\library\cache\driver\Redis;
+
+$cache = Redis::instance();
+if (!$cache->exists('data')) {
+    $data = '测试';
+    $cache->set('data', $data);
+}
+$data = $cache->get('data');
+```
+### 自定义缓存类
+文件存放位置 'framework/library/cache/driver' 。必须实现CacheIfs接口，具体方法看缓存介绍。
+
 ## 自定义路由
 路由配置文件位于 application 下，文件名：route.php
 现有News控制器中的detail方法
@@ -668,7 +770,7 @@ public function detail($id)
     ];
 }
 ```
-假设访问地址为： http://127.0.0.3/home/news/detail/id/1.html 。
+假设访问地址为： http://127.0.0.1/home/news/detail/id/1.html 。
 ### 必须参数
 添加如下规则
 ```
@@ -677,7 +779,7 @@ public function detail($id)
     'home/news/detail'
 ]
 ```
-完成后，可使用 http://127.0.0.3/detail/1.html 访问到对应位置。
+完成后，可使用 http://127.0.0.1/detail/1.html 访问到对应位置。
 ### 可选参数
 修改detail方法
 ```
@@ -695,7 +797,7 @@ public function detail($id = 0)
     'home/news/detail'
 ]
 ```
-完成后，可使用 http://127.0.0.3/detail.html 访问到对应位置，如果没传递id，则使用默认值。
+完成后，可使用 http://127.0.0.1/detail.html 访问到对应位置，如果没传递id，则使用默认值。
 ### 多个参数
 ```
 'detail' => [
@@ -705,6 +807,51 @@ public function detail($id = 0)
 ```
 
 ## 其他
+### Database类
+模型中的数据库操作实际也是调用Database类中的方法，模型类是在此基础上新增了更多高级操作，Database类方法的使用请参照模型中的2至22个方法的使用。在此需要特别指出，获取Database类实例使用table方法，table方法中传入表名以指定即将操作的数据表，例：
+```
+$db = Database::table('users');
+$data = $db->find(1);
+```
+框架默认使用MySQL数据库。此外，支持自定义数据库操作驱动类，文件位置 'framework/library/database/driver' ，参数需要自行解析，换言之，也就是SQL语句需要自行组合。自定义数据库驱动类必须实现DatabaseIfs接口，包括以下方法：
+1. connect
+
+连接数据库。方法参数为数据库连接配置。
+
+2. insert
+
+插入记录。参数列表：
+$table、$join、$on、$where、$order、$limit、$data
+
+3. update
+
+更新记录。参数列表
+$table、$distinct、$field、$join、$on、$where、$order
+
+4. find
+
+查询一条记录。参数列表
+$table、$distinct、$field、$join、$on、$where、$order
+
+5. select
+
+查询所有记录。参数列表
+$table、$distinct、$field、$join、$on、$where、$order、$limit
+
+6. delete
+
+删除记录。参数列表
+$effect、$table、$join、$on、$where、$order、$limit
+
+7. query
+
+执行SQL语句。参数列表
+$query
+
+8. close
+
+关闭数据库连接。
+
 ### Request类
 获取实例
 1. instance方法获取单例

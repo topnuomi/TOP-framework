@@ -1,4 +1,5 @@
 <?php
+
 namespace app\{name}\model;
 
 use top\library\Model;

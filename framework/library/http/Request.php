@@ -2,9 +2,9 @@
 
 namespace top\library\http;
 
+use top\library\Config;
 use top\middleware\ifs\MiddlewareIfs;
 use top\middleware\Init;
-use top\library\Register;
 use top\library\route\driver\Command;
 use top\library\route\driver\Pathinfo;
 use top\library\Router;
@@ -375,7 +375,7 @@ class Request
         $routeDriver = $this->routeDriver($type);
         $this->router = (new Router($routeDriver, $defaultModule))->handler();
 
-        $userMiddleware = Register::get('Config')->get('middleware');
+        $userMiddleware = Config::instance()->get('middleware');
         $systemMiddleware = [Init::class, View::class];
 
         $middleware = array_merge($systemMiddleware, $userMiddleware);

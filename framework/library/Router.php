@@ -95,10 +95,6 @@ class Router
 
         $this->check();
 
-        Register::set('Config', function () {
-            return Config::instance();
-        });
-
         return $this;
     }
 }

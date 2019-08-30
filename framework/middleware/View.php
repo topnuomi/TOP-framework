@@ -2,8 +2,9 @@
 
 namespace top\middleware;
 
+use top\library\cache\driver\File;
+use top\library\Config;
 use top\library\http\Response;
-use top\library\Register;
 use top\middleware\ifs\MiddlewareIfs;
 
 class View implements MiddlewareIfs
@@ -11,18 +12,14 @@ class View implements MiddlewareIfs
 
     public function before()
     {
-        // TODO: Implement before() method.
         if (!DEBUG) {
-            if (isset($_SERVER['REQUEST_URI'])) {
-                $fileIdent = md5($_SERVER['REQUEST_URI']);
-            } else {
-                $fileIdent = request()->module() . request()->controller() . request()->method();
-            }
-            $config = Register::get('Config')->get('view');
-            $filename = $config['cacheDir'] . $fileIdent;
-            $cache = Register::get('FileCache');
-            if ($cache->check($filename, $config['cacheTime'])) {
-                return Response::instance()->dispatch(file_get_contents($filename));
+            $ident = viewCacheIdent();
+            $config = Config::instance()->get('view');
+            (!$config['cacheDir']) && $config['cacheDir'] = './runtime/cache/application/' . request()->module() . '/';
+            $cache = File::instance($config['cacheDir']);
+            if ($cache->exists($ident)) {
+                $content = $cache->get($ident);
+                return Response::instance()->dispatch($content);
             }
         }
         return true;

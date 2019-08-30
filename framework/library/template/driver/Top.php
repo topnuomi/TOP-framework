@@ -2,8 +2,9 @@
 
 namespace top\library\template\driver;
 
-use top\library\Register;
-use top\library\template\driver\tags\Engine;
+use top\library\cache\driver\File;
+use top\library\Config;
+use top\library\template\driver\engine\Engine;
 use top\library\template\ifs\TemplateIfs;
 use top\traits\Instance;
 
@@ -29,7 +30,7 @@ class Top implements TemplateIfs
 
     public function run()
     {
-        $this->config = Register::get('Config')->get('view');
+        $this->config = Config::instance()->get('view');
         $module = request()->module();
         (!$this->config['dir']) && $this->config['dir'] = APP_PATH . $module . '/view/';
         (!$this->config['cacheDir']) && $this->config['cacheDir'] = './runtime/cache/application/' . $module . '/';
@@ -64,6 +65,7 @@ class Top implements TemplateIfs
     }
 
     /**
+     * 是否开启缓存或设置缓存时间
      * @param $status
      */
     public function cache($status)
@@ -78,22 +80,19 @@ class Top implements TemplateIfs
      * @return string
      * @throws \Exception
      */
-    private function cacheFile($filename, $params)
+    private function cacheFile($filename, $params, $cacheTime)
     {
-        if (isset($_SERVER['REQUEST_URI'])) {
-            $fileIdent = md5($_SERVER['REQUEST_URI']);
-        } else {
-            $fileIdent = request()->module() . request()->controller() . request()->method();
-        }
-        $filePath = $this->config['cacheDir'] . $fileIdent;
-        $cache = Register::get('FileCache');
+        $cache = File::instance($this->config['cacheDir']);
         extract($params);
+        // 获取文件内容
         ob_start();
         require $filename;
-        $content = ob_get_clean();
+        $content = ob_get_contents();
         ob_clean();
-        if ($cache->set($filePath, $content)) {
-            return $filePath;
+        // 写入文件缓存
+        $ident = viewCacheIdent();
+        if ($cache->set($ident, $content, $cacheTime)) {
+            return $cache->get($ident);
         } else {
             throw new \Exception('无法创建缓存文件');
         }
@@ -113,8 +112,15 @@ class Top implements TemplateIfs
         if (file_exists($filename)) {
             $filename = $this->compile($filename);
             if ($this->cache || $cache) {
-                $filename = $this->cacheFile($filename, $params);
-                return file_get_contents($filename);
+                $cacheTime = $this->config['cacheTime'];
+                if (!is_bool($cache) || !is_bool($this->cache)) {
+                    if ($cache > 0) {
+                        $cacheTime = $cache;
+                    } elseif ($this->cache > 0) {
+                        $cacheTime = $this->cache;
+                    }
+                }
+                return $this->cacheFile($filename, $params, $cacheTime);
             } else {
                 extract($params);
                 ob_start();

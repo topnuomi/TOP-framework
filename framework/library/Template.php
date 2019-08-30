@@ -14,9 +14,16 @@ class Template
 
     use Instance;
 
-    // 操作的具体实现
+    /**
+     * 模板操作的具体实现
+     * @var
+     */
     private $template;
 
+    /**
+     * 参数
+     * @var array
+     */
     private $param = [];
 
     /**

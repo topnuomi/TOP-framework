@@ -227,10 +227,9 @@ function filter($str)
  */
 function session($name, $value = '')
 {
-    $config = \top\library\Register::get('Config')->get('session');
+    $config = \top\library\Config::instance()->get('session');
     if (empty($config) || !$config['prefix']) {
-        $route = \top\library\Register::get('Route');
-        $prefix = $route->module;
+        $prefix = request()->module();
     } else {
         $prefix = $config['prefix'];
     }
@@ -398,6 +397,20 @@ function is_mobile()
         }
     }
     return false;
+}
+
+/**
+ * 获取当前视图文件的缓存标识
+ * @return string
+ */
+function viewCacheIdent()
+{
+    if (isset($_SERVER['REQUEST_URI'])) {
+        $ident = md5($_SERVER['REQUEST_URI']);
+    } else {
+        $ident = request()->module() . request()->controller() . request()->method();
+    }
+    return $ident;
 }
 
 // 模型自动验证函数

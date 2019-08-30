@@ -60,7 +60,7 @@ class Database
     private function __construct($table, $pk)
     {
         $driver = Register::get('DBDriver');
-        $this->config = $config = Register::get('Config')->get('db');
+        $this->config = $config = Config::instance()->get('db');
         $this->table = $config['prefix'] . $table;
         $this->pk = $pk;
         $this->setDriver($driver, $this->config);

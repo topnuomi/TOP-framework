@@ -25,7 +25,7 @@ class View
      */
     private function __construct()
     {
-        $this->config = Register::get('Config')->get('view');
+        $this->config = Config::instance()->get('view');
         $driver = Register::get($this->config['engine']);
         $this->template = Template::instance($driver);
     }
