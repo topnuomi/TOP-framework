@@ -60,7 +60,7 @@ class File implements CacheIfs
      * @param int $timeout
      * @return bool
      */
-    public function set($key = '', $value = '', $timeout = 10)
+    public function set($key, $value, $timeout = 10)
     {
         $this->createCacheDir();
         $filename = $this->getFileName($key);
@@ -77,16 +77,23 @@ class File implements CacheIfs
     /**
      * 获取缓存
      * @param string $key
+     * @param null $callable
      * @return bool|false|string
      */
-    public function get($key = '')
+    public function get($key = null, $callable = null)
     {
         $filename = $this->getFileName($key);
+        // 如果缓存文件存在
         if (file_exists($filename)) {
+            // 判断文件是否有效
             if ($this->isTimeOut($key)) {
+                // 返回缓存数据
                 return $this->getCacheContent($key);
             }
-            return false;
+        }
+        // 如果缓存不存在或缓存无效并且存在callable
+        if (is_callable($callable)) {
+            return $callable($this);
         }
         return false;
     }
@@ -96,7 +103,7 @@ class File implements CacheIfs
      * @param string $key
      * @return bool
      */
-    public function remove($key = '')
+    public function remove($key = null)
     {
         $filename = $this->getFileName($key);
         if (file_exists($filename)) {
@@ -149,7 +156,7 @@ class File implements CacheIfs
             $mtime = filemtime($filename);
             if ($timeout == 0) {
                 return true;
-            } elseif ((time() - $mtime > $timeout)) {
+            } elseif ((time() - $mtime >= $timeout)) {
                 // 已超时，删除缓存
                 $this->remove($key);
                 return false;

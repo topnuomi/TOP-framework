@@ -53,7 +53,7 @@ class Redis implements CacheIfs
      * @param int $timeout
      * @return bool
      */
-    public function set($key = '', $value = '', $timeout = 0)
+    public function set($key, $value, $timeout = 10)
     {
         if (is_array($value) || is_object($value)) {
             $value = json_encode($value);
@@ -64,16 +64,24 @@ class Redis implements CacheIfs
 
     /**
      * 获取缓存的值
-     * @param string $key
+     * @param null $key
+     * @param null $callable
      * @return bool|mixed|string
      */
-    public function get($key = '')
+    public function get($key = null, $callable = null)
     {
         $value = $this->redis->get($key);
+        // 如果获取不到结果但是callable存在
+        if ($value === false && is_callable($callable)) {
+            return $callable($this);
+        }
+        // 判断值是否是json字符串
         $jsonDecode = json_decode($value, true);
         if (is_null($jsonDecode)) {
+            // 原始数据
             return $value;
         }
+        // 返回转换后的数据
         return $jsonDecode;
     }
 
@@ -82,7 +90,7 @@ class Redis implements CacheIfs
      * @param string $key
      * @return int
      */
-    public function remove($key = '')
+    public function remove($key = null)
     {
         return $this->redis->del($key);
     }
