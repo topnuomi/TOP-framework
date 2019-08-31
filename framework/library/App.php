@@ -44,10 +44,12 @@ class App
         $response = Response::instance();
 
         // 处理请求并得到数据
-        $responseData = $response->dispatch($request->execute($type, $defaultModule));
+        $responseData = $response->header([
+            'X-Powered-By: TOP-Framework'
+        ])->dispatch($request->execute($type, $defaultModule));
 
         // 输出内容
-        echo $responseData;
+        echo $responseData->content;
 
     }
 }

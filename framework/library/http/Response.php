@@ -19,7 +19,7 @@ class Response
      * 响应内容
      * @var null
      */
-    private $content = null;
+    public $content = null;
 
     /**
      * 响应头
@@ -29,11 +29,19 @@ class Response
 
     /**
      * 设置Header
-     * @param array $header
+     * @param null $header
      * @return $this
      */
-    public function header($header = [])
+    public function header($header = null)
     {
+        if (is_array($header)) {
+            $this->header = array_merge($this->header, $header);
+        } else {
+            $this->header[] = $header;
+        }
+        foreach ($this->header as $value) {
+            header($value);
+        }
         return $this;
     }
 
@@ -44,11 +52,15 @@ class Response
      */
     public function dispatch($data)
     {
-        // 处理响应数据，并返回
-        $responseData = new ResponseData($data);
-        $this->content = $responseData->dispatch();
+        if ($data instanceof Response) {
+            return $data;
+        } else {
+            // 处理响应数据，并返回
+            $responseData = new ResponseData($data);
+            $this->content = $responseData->dispatch();
 
-        return $this->content;
+            return $this;
+        }
     }
 
 }
