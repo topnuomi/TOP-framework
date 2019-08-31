@@ -1,6 +1,74 @@
 # TOP-Framework
 *这是一个部分代码源自三年前毕业设计中的代码集合，后经过一系列重构，形成的一套框架。在此准备写一个文档。*
 
+## 目录结构
+遵循PSR-2规范的编码风格，遵循PSR-4自动加载规范（非composer，框架可脱离composer运行）。
+基本目录结构：
+```
+-application        应用目录
+-framework          框架所在目录
+    -config           默认配置文件目录
+    -create           自动生成模块
+    -extend           功能扩展类目录
+    -library          核心类库目录
+        -cache          缓存具体实现
+        -database       数据库操作具体实现
+        -error          错误处理
+        -exception      异常处理
+        -functions      框架函数库
+        -http           请求/响应类
+        -route          路由具体实现
+        -template       模板引擎具体实现
+        -......         实际调用的类
+    -middleware        面向控制器的中间件
+    -traits            通用trait
+    -vendor            composer加载的类库
+-public              可访问公共资源
+```
+
+## 入口文件
+### 入口文件中的配置
+```
+use \top\Framework;
+
+require '../framework/Framework.php';
+
+// 可能你会使用到下面这些配置
+
+// 调试模式，缺省值：false
+// Framework::debug(true);
+// 可使用常量DEBUG取得该值
+
+// 项目目录，缺省值：./application/
+// Framework::appPath('../application/');
+// 可使用常量APP_PATH取得该值
+
+// 项目命名空间，缺省值：app
+// Framework::appNameSpace('app');
+// 可使用常量APP_NS取得该值
+
+// session保存目录，缺省值：./runtime/session/
+// Framework::sessionPath('./runtime/session/');
+// 可使用常量SESSION_PATH取得该值
+
+// 框架目录，缺省值：Framework.php的绝对路径
+// Framework::frameworkPath('../framework');
+// 可使用常量FRAMEWORK_PATH取得该值
+
+// 静态资源目录，缺省值：/resource/
+// Framework::resourcePath('/resource/');
+// 可使用常量RESOURCE取得该值
+
+// 当前入口文件默认模块，缺省值：home
+// Framework::defaultModule('home');
+
+// 路由模式，缺省值：1（pathinfo和兼容模式）
+// Framework::runType(1);
+
+Framework::appPath('../application/');
+Framework::startApp();
+```
+
 ## 模块
 ### 创建模块
 1. 手动创建
@@ -107,6 +175,224 @@ public function index()
 ```
 命名规范：before_方法名（前置）、after_方法名（后置），执行index方法之前会先执行before_index方法（如果存在），执行完index方法后会执行after_index方法（如果存在）。当前置方法return的值为空字符串、null、true时才会继续执行，否则前置方法的return等效于index方法的return。
 
+## 模板
+框架自带一款模板引擎，暂时命名为TOP模板引擎。此外支持扩展其他第三方模板引擎，后面会讲到，先来看看自带模板引擎的基础使用。
+### 模板继承
+模板继承通过extend标签与block标签配合使用实现。
+一个最简单的继承
+```
+// Base/layout.html（父级模板）
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<block name="body"></block>
+</body>
+</html>
+
+// Index/index.html
+
+<extend file="Base/layout" />
+<block name="body">
+    <h3>内容主体</h3>
+</block>
+```
+### 模板标签
+内置一些常用标签
+1. php
+
+php标签。此标签为闭合标签，标签内的内容将被解析为原生php代码执行。
+
+```
+<php>
+    echo '你好';
+</php>
+```
+
+2. if
+
+if标签。此标签为闭合标签，condition属性为if的条件，属性列表：condition。
+
+```
+<if condition="$age eq 10">
+    // do something...
+</if>
+```
+
+3. else
+
+else标签。此标签为自闭合标签，可选属性condition，存在condition属性则被解析为elseif，属性列表：condition（可选）。
+
+```
+<if condition="$age eq 10">
+    // do something...
+<else />
+    // do something...
+</if>
+
+<if condition="$age eq 10">
+    // do something...
+<else condition="$age eq 20" />
+    // do something...
+</if>
+```
+
+4. volist
+
+循环标签。此标签为闭合标签，属性列表：name、id、key（可选）。
+
+```
+<volist name="lists" id="item">
+    {$item['id']}
+</volist>
+
+<volist name="lists" id="item" key="i">
+    {$i}、{$item['id']}
+</volist>
+```
+
+5. assign
+
+赋值标签，在模板中创建新的php变量。此标签为自闭合标签，属性列表：name、value。
+
+```
+<assign name="username" value="TOP糯米" />
+```
+
+6. raw
+
+该标签为闭合标签。raw标签中的内容不会被编译。
+
+```
+<raw>
+    <volist name="lists" id="item">
+        {$item['id']}
+    </volist>
+</raw>
+```
+上例，volist标签会被原样输出。
+
+7. include
+
+在当前模板中加载其他模板文件。
+
+8. 变量、函数输出
+```
+// 变量输出
+{$username}
+
+// 调用函数，左定界符后加上:表示调用函数
+{:mb_substr($username, 0, 3, 'utf8')}
+```
+
+### 自定义标签
+新建自定义标签库类文件/application/home/taglib/Extend.php，目录及文件名称没有要求。
+#### 闭合标签
+```
+namespace app\home\taglib;
+
+class Extend
+{
+    public $tags = [
+        'test' => ['attr' => 'start,length,id', 'close' => 1]
+    ];
+
+    public function _test($tag, $content)
+    {
+        $parse = '<?php ';
+        $parse .= 'for ($' . $tag['id'] . ' = ' . $tag['start'] . '; $' . $tag['id'];
+        $parse .=  ' < ' . $tag['start'] . ' + ' . $tag['length'] . '; ';
+        $parse .= '$' . $tag['id'] . '++): ?>';
+        $parse .= $content;
+        $parse .= '<?php endfor; ?>';
+        return $parse;
+    }
+}
+```
+类创建完成后，到配置文件config.php的view下的tagLib中添加Extend类
+```
+'view' => [
+        'tagLib' => [
+            \app\home\taglib\Extend::class
+        ]
+    ],
+```
+添加完成后即可在模板中使用
+```
+<test start="1" length="10" id="test">
+    {$test}
+</test>
+```
+#### 自闭合标签
+添加一个描述
+```
+'say' => ['attr' => 'what', 'close' => 0]
+```
+新建_say方法
+```
+public function _say($tag)
+{
+    return "<?php echo '{$tag['what']}'; ?>";
+}
+```
+模板调用
+```
+<say what="Hello world!" />
+```
+
+### 模板缓存
+#### 关于模板缓存的实现
+在渲染模板后，可选择将渲染结果缓存下来（文件缓存）。在框架调用控制器之前有面向控制器的前置操作，在此会判断是否存在模板缓存文件，如果存在并且有效，则会直接使用缓存文件。否则，将会重新渲染模板。
+#### 如何使用模板缓存
+1. 在view方法中使用。第三个参数为缓存控制，传入的参数为true时使用配置文件中设置的全局缓存时间，传入数字则表示当前模板的缓存时间（秒）
+```
+return $this->view('Index/index', [
+    'data' => $data
+], 30);
+```
+2. 直接在控制器中调用cache方法。参数作用参照view方法。
+```
+$this->cache(30);
+return [
+    'data' => $data
+];
+```
+
+### 第三方模板引擎
+文件存放位置 'framework/library/template/driver' 。必须实现TemplateIfs接口，所以需要实现以下三个方法：
+1. run
+
+返回当前类实例，做模板引擎初始化操作。
+
+2. cache
+
+设置缓存状态。
+
+3. fetch
+
+返回模板渲染后的内容。
+
+驱动类编写完成后需要以下两个步骤，方可使用（以自带模板引擎的配置为例）：
+1. 配置文件中注册
+
+```
+'register' => [
+    'Top' => \top\library\template\driver\Top::class,
+],
+```
+
+2. 模板配置中配置使用
+
+```
+'view' => [
+        'engine' => 'Top',
+],
+```
+
 ## 模型
 ### 创建模型
 一个典型的模型（Users.php）
@@ -124,7 +410,7 @@ class 模型名称 extends Model
 系统会根据模型名称去绑定对应同名称的数据表，例：模型名称为Users时，则绑定名为”前缀_users“的数据表。如果模型名称为UsersInfo时，则绑定名为“前缀_users_info”的数据表。
 
 继承自top\library\Model基础模型后，模型将拥有以下方法或属性：
-#### 方法：
+#### 方法
 1. data($data = [], $notRaw = true)
 获取即将操作的数据
 
@@ -296,7 +582,8 @@ $this->distinct('sex')->select();
 ```
 $this->delete(function ($model) {
     $model->effect('s,this');
-    $model->join('left', 'score', 's')->on('s.uid = this.id');
+    $model->join('left', 'score', 's');
+    $model->on('s.uid = this.id');
     $model->where(['this.id' => 3]);
 });
 ```
@@ -354,7 +641,8 @@ $this->limit([0, 5])->select();
 一般调用
 ```
 $this->select(function ($model) {
-    $model->join('left', 'score', 's')->on('s.uid = this.id');
+    $model->join('left', 'score', 's');
+    $model->on('s.uid = this.id');
 });
 ```
 同样也可以使用连贯操作
@@ -364,7 +652,7 @@ $this->select(function ($model) {
 
 见join方法
 
-#### 属性：
+#### 属性
 1. $table
 指定当前模型的表名（优先于模型名称）
 
@@ -493,219 +781,8 @@ $object = model(模型);
 $object = new 模型();
 ```
 
-## 模板
-框架自带一款模板引擎，暂时命名为TOP模板引擎。此外支持扩展其他第三方模板引擎，后面会讲到，先来看看自带模板引擎的基础使用。
-### 模板继承
-模板继承通过extend标签与block标签配合使用实现。
-一个最简单的继承
-```
-// Base/layout.html（父级模板）
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<block name="body"></block>
-</body>
-</html>
-
-// Index/index.html
-
-<extend file="Base/layout" />
-<block name="body">
-    <h3>内容主体</h3>
-</block>
-```
-### 模板标签
-内置一些常用标签
-1. php
-
-php标签。此标签为闭合标签，标签内的内容将被解析为原生php代码执行。
-
-```
-<php>
-    echo '你好';
-</php>
-```
-
-2. if
-
-if标签。此标签为闭合标签，condition属性为if的条件，属性列表：condition。
-
-```
-<if condition="$age eq 10">
-    // do something...
-</if>
-```
-
-3. else
-
-else标签。此标签为自闭合标签，可选属性condition，存在condition属性则被解析为elseif，属性列表：condition（可选）。
-
-```
-<if condition="$age eq 10">
-    // do something...
-<else />
-    // do something...
-</if>
-
-<if condition="$age eq 10">
-    // do something...
-<else condition="$age eq 20" />
-    // do something...
-</if>
-```
-
-4. volist
-
-循环标签。此标签为闭合标签，属性列表：name、id、key（可选）。
-
-```
-<volist name="lists" id="item">
-    {$item['id']}
-</volist>
-
-<volist name="lists" id="item" key="i">
-    {$i}、{$item['id']}
-</volist>
-```
-
-5. assign
-
-赋值标签，在模板中创建新的php变量。此标签为自闭合标签，属性列表：name、value。
-
-```
-<assign name="username" value="TOP糯米" />
-```
-
-6. raw
-
-该标签为闭合标签。raw标签中的内容不会被编译。
-
-```
-<raw>
-    <volist name="lists" id="item">
-        {$item['id']}
-    </volist>
-</raw>
-```
-上例，volist标签会被原样输出。
-
-7. 变量、函数输出
-```
-// 变量输出
-{$username}
-
-// 调用函数，左定界符后加上:表示调用函数
-{:mb_substr($username, 0, 3, 'utf8')}
-```
-
-### 自定义标签
-新建自定义标签库类文件/application/home/taglib/Extend.php，目录及文件名称没有要求。
-#### 闭合标签
-```
-namespace app\home\taglib;
-
-class Extend
-{
-    public $tags = [
-        'test' => ['attr' => 'start,length,id', 'close' => 1]
-    ];
-
-    public function _test($tag, $content)
-    {
-        $parse = '<?php ';
-        $parse .= 'for ($' . $tag['id'] . ' = ' . $tag['start'] . '; $' . $tag['id'];
-        $parse .=  ' < ' . $tag['start'] . ' + ' . $tag['length'] . '; ';
-        $parse .= '$' . $tag['id'] . '++): ?>';
-        $parse .= $content;
-        $parse .= '<?php endfor; ?>';
-        return $parse;
-    }
-}
-```
-类创建完成后，到配置文件config.php的view下的tagLib中添加Extend类
-```
-'view' => [
-        'tagLib' => [
-            \app\home\taglib\Extend::class
-        ]
-    ],
-```
-添加完成后即可在模板中使用
-```
-<test start="1" length="10" id="test">
-    {$test}
-</test>
-```
-#### 自闭合标签
-添加一个描述
-```
-'say' => ['attr' => 'what', 'close' => 0]
-```
-新建_say方法
-```
-public function _say($tag)
-{
-    return "<?php echo '{$tag['what']}'; ?>";
-}
-```
-模板调用
-```
-<say what="Hello world!" />
-```
-
-### 模板缓存
-#### 关于模板缓存的实现
-在渲染模板后，可选择将渲染结果缓存下来。在框架调用控制器之前有面向控制器的前置操作，在此会判断是否存在模板缓存文件，如果存在并且有效，则会直接使用缓存文件。否则，将会重新渲染模板。
-#### 如何使用模板缓存
-1. 在view方法中使用。第三个参数为缓存控制，传入的参数为true时使用配置文件中设置的全局缓存时间，传入数字则表示当前模板的缓存时间（秒）
-```
-return $this->view('Index/index', [
-    'data' => $data
-], 30);
-```
-2. 直接在控制器中调用cache方法。参数作用参照view方法。
-```
- $this->cache(30);
-```
-
-### 第三方模板引擎
-文件存放位置 'framework/library/template/driver' 。必须实现TemplateIfs接口。存在以下方法：
-1. run
-
-返回当前类实例，做模板引擎初始化操作。
-
-2. cache
-
-设置缓存状态。
-
-3. fetch
-
-返回模板渲染后的内容。
-
-驱动类编写完成后需要以下两个步骤，方可使用（以TOP模板引擎为例）：
-1. 配置文件中注册
-
-```
-'register' => [
-    'Top' => \top\library\template\driver\Top::class,
-],
-```
-
-2. 模板配置中配置使用
-
-```
-'view' => [
-        'engine' => 'Top',
-]
-```
-
 ## 缓存
-缓存类实现了CacheIfs接口，所以至少存在以下四个方法：
+缓存类必须实现CacheIfs接口，所以需要实现以下四个方法：
 1. set
 
 设置缓存。三个参数，前两个为必须，第三个默认为10（秒），第一个参数为准备缓存数据的key，第二个参数为缓存的具体数据（字符串、数组、对象），第三个为当前缓存的有效时间。
@@ -739,27 +816,27 @@ $cache->exists('lists');
 use top\library\cache\driver\File;
 
 $cache = File::instance();
-if (!$cache->exists('data')) {
-    $data = '测试';
-    $cache->set('data', $data);
+if (!$cache->exists('text')) {
+    $text = '测试';
+    $cache->set('text', $text);
 }
-$data = $cache->get('data');
+$data = $cache->get('text');
 ```
 ### Redis
 ```
 use top\library\cache\driver\Redis;
 
 $cache = Redis::instance();
-if (!$cache->exists('data')) {
-    $data = '测试';
-    $cache->set('data', $data);
+if (!$cache->exists('text')) {
+    $text = '测试';
+    $cache->set('text', $text);
 }
-$data = $cache->get('data');
+$data = $cache->get('text');
 ```
 ### 自定义缓存类
 文件存放位置 'framework/library/cache/driver' 。必须实现CacheIfs接口，具体方法看缓存介绍。
 
-## 自定义路由
+## 路由
 路由配置文件位于 application 下，文件名：route.php
 现有News控制器中的detail方法
 ```
@@ -863,7 +940,7 @@ Request::instance();
 request();
 ```
 
-#### 供调用的方法
+#### 提供的方法
 1. isPost
 
 判断是否是POST请求
@@ -962,6 +1039,30 @@ request()->get('id', ['type'], function ($value) {
 request()->except('type')->get();
 ```
 
+### Response类
+#### 获取实例
+```
+use top\library\http\Response;
+$instance = Response::instance();
+```
+#### 设置响应头、响应内容
+```
+return $instance->header([
+    'HTTP/1.1 200 OK'
+])->dispatch('OK');
+```
+其中，header方法接收数组或字符串的参数，参数为具体的响应头内容。dispatch方法参数为具体响应内容，为字符串。
+如果需要文件下载，例：
+```
+$filename = './demo.zip';
+$instance>header([
+    'Content-type: application/x-zip-compressed',
+    'Content-Disposition: attachment; filename="demo.zip"'
+]);
+readfile($filename);
+```
+使用header方法设置响应头，接下来使用readfile函数将文件内容读取到缓冲区，这样输出时将下载demo.zip文件。或者直接使用header函数设置响应头也是可行的。
+
 ### 面向控制器的前置、后置方法（请求拦截）
 创建application/home/filter/Auth.php测试文件
 ```
@@ -989,3 +1090,39 @@ class Auth implements MiddlewareIfs
 ],
 ```
 现在，访问项目则会得到 ' 拒绝请求 ' 结果。仅当before方法return的值为true时，程序才会继续执行，否则return等效于控制器方法的return。
+
+### 配置文件
+以home模块为例，文件位置 'application/home/config/config.php'。此外还存在一个默认配置文件，文件位置 'framework/config/config.php'，如果用户存在同名配置，将会执行merge操作。
+如果需要配置数据库，将如下内容添加到应用配置文件中
+```
+'db' => [
+    'driver' => 'MySQLi',
+    'host' => '127.0.0.1',
+    'user' => '',
+    'passwd' => '',
+    'dbname' => '',
+    'prefix' => '',
+    'port' => 3306,
+    'charset' => 'utf8'
+],
+```
+如果需要其他配置，请到framework/config/config.php中查看其他的配置。
+
+### Config类
+Config类用于获取、设置配置。
+#### 获取实例
+```
+use top\library\Config;
+$instance = Config::instance();
+```
+#### 添加动态配置
+```
+$instance->set('appid', '1234566');
+```
+#### 获取配置
+```
+$instance->get('appid');
+```
+
+### Composer
+框架支持使用composer，文件位置 'composer.json'。

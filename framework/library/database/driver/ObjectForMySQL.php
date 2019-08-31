@@ -28,7 +28,7 @@ class ObjectForMySQL implements DatabaseIfs
      */
     public function connect($config)
     {
-        $this->mysqli = new \mysqli($config['host'], $config['user'], $config['passwd'], $config['dbname']);
+        $this->mysqli = new \mysqli($config['host'], $config['user'], $config['passwd'], $config['dbname'], $config['port']);
         $this->mysqli->query('set names ' . $config['charset']);
         return $this;
     }

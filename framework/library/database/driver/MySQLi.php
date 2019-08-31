@@ -27,7 +27,7 @@ class MySQLi implements DatabaseIfs
      */
     public function connect($config)
     {
-        $link = $this->link = @mysqli_connect($config['host'], $config['user'], $config['passwd'], $config['dbname']);
+        $link = $this->link = @mysqli_connect($config['host'], $config['user'], $config['passwd'], $config['dbname'], $config['port']);
         if ($link === false) {
             throw new DatabaseException(mysqli_connect_error());
         }
