@@ -396,9 +396,10 @@ class Engine
      */
     private function _if($tag, $content)
     {
+        $tag['condition'] = $this->_parseCondition($tag['condition']);
         $parse = '<?php if (' . $tag['condition'] . '): ?>';
         $parse .= $content;
-        $parse .= '<?php echo ' . $tag['condition'] . '; endif; ?>';
+        $parse .= '<?php endif; ?>';
         return $parse;
     }
 
@@ -410,11 +411,40 @@ class Engine
     private function _else($tag)
     {
         if (isset($tag['condition'])) {
+            $tag['condition'] = $this->_parseCondition($tag['condition']);
             $parse = '<?php elseif (' . $tag['condition'] . '): ?>';
         } else {
             $parse = '<?php else: ?>';
         }
         return $parse;
+    }
+
+    /**
+     * 处理if/else标签的条件比较符
+     * @param $condition
+     * @return mixed
+     */
+    private function _parseCondition($condition)
+    {
+        return str_ireplace([
+            ' eq ',
+            ' neq ',
+            ' lt ',
+            ' elt ',
+            ' gt ',
+            ' egt ',
+            ' heq ',
+            ' nheq '
+        ], [
+            ' == ',
+            ' != ',
+            ' < ',
+            ' <= ',
+            ' > ',
+            ' >= ',
+            ' === ',
+            ' !== '
+        ], $condition);
     }
 
     /**
