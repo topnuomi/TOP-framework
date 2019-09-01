@@ -374,6 +374,16 @@ class Database
     }
 
     /**
+     * MySQL事务
+     * @param $action
+     * @return mixed
+     */
+    public function transaction($action)
+    {
+        return self::$driver->transaction($action);
+    }
+
+    /**
      * 获取最后执行的SQL语句
      *
      * @return string

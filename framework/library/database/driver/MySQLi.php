@@ -269,6 +269,25 @@ class MySQLi implements DatabaseIfs
     }
 
     /**
+     * MySQL事务
+     * @param $action
+     * @return bool
+     * @throws DatabaseException
+     */
+    public function transaction($action)
+    {
+        try {
+            $this->query('start transaction');
+            $action();
+            $this->query('commit');
+            return true;
+        } catch (DatabaseException $e) {
+            $this->query('rollback');
+            throw new DatabaseException($e->getMessage());
+        }
+    }
+
+    /**
      * 获取执行的最后一条SQL
      *
      * @return string

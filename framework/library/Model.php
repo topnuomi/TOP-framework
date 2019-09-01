@@ -304,6 +304,16 @@ class Model
     }
 
     /**
+     * MySQL事务
+     * @param $action
+     * @return mixed
+     */
+    public function transaction($action)
+    {
+        return $this->getDb()->transaction($action);
+    }
+
+    /**
      * 获取最后一次执行的SQL
      *
      * @return string

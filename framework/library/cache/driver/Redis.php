@@ -70,10 +70,14 @@ class Redis implements CacheIfs
      */
     public function get($key = null, $callable = null)
     {
-        $value = $this->redis->get($key);
+        $status = $this->exists($key);
+        $value = $status == 0 ? false : $this->redis->get($key);
         // 如果获取不到结果但是callable存在
-        if ($value === false && is_callable($callable)) {
-            return $callable($this);
+        if ($value === false) {
+            if (is_callable($callable)) {
+                return $callable($this);
+            }
+            return false;
         }
         // 判断值是否是json字符串
         $jsonDecode = json_decode($value, true);

@@ -19,9 +19,7 @@ class View implements MiddlewareIfs
             $cache = File::instance($config['cacheDir']);
             if ($cache->exists($ident)) {
                 $content = $cache->get($ident);
-                return Response::instance()->header([
-                    'HTTP/1.1 304 Not Modified'
-                ])->dispatch($content);
+                return Response::instance()->dispatch($content);
             }
         }
         return true;
