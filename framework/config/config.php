@@ -7,7 +7,7 @@ return [
     ],
     'middleware' => [],
     'session' => [
-        'open' => true,
+        'open' => false,
         'prefix' => '',
     ],
     'db' => [
