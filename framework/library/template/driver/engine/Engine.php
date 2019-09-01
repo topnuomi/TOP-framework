@@ -487,7 +487,7 @@ class Engine
         // 处理定义的标签
         $template = $this->parseTags($template);
 
-        return $template;
+        return '<?php if (!defined(\'APP_PATH\')) { exit; } ?>' . $template;
     }
 
 }

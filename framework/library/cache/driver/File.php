@@ -67,8 +67,8 @@ class File implements CacheIfs
         if (is_array($value) || is_object($value)) {
             $value = json_encode($value);
         }
-        $value = '<?php $timeout = ' . $timeout . '; ?>' . PHP_EOL . $value;
-        if (file_put_contents($filename, $value)) {
+        $content = '<?php if (!defined(\'APP_PATH\')) { exit; } $timeout = ' . $timeout . '; ?>' . PHP_EOL . $value;
+        if (file_put_contents($filename, $content)) {
             return true;
         }
         return false;
