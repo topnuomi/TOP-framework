@@ -9,36 +9,66 @@ namespace top\library;
 class Model
 {
 
-    // 数据库操作实例
-    private $db;
+    /**
+     * 当前表名
+     * @var string
+     */
+    protected $table = '';
 
-    // 当前表名
-    protected $table;
-
-    // 主键
+    /**
+     * 主键
+     * @var string
+     */
     protected $pk = '';
 
-    // 字段映射
+    /**
+     * 当前模型的表前缀
+     * @var string
+     */
+    protected $prefix = '';
+
+    /**
+     * 字段映射
+     * @var array
+     */
     protected $map = [];
 
-    // insert值映射
+    /**
+     * insert值映射
+     * @var array
+     */
     protected $inReplace = [];
 
-    // update值映射
+    /**
+     * update值映射
+     * @var array
+     */
     protected $updateReplace = [];
 
-    // 出库值映射
+    /**
+     * 出库值映射
+     * @var array
+     */
     protected $outReplace = [];
 
-    // 模型消息（请注意：在方法中赋值会覆盖掉数据验证的message）
+    /**
+     * 模型消息（请注意：在方法中赋值会覆盖掉数据验证的message）
+     * @var string
+     */
     protected $message = '';
 
-    // 自动验证
+    /**
+     * 自动验证
+     * @var array
+     */
     protected $validate = [];
 
-    // 是否为insert操作，决定如何验证数据
-    // true：验证模型中配置的全部字段
-    // false：仅验证$data中存在的字段
+    /**
+     * 是否为insert操作，决定如何验证数据
+     * true：验证模型中配置的全部字段
+     * false：仅验证$data中存在的字段
+     * @var bool
+     */
     private $isInsert = false;
 
     /**
@@ -63,7 +93,7 @@ class Model
      */
     private function getDb()
     {
-        return Database::table($this->table, $this->pk);
+        return Database::table($this->table, $this->pk, $this->prefix);
     }
 
     /**
@@ -245,50 +275,50 @@ class Model
 
     /**
      * 计数
-     * @param string $param
+     * @param null $param
      * @return mixed
      */
-    public function count($param = '')
+    public function count($param = null)
     {
         return $this->getDb()->common($param, 'count');
     }
 
     /**
      * 平均值
-     * @param string $param
+     * @param null $param
      * @return mixed
      */
-    public function avg($param = '')
+    public function avg($param = null)
     {
         return $this->getDb()->common($param, 'avg');
     }
 
     /**
      * 最大值
-     * @param string $param
+     * @param null $param
      * @return mixed
      */
-    public function max($param = '')
+    public function max($param = null)
     {
         return $this->getDb()->common($param, 'max');
     }
 
     /**
      * 最小值
-     * @param string $param
+     * @param null $param
      * @return mixed
      */
-    public function min($param = '')
+    public function min($param = null)
     {
         return $this->getDb()->common($param, 'min');
     }
 
     /**
      * 求和
-     * @param string $param
+     * @param null $param
      * @return mixed
      */
-    public function sum($param = '')
+    public function sum($param = null)
     {
         return $this->getDb()->common($param, 'sum');
     }

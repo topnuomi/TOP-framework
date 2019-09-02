@@ -11,59 +11,120 @@ use top\library\database\ifs\DatabaseIfs;
 class Database
 {
 
-    // 数据库驱动
-    private static $driver;
+    /**
+     * 数据库驱动
+     * @var null
+     */
+    private static $driver = null;
 
-    // 当前类实例
+    /**
+     * 当前类实例
+     * @var array
+     */
     private static $instance = [];
 
-    // 当前表结构
+    /**
+     * 当前表结构
+     * @var array
+     */
     private static $tableDesc = [];
 
-    // 数据库配置
+    /**
+     * 数据库配置
+     * @var array
+     */
     private $config = [];
 
-    // 当前操作的表
+    /**
+     * 当前操作的表
+     * @var string
+     */
     private $table = '';
 
-    // 当前表的主键
+    /**
+     * 当前表的主键
+     * @var string
+     */
     private $pk = '';
 
-    // 多个表（仅delete操作）
-    private $effect = '';
+    /**
+     * 多个表（仅delete操作）
+     * @var null
+     */
+    private $effect = null;
 
-    private $distinct = '';
+    /**
+     * 数据去重
+     * @var null
+     */
+    private $distinct = null;
 
-    // 操作的字段
-    private $field = '';
+    /**
+     * 操作的字段
+     * @var null
+     */
+    private $field = null;
 
-    // 条件
+    /**
+     * 条件
+     * @var array
+     */
     private $where = [];
 
-    // 排序
-    private $order = '';
+    /**
+     * 排序
+     * @var null
+     */
+    private $order = null;
 
-    // 范围
-    private $limit = '';
+    /**
+     * 范围
+     * @var null
+     */
+    private $limit = null;
 
-    // 多表
+    /**
+     * 多表
+     * @var array
+     */
     private $join = [];
 
-    // 关联
+    /**
+     * 关联
+     * @var array
+     */
     private $on = [];
 
     /**
      * Database constructor.
      * @param $table
      * @param $pk
+     * @param $prefix
+     * @throws \Exception
      */
-    private function __construct($table, $pk)
+    private function __construct($table, $pk, $prefix)
     {
         $driver = Register::get('DBDriver');
         $this->config = $config = Config::instance()->get('db');
-        $this->table = $config['prefix'] . $table;
+        $this->table = (($prefix) ? $prefix : $config['prefix']) . $table;
         $this->pk = $pk;
         $this->setDriver($driver, $this->config);
+    }
+
+    /**
+     * 指定表
+     * @param $table
+     * @param string $pk
+     * @param string $prefix
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function table($table, $pk = '', $prefix = '')
+    {
+        if (!isset(self::$instance[$table])) {
+            self::$instance[$table] = new self($table, $pk, $prefix);
+        }
+        return self::$instance[$table];
     }
 
     /**
@@ -75,20 +136,6 @@ class Database
     private function setDriver(DatabaseIfs $driver, $config)
     {
         self::$driver = $driver->connect($config);
-    }
-
-    /**
-     * 指定表
-     * @param $table
-     * @param string $pk
-     * @return mixed
-     */
-    public static function table($table, $pk = '')
-    {
-        if (!isset(self::$instance[$table])) {
-            self::$instance[$table] = new self($table, $pk);
-        }
-        return self::$instance[$table];
     }
 
     /**
@@ -398,14 +445,14 @@ class Database
      */
     private function _reset()
     {
-        $this->effect = '';
-        $this->distinct = '';
-        $this->field = '';
+        $this->effect = null;
+        $this->distinct = null;
+        $this->field = null;
         $this->join = [];
         $this->on = [];
         $this->where = [];
-        $this->order = '';
-        $this->limit = '';
+        $this->order = null;
+        $this->limit = null;
         $this->table = str_ireplace(' as this', '', $this->table);
     }
 
