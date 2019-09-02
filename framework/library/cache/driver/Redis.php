@@ -2,7 +2,6 @@
 
 namespace top\library\cache\driver;
 
-
 use top\library\cache\ifs\CacheIfs;
 use top\library\Config;
 use top\traits\Instance;
@@ -14,6 +13,7 @@ use top\traits\Instance;
  */
 class Redis implements CacheIfs
 {
+
     use Instance;
 
     /**
@@ -55,9 +55,8 @@ class Redis implements CacheIfs
      */
     public function set($key, $value, $timeout = 10)
     {
-        if (is_array($value) || is_object($value)) {
-            $value = json_encode($value);
-        }
+        $data = ['value' => $value];
+        $value = serialize($data);
         $timeout = $timeout == 0 ? null : $timeout;
         return $this->redis->set($key, $value, $timeout);
     }
@@ -71,22 +70,18 @@ class Redis implements CacheIfs
     public function get($key = null, $callable = null)
     {
         $status = $this->exists($key);
-        $value = $status == 0 ? false : $this->redis->get($key);
+        $value = $status ? $this->redis->get($key) : false;
         // 如果获取不到结果但是callable存在
         if ($value === false) {
             if (is_callable($callable)) {
                 return $callable($this);
             }
             return false;
+        } else {
+            $data = unserialize($value);
+            // 返回转换后的数据
+            return $data['value'];
         }
-        // 判断值是否是json字符串
-        $jsonDecode = json_decode($value, true);
-        if (is_null($jsonDecode)) {
-            // 原始数据
-            return $value;
-        }
-        // 返回转换后的数据
-        return $jsonDecode;
     }
 
     /**
@@ -106,6 +101,6 @@ class Redis implements CacheIfs
      */
     public function exists($key)
     {
-        return $this->redis->exists($key);
+        return $this->redis->exists($key) ? true : false;
     }
 }

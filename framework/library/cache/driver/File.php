@@ -22,6 +22,12 @@ class File implements CacheIfs
     private static $instance;
 
     /**
+     * 已读取的文件
+     * @var array
+     */
+    private $files = [];
+
+    /**
      * 默认缓存位置
      * @var null|string
      */
@@ -64,11 +70,14 @@ class File implements CacheIfs
     {
         $this->createCacheDir();
         $filename = $this->getFileName($key);
-        if (is_array($value) || is_object($value)) {
-            $value = json_encode($value);
-        }
-        $content = '<?php if (!defined(\'APP_PATH\')) { exit; } $timeout = ' . $timeout . '; ?>' . PHP_EOL . $value;
+        $cacheArray = [
+            'create' => time(),
+            'time' => $timeout,
+            'value' => $value
+        ];
+        $content = serialize($cacheArray);
         if (file_put_contents($filename, $content)) {
+            $this->files[$key] = $cacheArray;
             return true;
         }
         return false;
@@ -82,17 +91,12 @@ class File implements CacheIfs
      */
     public function get($key = null, $callable = null)
     {
-        $filename = $this->getFileName($key);
-        // 如果缓存文件存在
-        if (file_exists($filename)) {
-            // 判断文件是否有效
-            if ($this->isTimeOut($key)) {
-                // 返回缓存数据
-                return $this->getCacheContent($key);
-            }
-        }
-        // 如果缓存不存在或缓存无效并且存在callable
-        if (is_callable($callable)) {
+        // 判断缓存是否存在
+        if ($this->exists($key)) {
+            // 返回缓存数据
+            return $this->getCacheContent($key);
+        } elseif (is_callable($callable)) {
+            // 如果缓存不存在但是存在callable，则调用
             return $callable($this);
         }
         return false;
@@ -106,7 +110,7 @@ class File implements CacheIfs
     public function remove($key = null)
     {
         $filename = $this->getFileName($key);
-        if (file_exists($filename)) {
+        if (is_file($filename)) {
             @unlink($filename);
         }
         return true;
@@ -119,7 +123,11 @@ class File implements CacheIfs
      */
     public function exists($key)
     {
-        return $this->isTimeOut($key);
+        $filename = $this->getFileName($key);
+        if (is_file($filename) && !$this->timeOut($key)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -129,16 +137,8 @@ class File implements CacheIfs
      */
     private function getCacheContent($key)
     {
-        $filename = $this->getFileName($key);
-        ob_start();
-        require $filename;
-        $content = ob_get_contents();
-        ob_clean();
-        $jsonDecode = json_decode($content, true);
-        if (is_null($jsonDecode)) {
-            return $content;
-        }
-        return $jsonDecode;
+        $content = $this->readCacheFile($key);
+        return (!$content) ? false : $content['value'];
     }
 
     /**
@@ -146,25 +146,47 @@ class File implements CacheIfs
      * @param $key
      * @return bool
      */
-    private function isTimeOut($key)
+    private function timeOut($key)
     {
-        $filename = $this->getFileName($key);
-        if (file_exists($filename)) {
-            ob_start();
-            require $filename;
-            ob_clean();
-            $mtime = filemtime($filename);
+        $content = $this->readCacheFile($key);
+        // 缓存文件存在，已读取到内容
+        if (!empty($content)) {
+            $mtime = $content['create'];
+            $timeout = $content['time'];
             if ($timeout == 0) {
-                return true;
+                return false;
             } elseif ((time() - $mtime >= $timeout)) {
                 // 已超时，删除缓存
                 $this->remove($key);
-                return false;
-            } else {
                 return true;
+            } else {
+                return false;
             }
         }
-        return false;
+        // 否则直接返回超时
+        return true;
+    }
+
+    /**
+     * 读取缓存文件
+     * @param $key
+     * @return mixed
+     */
+    private function readCacheFile($key)
+    {
+        if (!isset($this->files[$key])) {
+            // 获取文件名
+            $filename = $this->getFileName($key);
+            if (is_file($filename)) {
+                $content = file_get_contents($filename);
+                $this->files[$key] = unserialize($content);
+                unset($content);
+            } else {
+                // 文件不存在
+                $this->files[$key] = false;
+            }
+        }
+        return $this->files[$key];
     }
 
     /**
@@ -174,7 +196,7 @@ class File implements CacheIfs
      */
     public function getFileName($key)
     {
-        return $this->dir . $key . '.php';
+        return $this->dir . $key . '.txt';
     }
 
     /**
