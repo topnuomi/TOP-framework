@@ -244,9 +244,15 @@ class Database
      */
     public function join($type, $table, $name)
     {
+        $tableName = null;
+        if (is_array($table) && isset($table[0]) && isset($table[1])) {
+            $tableName = $table[0] . $table[1];
+        } else {
+            $tableName = $this->config['prefix'] . $table;
+        }
         $this->join[] = [
             $type,
-            $this->config['prefix'] . $table,
+            $tableName,
             $name
         ];
         return $this;
@@ -285,13 +291,14 @@ class Database
         if (is_callable($param))
             $param($this);
         $field = $this->getPk();
-        if (!empty($this->join)) {
-            $this->table .= ' as this';
-            $field = 'this.' . $field;
-        }
+        $pkWhere = [];
         if (!is_bool($param) && !is_callable($param))
-            $this->where([$field => $param]);
-        $result = self::$driver->find($this->table, $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order);
+            $pkWhere = [$field => $param];
+        $result = self::$driver->find([
+            $this->table,
+            !empty($this->join),
+            $pkWhere
+        ], $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order);
         $this->_reset();
         return $result;
     }
@@ -307,13 +314,14 @@ class Database
         if (is_callable($param))
             $param($this);
         $field = $this->getPk();
-        if (!empty($this->join)) {
-            $this->table .= ' as this';
-            $field = 'this.' . $field;
-        }
+        $pkWhere = [];
         if (!is_bool($param) && !is_callable($param))
-            $this->where([$field => $param]);
-        $result = self::$driver->select($this->table, $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order, $this->limit);
+            $pkWhere = [$field => $param];
+        $result = self::$driver->select([
+            $this->table,
+            !empty($this->join),
+            $pkWhere
+        ], $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order, $this->limit);
         $this->_reset();
         foreach ($result as $k => $v)
             $result[$k] = $v;
@@ -332,13 +340,14 @@ class Database
         if (is_callable($param))
             $param($this);
         $field = $this->getPk();
-        if (!empty($this->join)) {
-            $this->table .= ' as this';
-            $field = 'this.' . $field;
-        }
+        $pkWhere = [];
         if (!is_bool($param) && !is_callable($param))
-            $this->where([$field => $param]);
-        $result = self::$driver->update($this->table, $this->join, $this->on, $this->where, $this->order, $this->limit, $data);
+            $pkWhere = [$field => $param];
+        $result = self::$driver->update([
+            $this->table,
+            !empty($this->join),
+            $pkWhere
+        ], $this->join, $this->on, $this->where, $this->order, $this->limit, $data);
         $this->_reset();
         return $result;
     }
@@ -355,14 +364,14 @@ class Database
             $param($this);
         }
         $field = $this->getPk();
-        if (!empty($this->join)) {
-            $this->table .= ' as this';
-            $field = 'this.' . $field;
-        }
-        if (!is_bool($param) && !is_callable($param)) {
-            $this->where([$field => $param]);
-        }
-        $result = self::$driver->delete($this->effect, $this->table, $this->join, $this->on, $this->where, $this->order, $this->limit);
+        $pkWhere = [];
+        if (!is_bool($param) && !is_callable($param))
+            $pkWhere = [$field => $param];
+        $result = self::$driver->delete($this->effect, [
+            $this->table,
+            !empty($this->join),
+            $pkWhere
+        ], $this->join, $this->on, $this->where, $this->order, $this->limit);
         $this->_reset();
 
         return $result;
@@ -380,13 +389,14 @@ class Database
         if (is_callable($param)) {
             $param($this);
         }
-        if (!empty($this->join)) {
-            $this->table .= ' as this';
-        }
         if (empty($this->field) && $param && !is_callable($param)) {
             $this->field = $param;
         }
-        $result = self::$driver->common($this->table, $this->distinct, $this->field, $this->join, $this->on, $this->where, $type);
+        $result = self::$driver->common([
+            $this->table,
+            !empty($this->join),
+            []
+        ], $this->distinct, $this->field, $this->join, $this->on, $this->where, $type);
         $this->_reset();
 
         return $result;
@@ -421,13 +431,27 @@ class Database
     }
 
     /**
-     * MySQL事务
-     * @param $action
-     * @return mixed
+     * 开启事务
      */
-    public function transaction($action)
+    public function begin()
     {
-        return self::$driver->transaction($action);
+        self::$driver->begin();
+    }
+
+    /**
+     * 提交
+     */
+    public function commit()
+    {
+        self::$driver->commit();
+    }
+
+    /**
+     * 回滚
+     */
+    public function rollback()
+    {
+        self::$driver->rollback();
     }
 
     /**
@@ -453,7 +477,6 @@ class Database
         $this->where = [];
         $this->order = null;
         $this->limit = null;
-        $this->table = str_ireplace(' as this', '', $this->table);
     }
 
     /**

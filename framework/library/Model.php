@@ -2,6 +2,8 @@
 
 namespace top\library;
 
+use top\library\exception\DatabaseException;
+
 /**
  * 基础模型
  * @author topnuomi 2018年11月23日
@@ -340,7 +342,19 @@ class Model
      */
     public function transaction($action)
     {
-        return $this->getDb()->transaction($action);
+        $db = $this->getDb();
+        // 开启事务
+        $db->begin();
+        try {
+            $action();
+            // 执行操作后提交
+            $db->commit();
+            return true;
+        } catch (DatabaseException $exception) {
+            // 回滚
+            $db->rollback();
+            return false;
+        }
     }
 
     /**
@@ -367,7 +381,7 @@ class Model
                 return $mapData;
             } else {
                 $data = [];
-                $prefix = Config::instance()->get('db')['prefix'];
+                $prefix = $this->prefix ? $this->prefix : Config::instance()->get('db')['prefix'];
                 $tableDesc = $this->tableDesc($prefix . $this->table);
                 foreach ($tableDesc as $value) {
                     if (array_key_exists($value['Field'], $mapData)) {

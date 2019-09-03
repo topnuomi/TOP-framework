@@ -77,17 +77,19 @@ class ObjectForMySQL implements DatabaseIfs
     public function update($table, $join, $on, $where, $order, $limit, $data)
     {
         // TODO Auto-generated method stub
+        $tableInfo = $this->parseTable($table);
         $join = $this->parseJoin($join, $on);
+        array_push($where, $tableInfo['where']);
         $where = $this->parseWhere($where);
         $order = $this->parseOrder($order);
         $limit = $this->parseLimit($limit);
-        $query = 'update ' . $table . "{$join} set ";
+        $query = 'update ' . $tableInfo['table'] . "{$join} set ";
         $updateData = [];
         foreach ($data as $key => $value) {
             if (!is_numeric($value) && !$value) {
                 $value = 'NULL';
             } else {
-                $value = '\'' . $this->mysqli->real_escape_string($value) . '\'';
+                $value = '\'' . mysqli_real_escape_string($this->link, $value) . '\'';
             }
             $updateData[] = $key . '=' . $value;
         }
@@ -111,6 +113,7 @@ class ObjectForMySQL implements DatabaseIfs
     public function find($table, $distinct, $field, $join, $on, $where, $order)
     {
         // TODO Auto-generated method stub
+        $tableInfo = $this->parseTable($table);
         $join = $this->parseJoin($join, $on);
         $distinct = $this->parseDistinct($distinct);
         if ($distinct) {
@@ -118,9 +121,10 @@ class ObjectForMySQL implements DatabaseIfs
         } else {
             $field = $this->parseField($field);
         }
+        array_push($where, $tableInfo['where']);
         $where = $this->parseWhere($where);
         $order = $this->parseOrder($order);
-        $this->sql = "select {$field} from $table{$join}{$where}{$order} limit 1";
+        $this->sql = "select {$field} from {$tableInfo['table']}{$join}{$where}{$order} limit 1";
         $result = $this->query($this->sql);
         return $result->fetch_assoc();
     }
@@ -141,6 +145,7 @@ class ObjectForMySQL implements DatabaseIfs
     public function select($table, $distinct, $field, $join, $on, $where, $order, $limit)
     {
         // TODO Auto-generated method stub
+        $tableInfo = $this->parseTable($table);
         $join = $this->parseJoin($join, $on);
         $distinct = $this->parseDistinct($distinct);
         if ($distinct) {
@@ -148,10 +153,11 @@ class ObjectForMySQL implements DatabaseIfs
         } else {
             $field = $this->parseField($field);
         }
+        array_push($where, $tableInfo['where']);
         $where = $this->parseWhere($where);
         $order = $this->parseOrder($order);
         $limit = $this->parseLimit($limit);
-        $this->sql = "select {$field} from {$table}{$join}{$where}{$order}{$limit}";
+        $this->sql = "select {$field} from {$tableInfo['table']}{$join}{$where}{$order}{$limit}";
         $result = $this->query($this->sql);
         return $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -171,12 +177,14 @@ class ObjectForMySQL implements DatabaseIfs
     public function delete($effect, $table, $join, $on, $where, $order, $limit)
     {
         // TODO Auto-generated method stub
+        $tableInfo = $this->parseTable($table);
         $effect = $this->parseEffect($effect);
         $join = $this->parseJoin($join, $on);
+        array_push($where, $tableInfo['where']);
         $where = $this->parseWhere($where);
         $order = $this->parseOrder($order);
         $limit = $this->parseLimit($limit);
-        $this->sql = "delete{$effect} from $table{$join}{$where}{$order}{$limit}";
+        $this->sql = "delete{$effect} from {$tableInfo['table']}{$join}{$where}{$order}{$limit}";
         $this->query($this->sql);
         return $this->mysqli->affected_rows;
     }
@@ -198,27 +206,6 @@ class ObjectForMySQL implements DatabaseIfs
     }
 
     /**
-     * 计数
-     * @param $table
-     * @param $field
-     * @param $join
-     * @param $on
-     * @param $where
-     * @return mixed
-     * @throws DatabaseException
-     */
-    public function count($table, $field, $join, $on, $where)
-    {
-        $field = $this->parseField($field);
-        $join = $this->parseJoin($join, $on);
-        $where = $this->parseWhere($where);
-        $this->sql = "select count({$field}) from $table{$join}{$where}";
-        $result = $this->query($this->sql);
-        $count = $result->fetch_array();
-        return $count[0];
-    }
-
-    /**
      * 公共方法
      * @param $table
      * @param $distinct
@@ -232,6 +219,7 @@ class ObjectForMySQL implements DatabaseIfs
      */
     public function common($table, $distinct, $field, $join, $on, $where, $type)
     {
+        $tableInfo = $this->parseTable($table);
         $distinct = $this->parseDistinct($distinct);
         if ($distinct) {
             $field = $distinct;
@@ -239,8 +227,9 @@ class ObjectForMySQL implements DatabaseIfs
             $field = $this->parseField($field);
         }
         $join = $this->parseJoin($join, $on);
+        array_push($where, $tableInfo['where']);
         $where = $this->parseWhere($where);
-        $this->sql = "select {$type}({$field}) from {$table}{$join}{$where}";
+        $this->sql = "select {$type}({$field}) from {$tableInfo['table']}{$join}{$where}";
         $result = $this->query($this->sql);
         $data = $result->fetch_array();
         if (isset($data[0])) {
@@ -248,6 +237,30 @@ class ObjectForMySQL implements DatabaseIfs
         } else {
             return false;
         }
+    }
+
+    /**
+     * 开启事务
+     */
+    public function begin()
+    {
+        $this->mysqli->begin_transaction();
+    }
+
+    /**
+     * 提交
+     */
+    public function commit()
+    {
+        $this->mysqli->commit();
+    }
+
+    /**
+     * 回滚
+     */
+    public function rollback()
+    {
+        $this->mysqli->rollback();
     }
 
     /**
@@ -275,6 +288,36 @@ class ObjectForMySQL implements DatabaseIfs
         return trim($this->sql, ' ');
     }
 
+    /**
+     * 解析表信息
+     * @param $table
+     * @return array
+     */
+    private function parseTable($table)
+    {
+        $info = [];
+        // 如果是多表查询，给当前表名别名this
+        if ($table[1] === true) {
+            $info['table'] = $table[0] . ' as this';
+            $info['where'] = [];
+            // 如果存在主键的条件，给键名加上别名
+            if (!empty($table[2])) {
+                $field = 'this.' . array_keys($table[2])[0];
+                $value = array_values($table[2])[0];
+                $info['where'] = [$field => $value];
+            }
+        } else {
+            $info['table'] = $table[0];
+            $info['where'] = $table[2];
+        }
+        return $info;
+    }
+
+    /**
+     * 解析多表的删除
+     * @param $effect
+     * @return string
+     */
     public function parseEffect($effect)
     {
         if ($effect) {
@@ -287,7 +330,7 @@ class ObjectForMySQL implements DatabaseIfs
     }
 
     /**
-     *
+     * 解析数据去重
      * @param $distinct
      * @return string
      */
@@ -402,16 +445,19 @@ class ObjectForMySQL implements DatabaseIfs
     {
         $join = [];
         for ($i = 0; $i < count($data); $i++) {
-            if (is_array($on[$i])) {
-                $pieces = [];
-                foreach ($on[$i] as $key => $value) {
-                    $pieces[] = $key . ' = ' . $value;
+            $string = null;
+            if (isset($on[$i])) {
+                if (is_array($on[$i])) {
+                    $pieces = [];
+                    foreach ($on[$i] as $key => $value) {
+                        $pieces[] = $key . ' = ' . $value;
+                    }
+                    $string = ' on ' . implode(' and ', $pieces);
+                } else {
+                    $string = ' on ' . $on[$i];
                 }
-                $onString = implode(' and ', $pieces);
-            } else {
-                $onString = $on[$i];
             }
-            $join[] = $data[$i][0] . ' join ' . $data[$i][1] . ($data[$i][2] ? ' as ' . $data[$i][2] : '') . ' on ' . $onString;
+            $join[] = $data[$i][0] . ' join ' . $data[$i][1] . ($data[$i][2] ? ' as ' . $data[$i][2] : '') . $string;
         }
         if (!empty($join)) {
             return ' ' . implode(' ', $join);

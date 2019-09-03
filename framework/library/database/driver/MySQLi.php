@@ -80,11 +80,13 @@ class MySQLi implements DatabaseIfs
     public function update($table, $join, $on, $where, $order, $limit, $data)
     {
         // TODO Auto-generated method stub
-        $join = $this->processJoin($join, $on);
-        $where = $this->processWhere($where);
-        $order = $this->processOrder($order);
-        $limit = $this->processLimit($limit);
-        $query = 'update ' . $table . "{$join} set ";
+        $tableInfo = $this->parseTable($table);
+        $join = $this->parseJoin($join, $on);
+        array_push($where, $tableInfo['where']);
+        $where = $this->parseWhere($where);
+        $order = $this->parseOrder($order);
+        $limit = $this->parseLimit($limit);
+        $query = "update {$tableInfo['table']}{$join} set ";
         $updateData = [];
         foreach ($data as $key => $value) {
             if (!is_numeric($value) && !$value) {
@@ -114,16 +116,18 @@ class MySQLi implements DatabaseIfs
     public function find($table, $distinct, $field, $join, $on, $where, $order)
     {
         // TODO Auto-generated method stub
-        $join = $this->processJoin($join, $on);
-        $distinct = $this->processDistinct($distinct);
+        $tableInfo = $this->parseTable($table);
+        $join = $this->parseJoin($join, $on);
+        $distinct = $this->parseDistinct($distinct);
         if ($distinct) {
             $field = $distinct;
         } else {
-            $field = $this->processField($field);
+            $field = $this->parseField($field);
         }
-        $where = $this->processWhere($where);
-        $order = $this->processOrder($order);
-        $this->sql = "select {$field} from $table{$join}{$where}{$order} limit 1";
+        array_push($where, $tableInfo['where']);
+        $where = $this->parseWhere($where);
+        $order = $this->parseOrder($order);
+        $this->sql = "select {$field} from {$tableInfo['table']}{$join}{$where}{$order} limit 1";
         $result = $this->query($this->sql);
         return mysqli_fetch_assoc($result);
     }
@@ -144,17 +148,19 @@ class MySQLi implements DatabaseIfs
     public function select($table, $distinct, $field, $join, $on, $where, $order, $limit)
     {
         // TODO Auto-generated method stub
-        $join = $this->processJoin($join, $on);
-        $distinct = $this->processDistinct($distinct);
+        $tableInfo = $this->parseTable($table);
+        $join = $this->parseJoin($join, $on);
+        $distinct = $this->parseDistinct($distinct);
         if ($distinct) {
             $field = $distinct;
         } else {
-            $field = $this->processField($field);
+            $field = $this->parseField($field);
         }
-        $where = $this->processWhere($where);
-        $order = $this->processOrder($order);
-        $limit = $this->processLimit($limit);
-        $this->sql = "select {$field} from {$table}{$join}{$where}{$order}{$limit}";
+        array_push($where, $tableInfo['where']);
+        $where = $this->parseWhere($where);
+        $order = $this->parseOrder($order);
+        $limit = $this->parseLimit($limit);
+        $this->sql = "select {$field} from {$tableInfo['table']}{$join}{$where}{$order}{$limit}";
         $result = $this->query($this->sql);
         return mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
@@ -174,12 +180,14 @@ class MySQLi implements DatabaseIfs
     public function delete($effect, $table, $join, $on, $where, $order, $limit)
     {
         // TODO Auto-generated method stub
-        $effect = $this->effect($effect);
-        $join = $this->processJoin($join, $on);
-        $where = $this->processWhere($where);
-        $order = $this->processOrder($order);
-        $limit = $this->processLimit($limit);
-        $this->sql = "delete{$effect} from $table{$join}{$where}{$order}{$limit}";
+        $tableInfo = $this->parseTable($table);
+        $effect = $this->parseEffect($effect);
+        $join = $this->parseJoin($join, $on);
+        array_push($where, $tableInfo['where']);
+        $where = $this->parseWhere($where);
+        $order = $this->parseOrder($order);
+        $limit = $this->parseLimit($limit);
+        $this->sql = "delete{$effect} from {$tableInfo['table']}{$join}{$where}{$order}{$limit}";
         $this->query($this->sql);
         return mysqli_affected_rows($this->link);
     }
@@ -201,27 +209,6 @@ class MySQLi implements DatabaseIfs
     }
 
     /**
-     * 计数
-     * @param $table
-     * @param $field
-     * @param $join
-     * @param $on
-     * @param $where
-     * @return mixed
-     * @throws \Exception
-     */
-    public function count($table, $field, $join, $on, $where)
-    {
-        $field = $this->processField($field);
-        $join = $this->processJoin($join, $on);
-        $where = $this->processWhere($where);
-        $this->sql = "select count({$field}) from $table{$join}{$where}";
-        $result = $this->query($this->sql);
-        $count = mysqli_fetch_array($result);
-        return $count[0];
-    }
-
-    /**
      * 公共方法
      * @param $table
      * @param $field
@@ -234,15 +221,17 @@ class MySQLi implements DatabaseIfs
      */
     public function common($table, $distinct, $field, $join, $on, $where, $type)
     {
-        $distinct = $this->processDistinct($distinct);
+        $tableInfo = $this->parseTable($table);
+        $distinct = $this->parseDistinct($distinct);
         if ($distinct) {
             $field = $distinct;
         } else {
-            $field = $this->processField($field);
+            $field = $this->parseField($field);
         }
-        $join = $this->processJoin($join, $on);
-        $where = $this->processWhere($where);
-        $this->sql = "select {$type}({$field}) from {$table}{$join}{$where}";
+        $join = $this->parseJoin($join, $on);
+        array_push($where, $tableInfo['where']);
+        $where = $this->parseWhere($where);
+        $this->sql = "select {$type}({$field}) from {$tableInfo['table']}{$join}{$where}";
         $result = $this->query($this->sql);
         $data = mysqli_fetch_array($result);
         if (isset($data[0])) {
@@ -250,6 +239,30 @@ class MySQLi implements DatabaseIfs
         } else {
             return false;
         }
+    }
+
+    /**
+     * 事务
+     */
+    public function begin()
+    {
+        mysqli_begin_transaction($this->link);
+    }
+
+    /**
+     * 提交
+     */
+    public function commit()
+    {
+        mysqli_commit($this->link);
+    }
+
+    /**
+     * 回滚
+     */
+    public function rollback()
+    {
+        mysqli_rollback($this->link);
     }
 
     /**
@@ -264,27 +277,8 @@ class MySQLi implements DatabaseIfs
         if (!$result) {
             throw new DatabaseException(mysqli_error($this->link));
         }
-        // $this->writeLogs($result, $query);
+        $this->writeLogs($result, $query);
         return $result;
-    }
-
-    /**
-     * MySQL事务
-     * @param $action
-     * @return bool
-     * @throws DatabaseException
-     */
-    public function transaction($action)
-    {
-        try {
-            $this->query('start transaction');
-            $action();
-            $this->query('commit');
-            return true;
-        } catch (DatabaseException $e) {
-            $this->query('rollback');
-            throw new DatabaseException($e->getMessage());
-        }
     }
 
     /**
@@ -297,7 +291,37 @@ class MySQLi implements DatabaseIfs
         return trim($this->sql, ' ');
     }
 
-    public function effect($effect)
+    /**
+     * 解析表信息
+     * @param $table
+     * @return array
+     */
+    private function parseTable($table)
+    {
+        $info = [];
+        // 如果是多表查询，给当前表名别名this
+        if ($table[1] === true) {
+            $info['table'] = $table[0] . ' as this';
+            $info['where'] = [];
+            // 如果存在主键的条件，给键名加上别名
+            if (!empty($table[2])) {
+                $field = 'this.' . array_keys($table[2])[0];
+                $value = array_values($table[2])[0];
+                $info['where'] = [$field => $value];
+            }
+        } else {
+            $info['table'] = $table[0];
+            $info['where'] = $table[2];
+        }
+        return $info;
+    }
+
+    /**
+     * 解析多表的删除
+     * @param $effect
+     * @return string
+     */
+    public function parseEffect($effect)
     {
         if ($effect) {
             if (is_array($effect)) {
@@ -308,7 +332,12 @@ class MySQLi implements DatabaseIfs
         return '';
     }
 
-    private function processDistinct($distinct)
+    /**
+     * 解析数据去重
+     * @param $distinct
+     * @return string
+     */
+    private function parseDistinct($distinct)
     {
         if ($distinct) {
             if (is_array($distinct)) {
@@ -324,7 +353,7 @@ class MySQLi implements DatabaseIfs
      * @param string|array $field
      * @return string
      */
-    private function processField($field)
+    private function parseField($field)
     {
         if (!$field) {
             $field = '*';
@@ -340,7 +369,7 @@ class MySQLi implements DatabaseIfs
      * @param string $glue
      * @return string
      */
-    private function processWhere(array $array, $glue = 'and')
+    private function parseWhere(array $array, $glue = 'and')
     {
         $where = [];
         foreach ($array as $value) {
@@ -384,7 +413,7 @@ class MySQLi implements DatabaseIfs
      * @param string $order
      * @return string
      */
-    private function processOrder($order = '')
+    private function parseOrder($order = '')
     {
         if ($order) {
             $order = ' order by ' . $order;
@@ -397,7 +426,7 @@ class MySQLi implements DatabaseIfs
      * @param string $limit
      * @return string
      */
-    private function processLimit($limit = '')
+    private function parseLimit($limit = '')
     {
         if ($limit) {
             if (is_array($limit)) {
@@ -415,20 +444,23 @@ class MySQLi implements DatabaseIfs
      * @param string|array $on
      * @return string
      */
-    private function processJoin($data, $on)
+    private function parseJoin($data, $on)
     {
         $join = [];
         for ($i = 0; $i < count($data); $i++) {
-            if (is_array($on[$i])) {
-                $pieces = [];
-                foreach ($on[$i] as $key => $value) {
-                    $pieces[] = $key . ' = ' . $value;
+            $string = null;
+            if (isset($on[$i])) {
+                if (is_array($on[$i])) {
+                    $pieces = [];
+                    foreach ($on[$i] as $key => $value) {
+                        $pieces[] = $key . ' = ' . $value;
+                    }
+                    $string = ' on ' . implode(' and ', $pieces);
+                } else {
+                    $string = ' on ' . $on[$i];
                 }
-                $onString = implode(' and ', $pieces);
-            } else {
-                $onString = $on[$i];
             }
-            $join[] = $data[$i][0] . ' join ' . $data[$i][1] . ($data[$i][2] ? ' as ' . $data[$i][2] : '') . ' on ' . $onString;
+            $join[] = $data[$i][0] . ' join ' . $data[$i][1] . ($data[$i][2] ? ' as ' . $data[$i][2] : '') . $string;
         }
         if (!empty($join)) {
             return ' ' . implode(' ', $join);
@@ -461,6 +493,11 @@ class MySQLi implements DatabaseIfs
         return $value;
     }
 
+    /**
+     * SQL存文件
+     * @param $result
+     * @param $query
+     */
     private function writeLogs($result, $query)
     {
         if (DEBUG) {
@@ -469,10 +506,8 @@ class MySQLi implements DatabaseIfs
                 $error = mysqli_error($this->link);
             }
             $nowTime = date('Y-m-d H:i:s', time());
-            $content = <<<EOF
-[{$nowTime}] SQL: {$query} {$error}\n
-EOF;
-            file_put_contents(FRAMEWORK_PATH . '/db_logs.txt', $content, FILE_APPEND);
+            $content = "[{$nowTime}] SQL: {$query} {$error}" . PHP_EOL;
+            file_put_contents('./runtime/database_logs.txt', $content, FILE_APPEND);
         }
     }
 
