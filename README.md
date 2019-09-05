@@ -652,6 +652,24 @@ $this->select(function ($model) {
 
 见join方法
 
+23. transaction
+
+事务处理
+
+```
+use app\home\model\Users;
+
+$userModel = model(Users::class);
+$res = $userModel->transaction(function ($model) {
+    $model->delete(4);
+    $model->update([
+        'id' => 3,
+    ], 1);
+});
+var_dump($res);
+```
+上例中，开启了一个事务，先删除一条记录，再更新一条记录的ID为已存在的ID，更新操作必定不会执行成功，所以数据将会执行回滚，删除数据也不会执行成功，var_dump($res)结果为false。返回值为布尔值，成功返回true，失败返回false。transaction方法接收一个匿名函数，匿名函数形参为当前模型。SQL执行失败时会回滚事务，也可以通过手动抛出DatabaseException异常来回滚事务。
+
 #### 属性
 1. $table
 指定当前模型的表名（优先于模型名称）
@@ -676,7 +694,14 @@ protected $map = [
 ];
 ```
 
-4. $inReplace
+4. $prefix
+指定当前表前缀
+
+```
+protected $prefix = 'cms_';
+```
+
+5. $inReplace
 入库时替换值
 
 数据入库时自动格式化时间为unix时间戳
@@ -694,7 +719,7 @@ protected function formatTime($time)
 
 注意：当以字段为键名的数组的值为一个字符串时，则该字符串为即将调用的函数，如果值为一个数组，且无第二个值或第二个值为false、空，则该数组第一个值为即将调用的函数，如第二个值为true，则表示当前调用的方法存在于本类或父类中。
 
-5. $outReplace
+6. $outReplace
 出库时替换值
 
 ```
@@ -719,12 +744,12 @@ protected function outFormatSex($sex)
 
 注意：当以字段为键名的数组的值为一个字符串时，则该字符串为即将调用的函数，如果值为一个数组，且无第二个值或第二个值为false、空，则该数组第一个值为即将调用的函数，如第二个值为true，则表示当前调用的方法存在于本类或父类中。
 
-6. $updateReplace
+7. $updateReplace
 数据更新时替换值
 
 基本类似于inReplace，但仅当执行更新操作时执行。
 
-7. $validate
+8. $validate
 自动验证
 
 验证不为空
@@ -797,6 +822,8 @@ $cache->set('lists', [0, 1, 2, 3, 4, 5], 30);
 $cache->get('lists');
 ```
 
+第一个参数为缓存标识，第二个可选参数为当前缓存不存在即将调用的匿名函数，并将返回值当作第一次调用的缓存值。
+
 3. remove
 
 根据key删除缓存
@@ -812,6 +839,7 @@ $cache->exists('lists');
 ```
 
 ### 文件缓存
+1. 使用判断设置缓存
 ```
 use top\library\cache\driver\File;
 
@@ -822,17 +850,21 @@ if (!$cache->exists('text')) {
 }
 $data = $cache->get('text');
 ```
-### Redis
+2. get方法
 ```
-use top\library\cache\driver\Redis;
+use top\library\cache\driver\File;
 
-$cache = Redis::instance();
-if (!$cache->exists('text')) {
+$cache = File::instance();
+$data = $cache->get('text', function ($cache) {
     $text = '测试';
     $cache->set('text', $text);
-}
-$data = $cache->get('text');
+    return $text;
+});
 ```
+### Redis
+
+使用方式同File缓存
+
 ### 自定义缓存类
 文件存放位置 'framework/library/cache/driver' 。必须实现CacheIfs接口，具体方法看缓存介绍。
 
@@ -925,9 +957,41 @@ $effect、$table、$join、$on、$where、$order、$limit
 执行SQL语句。参数列表
 $query
 
-8. close
+8. begin
+
+开启数据库事务
+
+9. commit
+
+提交事务
+
+10. rollback
+
+回滚
+
+11. close
 
 关闭数据库连接。
+
+Database类的事务与Model类不同，Model类进行了更进一步的封装。Database类事务使用示例：
+```
+use top\library\Database;
+
+$db = Database::table('users');
+// 开启事务
+$db->begin();
+try {
+    // 一些对数据库的改动操作
+
+    // 提交
+    $db->commit();
+} catch (DatabaseException $exception) {
+    // 回滚
+    $db->rollback();
+
+    // 其他操作
+}
+```
 
 ### Request类
 获取实例
