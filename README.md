@@ -973,6 +973,7 @@ $query
 
 关闭数据库连接。
 
+#### 注意
 Database类的事务与Model类不同，Model类进行了更进一步的封装。Database类事务使用示例：
 ```
 use top\library\Database;

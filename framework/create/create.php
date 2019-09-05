@@ -1,18 +1,46 @@
 <?php
 
+/**
+ * 自动创建模块类
+ * Class Create
+ */
 class Create
 {
 
-    private $name;
+    /**
+     * 模块名
+     * @var string
+     */
+    private $name = '';
 
-    private $start;
+    /**
+     * 命名空间
+     * @var string
+     */
+    private $namespace = '';
 
-    private $namespace;
+    /**
+     * 入口文件名
+     * @var string
+     */
+    private $start = '';
 
-    private $base;
+    /**
+     * 默认项目根目录
+     * @var string
+     */
+    private $base = '';
 
-    private $dir;
+    /**
+     * 当前目录
+     * @var string
+     */
+    private $dir = '';
 
+    /**
+     * 模块目录
+     * @var string
+     */
     private $projectPath;
 
     public function __construct($start, $namespace, $name)
@@ -27,6 +55,11 @@ class Create
         $this->create();
     }
 
+    /**
+     * 替换内容
+     * @param $content
+     * @return mixed
+     */
     public function replaceContent($content)
     {
         return str_replace([
@@ -38,9 +71,13 @@ class Create
         ], $content);
     }
 
+    /**
+     * 创建入口文件
+     * @return bool
+     */
     public function createStartFile()
     {
-        if ($this->start && !file_exists($this->start)) {
+        if ($this->start && !is_file($this->start)) {
             $content = file_get_contents($this->dir . 'tpl/index.tpl');
             $content = $this->replaceContent($content);
             if (file_put_contents($this->start, $content)) {
@@ -51,6 +88,9 @@ class Create
         return true;
     }
 
+    /**
+     * 创建配置文件
+     */
     public function createConfig()
     {
         $configPath = $this->projectPath . 'config/';
@@ -58,7 +98,7 @@ class Create
         if (!is_dir($configPath)) {
             mkdir($configPath, 0755, true);
         }
-        if (!file_exists($configFile)) {
+        if (!is_file($configFile)) {
             $content = file_get_contents($this->dir . 'tpl/config/config.tpl');
             $content = $this->replaceContent($content);
             $realConfigFile = $this->base . '/' . $this->namespace . '/' . $this->name . '/config/config.php';
@@ -66,9 +106,11 @@ class Create
                 exit('error -2');
             }
         }
-        return true;
     }
 
+    /**
+     * 创建MVC目录及文件
+     */
     public function createMVC()
     {
         $dirArray = [
@@ -82,7 +124,7 @@ class Create
             }
         }
         $controllerFile = $this->projectPath . 'controller/index.php';
-        if (!file_exists($controllerFile)) {
+        if (!is_file($controllerFile)) {
             $content = file_get_contents($this->dir . 'tpl/controller/index.tpl');
             $content = $this->replaceContent($content);
             if (!file_put_contents($this->projectPath . 'controller/Index.php', $content)) {
@@ -90,7 +132,7 @@ class Create
             }
         }
         $modelFile = $this->projectPath . 'model/demo.php';
-        if (!file_exists($modelFile)) {
+        if (!is_file($modelFile)) {
             $content = file_get_contents($this->dir . 'tpl/model/demo.tpl');
             $content = $this->replaceContent($content);
             if (!file_put_contents($this->projectPath . 'model/Demo.php', $content)) {
@@ -98,10 +140,10 @@ class Create
             }
         }
         $viewFile = $this->projectPath . 'view/index/index.html';
-        if (!file_exists($viewFile)) {
+        if (!is_file($viewFile)) {
             $content = file_get_contents($this->dir . 'tpl/view/index.tpl');
-            if (!is_dir($this->projectPath . 'view/index/')) {
-                mkdir($this->projectPath . 'view/index/', 0755, true);
+            if (!is_dir($this->projectPath . 'view/Index/')) {
+                mkdir($this->projectPath . 'view/Index/', 0755, true);
             }
             if (!file_put_contents($this->projectPath . 'view/Index/index.html', $content)) {
                 exit('error -6');
@@ -109,26 +151,35 @@ class Create
         }
     }
 
+    /**
+     * 创建函数库文件
+     */
     public function createFunctions()
     {
         $file = $this->projectPath . 'functions.php';
-        if (!file_exists($file)) {
+        if (!is_file($file)) {
             if (!file_put_contents($file, "<?php\r\n")) {
                 exit('-7');
             }
         }
     }
 
+    /**
+     * 创建路由文件
+     */
     public function createRoute()
     {
         $file = $this->projectPath . '../route.php';
-        if (!file_exists($file)) {
+        if (!is_file($file)) {
             if (!file_put_contents($file, file_get_contents($this->dir . 'tpl/route.tpl'))) {
                 exit('-8');
             }
         }
     }
 
+    /**
+     * 执行创建操作
+     */
     public function create()
     {
         $this->createStartFile();

@@ -2,14 +2,14 @@
 
 namespace app\{name}\controller;
 
-use top\library\Controller;
+use app\{name}\model\Demo;
 
-class Index extends Controller
+class Index
 {
 
     public function index()
     {
-        $model = model(\app\{name}\model\Demo::class);
+        $model = model(Demo::class);
         return [
             'hello' => $model->get()
         ];
