@@ -56,7 +56,7 @@ class Create
         $configPath = $this->projectPath . 'config/';
         $configFile = $configPath . 'config.php';
         if (!is_dir($configPath)) {
-            mkdir($configPath, 0777, true);
+            mkdir($configPath, 0755, true);
         }
         if (!file_exists($configFile)) {
             $content = file_get_contents($this->dir . 'tpl/config/config.tpl');
@@ -78,7 +78,7 @@ class Create
         ];
         for ($i = 0; $i < count($dirArray); $i++) {
             if (!is_dir($this->projectPath . $dirArray[$i] . '/')) {
-                mkdir($this->projectPath . $dirArray[$i] . '/', 0777, true);
+                mkdir($this->projectPath . $dirArray[$i] . '/', 0755, true);
             }
         }
         $controllerFile = $this->projectPath . 'controller/index.php';
@@ -101,7 +101,7 @@ class Create
         if (!file_exists($viewFile)) {
             $content = file_get_contents($this->dir . 'tpl/view/index.tpl');
             if (!is_dir($this->projectPath . 'view/index/')) {
-                mkdir($this->projectPath . 'view/index/', 0777, true);
+                mkdir($this->projectPath . 'view/index/', 0755, true);
             }
             if (!file_put_contents($this->projectPath . 'view/Index/index.html', $content)) {
                 exit('error -6');

@@ -129,7 +129,7 @@ class Framework
                 $path = './runtime/session/';
             }
             if (!is_dir($path)) {
-                mkdir($path, 0775, true);
+                mkdir($path, 0755, true);
             }
             define('SESSION_PATH', $path);
         }

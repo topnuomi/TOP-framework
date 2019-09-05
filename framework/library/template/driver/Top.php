@@ -49,7 +49,7 @@ class Top implements TemplateIfs
         $compileFileName = $this->config['compileDir'] . md5($filename) . '.php';
         if (!file_exists($compileFileName) || DEBUG === true) {
             if (!is_dir($this->config['compileDir'])) {
-                mkdir($this->config['compileDir'], 0777, true);
+                mkdir($this->config['compileDir'], 0755, true);
             }
             if (isset($this->config['tagLib']) && !empty($this->config['tagLib'])) {
                 foreach ($this->config['tagLib'] as $lib) {

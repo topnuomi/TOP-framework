@@ -205,7 +205,7 @@ class File implements CacheIfs
     private function createCacheDir()
     {
         if (!is_dir($this->dir)) {
-            mkdir($this->dir, 0777, true);
+            mkdir($this->dir, 0755, true);
         }
     }
 

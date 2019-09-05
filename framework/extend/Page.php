@@ -1,8 +1,7 @@
 <?php
 
-namespace system\extend;
+namespace top\extend;
 
-use top\library\Register;
 
 /**
  * 分页类
@@ -11,51 +10,74 @@ use top\library\Register;
 class Page
 {
 
-    // 每页显示记录数
-    public $listRow;
+    /**
+     * 记录总数
+     * @var int
+     */
+    private $total = 0;
 
-    // 记录总数
-    private $total;
+    /**
+     * 总页数
+     * @var int
+     */
+    private $totalPage = 0;
 
-    // 总页数
-    private $totalPage;
+    /**
+     * 当前页码
+     * @var int
+     */
+    public $page = 1;
 
-    // 当前页码
-    public $page;
+    /**
+     * 开始记录
+     * @var int
+     */
+    public $firstRow = 0;
 
-    public $firstRow;
+    /**
+     * 每页显示记录数
+     * @var int
+     */
+    public $listRow = 0;
 
     public function __construct($listRow, $total)
     {
         $this->listRow = $listRow;
         $this->total = $total;
         $this->page = (isset($_GET['p']) && $_GET['p']) ? (int)$_GET['p'] : ((isset($_POST['p']) && $_POST['p']) ? (int)$_POST['p'] : 1);
+        $this->totalPage = $this->totalPage();
+        $this->firstRow = $this->firstRow();
     }
 
+    /**
+     * 计算开始记录数
+     * @return float|int
+     */
     private function firstRow()
     {
         return ($this->page - 1) * $this->listRow;
     }
 
+    /**
+     * 计算总页数
+     * @return float
+     */
     private function totalPage()
     {
         return ceil($this->total / $this->listRow);
     }
 
-    public function process()
-    {
-        $this->totalPage = $this->totalPage();
-        $this->firstRow = $this->firstRow();
-        return $this;
-    }
-
+    /**
+     * 获取HTML
+     * @return string
+     */
     public function html()
     {
-        $url = Register::get('Route')->rawUri;
+        $uri = request()->uri(true);
         // 链接没有匹配&或?，配置了伪静态也就无所谓了
         $html = '<ul>';
         for ($i = 1; $i < $this->totalPage + 1; $i++) {
-            $html .= '<li><a href="' . u($url) . '?p=' . $i . '">' . $i . '</a></li>';
+            $html .= '<li><a href="' . u($uri) . '?p=' . $i . '">' . $i . '</a></li>';
         }
         $html .= '</ul>';
         return $html;

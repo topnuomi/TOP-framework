@@ -178,6 +178,19 @@ class Request
     }
 
     /**
+     * 当前请求的URI
+     * @param bool $raw
+     * @return mixed
+     */
+    public function uri($raw = false)
+    {
+        if ($raw) {
+            return $this->router->rawUri;
+        }
+        return $this->router->uri;
+    }
+
+    /**
      * 模块名称
      * @return mixed
      */
@@ -190,7 +203,7 @@ class Request
      * 控制器完整类名
      * @return mixed
      */
-    public function classname()
+    public function className()
     {
         return $this->router->class;
     }
@@ -239,7 +252,7 @@ class Request
 
     /**
      * GET数据
-     * @param null $name
+     * @param string $name
      * @param array $except
      * @param string $filter
      * @return null
@@ -251,7 +264,7 @@ class Request
 
     /**
      * POST数据
-     * @param null $name
+     * @param string $name
      * @param array $except
      * @param string $filter
      * @return null

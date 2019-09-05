@@ -18,6 +18,18 @@ class Router
     private $driver;
 
     /**
+     * 当前URI
+     * @var string
+     */
+    public $uri = '';
+
+    /**
+     * 当前原始URI
+     * @var string
+     */
+    public $rawUri = '';
+
+    /**
      * 模块
      * @var string
      */
@@ -87,6 +99,8 @@ class Router
      */
     public function handler()
     {
+        $this->uri = $this->driver->uri;
+        $this->rawUri = $this->driver->rawUri;
         $this->module = $this->driver->module;
         $this->class = $this->driver->class;
         $this->ctrl = $this->driver->ctrl;
