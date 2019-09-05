@@ -105,8 +105,8 @@ class Database
     private function __construct($table, $pk, $prefix)
     {
         $driver = Register::get('DBDriver');
-        $this->config = $config = Config::instance()->get('db');
-        $this->table = (($prefix) ? $prefix : $config['prefix']) . $table;
+        $this->config = Config::instance()->get('db');
+        $this->table = $this->getTableName($prefix, $table);
         $this->pk = $pk;
         $this->setDriver($driver, $this->config);
     }
@@ -121,10 +121,11 @@ class Database
      */
     public static function table($table, $pk = '', $prefix = '')
     {
-        if (!isset(self::$instance[$table])) {
-            self::$instance[$table] = new self($table, $pk, $prefix);
+        $ident = md5($prefix . $table);
+        if (!isset(self::$instance[$ident])) {
+            self::$instance[$ident] = new self($table, $pk, $prefix);
         }
-        return self::$instance[$table];
+        return self::$instance[$ident];
     }
 
     /**
@@ -136,6 +137,25 @@ class Database
     private function setDriver(DatabaseIfs $driver, $config)
     {
         self::$driver = $driver->connect($config);
+    }
+
+    /**
+     * 获取表名
+     * @param $prefix
+     * @param $table
+     * @return string
+     */
+    private function getTableName($prefix, $table)
+    {
+        // 无前缀
+        if ($prefix === false) {
+            $tableName = $table;
+        } elseif (!$prefix) {
+            $tableName = $this->config['prefix'] . $table;
+        } else {
+            $tableName = $prefix . $table;
+        }
+        return $tableName;
     }
 
     /**
