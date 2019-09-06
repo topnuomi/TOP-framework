@@ -2,7 +2,7 @@
 *这是一个部分代码源自三年前毕业设计中的代码集合，后经过一系列重构，形成的一套框架。在此准备写一个文档。*
 
 ## 目录结构
-遵循PSR-2规范的编码风格，遵循PSR-4自动加载规范（非composer，框架可脱离composer运行）。
+遵循PSR-2规范的编码风格，遵循PSR-4自动加载规范。
 基本目录结构：
 ```
 -application        应用目录
@@ -316,10 +316,10 @@ class Extend
 类创建完成后，到配置文件config.php的view下的tagLib中添加Extend类
 ```
 'view' => [
-        'tagLib' => [
-            \app\home\taglib\Extend::class
-        ]
-    ],
+    'tagLib' => [
+        \app\home\taglib\Extend::class
+    ]
+],
 ```
 添加完成后即可在模板中使用
 ```
@@ -389,7 +389,7 @@ return [
 
 ```
 'view' => [
-        'engine' => 'Top',
+    'engine' => 'Top',
 ],
 ```
 
@@ -1190,4 +1190,3 @@ $instance->get('appid');
 ```
 
 ### Composer
-框架支持使用composer，文件位置 'composer.json'。
