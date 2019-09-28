@@ -176,6 +176,8 @@ class Engine
                 $replace[] = '<?php echo (' . $matches[1][$i] . '); ?>';
             } elseif ($start == ':') {
                 $replace[] = '<?php echo (' . ltrim($matches[1][$i], ':') . '); ?>';
+            } elseif ($start == '@') {
+                $replace[] = '<?php echo (' . ltrim($matches[1][$i], '@') . '); ?>';
             } else {
                 $replace[] = $matches[0][$i];
             }
@@ -326,7 +328,7 @@ class Engine
     private function getAttr($string, $tags = [])
     {
         $attr = [];
-        $attrPattern = '/[ +](.*?)=[\'"](.*?)[\'"]/is';
+        $attrPattern = '/[ +](.*?)=["](.*?)["]/is';
         preg_match_all($attrPattern, $string, $result);
         if (isset($result[0]) && !empty($result[0])) {
             foreach ($result[1] as $key => $value) {

@@ -4,6 +4,7 @@ namespace top\library;
 
 use top\library\exception\RouteException;
 use top\library\route\ifs\RouteIfs;
+use top\middleware\ifs\MiddlewareIfs;
 
 /**
  * 路由类
@@ -18,97 +19,180 @@ class Router
     private $driver;
 
     /**
-     * 当前URI
-     * @var string
+     * 自定义路由标识
+     * @var null
      */
-    public $uri = '';
+    private $ident = null;
 
     /**
-     * 当前原始URI
-     * @var string
-     */
-    public $rawUri = '';
-
-    /**
-     * 模块
-     * @var string
-     */
-    public $module = '';
-
-    /**
-     * 完整控制器类名
-     * @var string
-     */
-    public $class = '';
-
-    /**
-     * 控制器
-     * @var string
-     */
-    public $ctrl = '';
-
-    /**
-     * 方法名称
-     * @var string
-     */
-    public $method = '';
-
-    /**
-     * 请求参数
+     * 自定义路由规则
      * @var array
      */
-    public $params = [];
+    private $rule = [];
 
     /**
      * 实例化时注入具体路由实现和默认位置
      * Router constructor.
      * @param RouteIfs $driver
-     * @param $default
      */
-    public function __construct(RouteIfs $driver, $default)
+    public function __construct(RouteIfs $driver)
     {
         $this->driver = $driver;
-        $this->driver->default = $default;
-        $this->driver->processing();
     }
 
     /**
-     * 执行前进行必要检查
+     * 完整控制器名
+     * @return mixed
+     */
+    public function controllerFullName()
+    {
+        return $this->driver->controllerFullName();
+    }
+
+    /**
+     * 控制器名
+     * @return mixed
+     */
+    public function controller()
+    {
+        return $this->driver->controller();
+    }
+
+    /**
+     * 模块名
+     * @return mixed
+     */
+    public function module()
+    {
+        return $this->driver->module();
+    }
+
+    /**
+     * 方法名
+     * @return mixed
+     */
+    public function method()
+    {
+        return $this->driver->method();
+    }
+
+    /**
+     * 请求参数
+     * @return mixed
+     */
+    public function params()
+    {
+        return $this->driver->params();
+    }
+
+    /**
+     * 获取当前的URI
+     * @return array
+     */
+    public function uri()
+    {
+        $uri = null;
+        if (isset($_SERVER['PATH_INFO'])) {
+            $uri = $_SERVER['PATH_INFO'];
+        } elseif (isset($_GET['s']) && $_GET['s']) {
+            $uri = $_GET['s'];
+        }
+        $uri = str_replace('.html', '', trim($uri, '/'));
+        return $uri;
+    }
+
+    /**
+     * 处理用户自定义路由规则
+     * @param $uri
+     * @return string
      * @throws RouteException
      */
-    private function check()
+    private function customRule($uri)
     {
-        // 检查模块是否存在
-        if (!is_dir(APP_PATH . $this->module)) {
-            throw new RouteException('模块' . $this->module . '不存在');
+        // 准备检查自定义路由
+        $file = APP_PATH . 'route.php';
+        if (is_file($file)) $this->rule = require $file;
+        $uriArray = explode('/', $uri);
+        $ident = $this->ident = $uriArray[0];
+        // 如果标识存在，则准备替换URI
+        if (isset($this->rule[$ident])) {
+            $uri = $this->rule[$ident][0];
+            $paramString = null;
+            // 如果存在参数
+            if (isset($this->rule[$ident][1]) && $this->rule[$ident][1]) {
+                $param = (count($uriArray) > 1) ? array_slice($uriArray, 1) : [];
+                $paramNames = explode(',', $this->rule[$ident][1]);
+                for ($i = 0; $i < count($paramNames); $i++) {
+                    if (substr($paramNames[$i], 0, 1) == '?') { // 可选参数
+                        if (isset($param[$i]) && $param[$i]) { // 如果按顺序存在参数，且值有效
+                            $paramString .= substr($paramNames[$i], 1) . '/' . $param[$i] . '/';
+                        }
+                    } else {
+                        if (isset($param[$i]) && $param[$i]) {
+                            $paramString .= $paramNames[$i] . '/' . $param[$i] . '/';
+                        } else {
+                            throw new RouteException('链接中缺少必须参数' . $paramNames[$i]);
+                        }
+                    }
+                }
+            }
+            $uri .= '/' . rtrim($paramString, '/');
         }
-        // 检查控制器是否存在
-        if (!class_exists($this->class)) {
-            throw new RouteException('控制器' . $this->class . '不存在');
-        }
-        // 检查方法在控制器中是否存在
-        if (!in_array($this->method, get_class_methods($this->class))) {
-            throw new RouteException('方法' . $this->method . '在控制器' . $this->ctrl . '中不存在');
-        }
+
+        return $uri;
     }
 
     /**
-     * 处理结果返回
+     * 路由中间件
+     * @param \Closure $application
+     * @return mixed
+     */
+    public function middleware(\Closure $application)
+    {
+        // 不执行的中间件
+        $exceptMiddlewareArray = [];
+        // 加载配置文件中配置的中间件
+        $middlewareArray = Config::instance()->get('middleware');
+        // 合并路由中配置的中间件、不执行的中间件
+        if (isset($this->rule[$this->ident])) {
+            if (isset($this->rule[$this->ident][2]) && !empty(isset($this->rule[$this->ident][2]))) {
+                $middlewareArray = array_merge($middlewareArray, $this->rule[$this->ident][2]);
+            }
+            if (isset($this->rule[$this->ident][3]) && !empty(isset($this->rule[$this->ident][3]))) {
+                $exceptMiddlewareArray = $this->rule[$this->ident][3];
+            }
+        }
+        $middleware = array_reverse($middlewareArray);
+        $next = $application;
+        foreach ($middleware as $value) {
+            if (!in_array($value, $exceptMiddlewareArray)) {
+                $next = function () use ($next, $value) {
+                    $middleware = new $value;
+                    if ($middleware instanceof MiddlewareIfs) {
+                        return $middleware->handler($next);
+                    } else {
+                        throw new RouteException('中间件' . $value . '不属于MiddlewareIfs类型实例');
+                    }
+                };
+            }
+        }
+        return $next();
+    }
+
+    /**
+     * 处理URI
      * @return $this
-     * @throws RouteException
      */
     public function handler()
     {
-        $this->uri = $this->driver->uri;
-        $this->rawUri = $this->driver->rawUri;
-        $this->module = $this->driver->module;
-        $this->class = $this->driver->class;
-        $this->ctrl = $this->driver->ctrl;
-        $this->method = $this->driver->method;
-        $this->params = $this->driver->params;
-
-        $this->check();
-
+        $uri = $this->uri();
+        if ($uri) {
+            // 自定义路由规则
+            $uri = $this->customRule($uri);
+        }
+        // 初始化路由驱动
+        $this->driver->init(urldecode($uri));
         return $this;
     }
+
 }

@@ -22,7 +22,7 @@ class ResponseData
 
     public function __construct($data)
     {
-        if (DEBUG === false) {
+        if (DEBUG === false && php_sapi_name() != 'cli') {
             ob_clean();
         }
         $this->data = $this->checkData($data);

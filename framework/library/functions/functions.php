@@ -1,6 +1,33 @@
 <?php
 
 /**
+ * 获取headers
+ * @return array|false
+ */
+function get_header()
+{
+    if (PHP_SAPI === 'apache2handler') {
+        $headers = getallheaders();
+        $data = [];
+        foreach ($headers as $key => $value) {
+            $data[strtolower($key)] = $value;
+        }
+        unset($headers);
+        return $data;
+    } else {
+        $server = $_SERVER;
+        $headers = [];
+        foreach ($server as $key => $value) {
+            if ('http_' == strtolower(substr($key, 0, 5))) {
+                $headers[strtolower(substr($key, 5))] = $value;
+            }
+        }
+        unset($server);
+        return $headers;
+    }
+}
+
+/**
  * 过滤数组
  * @param array $array
  * @param string $filter
@@ -45,34 +72,12 @@ function model($class)
 }
 
 /**
- * print_r
- * @param array|string|int|object $value
- */
-function p($value)
-{
-    echo '<pre>';
-    print_r($value);
-    echo '</pre>';
-}
-
-/**
- * var_dump
- * @param array|string|int|object $value
- */
-function v($value)
-{
-    echo '<pre>';
-    var_dump($value);
-    echo '</pre>';
-}
-
-/**
  * 拼接链接（暂时先这样
  * @param string $url
  * @param string|int $param
  * @return string
  */
-function u($url, $param = '')
+function url($url, $param = '')
 {
     if (!empty($param) || is_numeric($param)) {
         if (is_array($param)) {
@@ -83,6 +88,37 @@ function u($url, $param = '')
     }
     $url = ltrim($url, '/');
     return '/' . $url . $param . '.html';
+}
+
+/**
+ * 设置视图缓存时间
+ * @param $sec
+ */
+function view_cache($sec)
+{
+    \top\library\View::instance()->cache($sec);
+}
+
+/**
+ * 参数传递
+ * @param $name
+ * @param $value
+ */
+function view_param($name, $value)
+{
+    \top\library\View::instance()->param($name, $value);
+}
+
+/**
+ * 显示视图
+ * @param string $file
+ * @param array $param
+ * @param bool $cache
+ * @return mixed
+ */
+function view($file = '', $param = [], $cache = false)
+{
+    return \top\library\View::instance()->fetch($file, $param, $cache);
 }
 
 /**
@@ -174,11 +210,17 @@ function get_client_ip($type = 0, $client = true)
 /**
  * 页面跳转
  * @param $url
+ * @return false|string
  */
 function redirect($url)
 {
-    header('location: ' . u($url));
-    exit;
+    if (request()->isAjax()) {
+        return json_encode([
+            'redirect' => $url,
+        ]);
+    } else {
+        header('location: ' . $url);
+    }
 }
 
 /**

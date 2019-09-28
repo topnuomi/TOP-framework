@@ -12,7 +12,7 @@ trait Json {
             return json_encode([
                 'msg' => $msg,
                 'code' => $code,
-                'data' => $data
+                'data' => $data,
             ]);
         }
     }

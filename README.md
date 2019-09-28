@@ -1,5 +1,5 @@
 # TOP-Framework
-*这是一个部分代码源自三年前毕业设计中的代码集合，后经过一系列重构，形成的一套框架。在此准备写一个文档。*
+*部分代码于四年前所写，后经过一系列重构，形成的一套框架。在此准备写一个文档。*
 
 ## 目录结构
 遵循PSR-2规范的编码风格，遵循PSR-4自动加载规范。
@@ -20,7 +20,7 @@
         -route          路由具体实现
         -template       模板引擎具体实现
         -......         实际调用的类
-    -middleware        面向控制器的中间件
+    -middleware        默认中间件
     -traits            通用trait
     -vendor            composer加载的类库
 -public              可访问公共资源
@@ -58,12 +58,6 @@ require '../framework/Framework.php';
 // 静态资源目录，缺省值：/resource/
 // Framework::resourcePath('/resource/');
 // 可使用常量RESOURCE取得该值
-
-// 当前入口文件默认模块，缺省值：home
-// Framework::defaultModule('home');
-
-// 路由模式，缺省值：1（pathinfo和兼容模式）
-// Framework::runType(1);
 
 Framework::appPath('../application/');
 Framework::startApp();
@@ -120,6 +114,7 @@ class Index
 4. view($file = '', $param = [], $cache = false)
 
 显示模板（得到模板文件渲染后的内容）。
+此外，控制器方法中可以使用view函数完成相同操作。
 
 5. redirect($url)
 
@@ -137,16 +132,29 @@ public function index()
 ```
 调用基础控制器中的view方法、并return出去，完成模板的展示。
 ### 模板传值
-1. view方法
+1. view方法/view函数
 ```
 public function index()
 {
     return $this->view(null, [
         'param' => 'Hello world!'
     ]);
+    return view(null, [
+        'param' => 'Hello world!'
+    ]);
 }
 ```
-2. 直接return数组
+2. view_param函数
+```
+public function index()
+{
+    view_param([
+        'param' => 'Hello world!',
+    ]);
+    return $this->view();
+}
+```
+3. 直接return数组
 ```
 public function index()
 {
@@ -430,7 +438,7 @@ class 模型名称 extends Model
 
 成功返回受影响的记录数，失败抛出DatabaseException异常。
 
-4. update($data, [$param = false])
+4. update($data, $param = false)
 更新一条记录
 
 第一个参数为即将更新的数据，可传入第二个参数为主键。
@@ -870,6 +878,12 @@ $data = $cache->get('text', function ($cache) {
 
 ## 路由
 路由配置文件位于 application 下，文件名：route.php
+
+使用方法：
+```
+规则名称 => [访问位置, 参数, 执行的中间件, 不执行的中间件]
+```
+
 现有News控制器中的detail方法
 ```
 public function detail($id)
@@ -883,10 +897,7 @@ public function detail($id)
 ### 必须参数
 添加如下规则
 ```
-'detail' => [
-    '[id]',
-    'home/news/detail'
-]
+'detail' => ['home/news/detail', 'id']
 ```
 完成后，可使用 http://127.0.0.1/detail/1.html 访问到对应位置。
 ### 可选参数
@@ -901,18 +912,12 @@ public function detail($id = 0)
 ```
 添加路由规则
 ```
-'detail' => [
-    '[:id]',
-    'home/news/detail'
-]
+'detail' => ['home/news/detail', '?id']
 ```
 完成后，可使用 http://127.0.0.1/detail.html 访问到对应位置，如果没传递id，则使用默认值。
 ### 多个参数
 ```
-'detail' => [
-    '[id][:type]',
-    'home/news/detail'
-]
+'detail' => ['home/news/detail', 'id,?type']
 ```
 
 ## 其他
@@ -1054,7 +1059,7 @@ request();
 
 当前请求的模型名称
 
-12. classname
+12. controllerFullName
 
 当前请求的完整控制器名称
 
@@ -1095,7 +1100,13 @@ request()->get('id', ['type'], function ($value) {
 
 使用同get方法
 
-18. except
+18. header
+
+获取请求中header数据
+
+使用同get方法
+
+19. except
 
 指定过滤的变量
 
@@ -1128,33 +1139,31 @@ readfile($filename);
 ```
 使用header方法设置响应头，接下来使用readfile函数将文件内容读取到缓冲区，这样输出时将下载demo.zip文件。或者直接使用header函数设置响应头也是可行的。
 
-### 面向控制器的前置、后置方法（请求拦截）
-创建application/home/filter/Auth.php测试文件
+### 中间件
+创建application/home/middleware/Auth.php测试文件
 ```
-namespace app\home\filter;
+namespace app\home\middleware;
 
 use top\middleware\ifs\MiddlewareIfs;
 
 class Auth implements MiddlewareIfs
 {
-    public function before()
+    public function handler(\Closure $next)
     {
-        return '拒绝请求';
-    }
-
-    public function after($data)
-    {
-        // TODO: Implement after() method.
+        if (true) {
+            return '拒绝请求';
+        }
+        return $next();
     }
 }
 ```
 创建完成后，加入配置
 ```
 'middleware' => [
-    \app\home\filter\Auth::class
+    \app\home\middleware\Auth::class
 ],
 ```
-现在，访问项目则会得到 ' 拒绝请求 ' 结果。仅当before方法return的值为true时，程序才会继续执行，否则return等效于控制器方法的return。
+现在，访问项目则会得到 ' 拒绝请求 ' 结果。
 
 ### 配置文件
 以home模块为例，文件位置 'application/home/config/config.php'。此外还存在一个默认配置文件，文件位置 'framework/config/config.php'，如果用户存在同名配置，将会执行merge操作。

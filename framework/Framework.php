@@ -15,19 +15,12 @@ use top\library\App;
 class Framework
 {
 
-    // 程序运行方式
-    private static $type = 1;
-
-    // 默认访问模块
-    private static $defaultModule = 'home';
-
     /**
      * 框架入口
      * @param string $callable
      */
     public static function startApp($callable = '')
     {
-        header('content-type: text/html; charset=utf-8');
 
         if (is_callable($callable)) {
             $callable(self::class);
@@ -46,7 +39,7 @@ class Framework
             self::sessionPath();
 
             require 'library/App.php';
-            App::run(self::$type, self::$defaultModule);
+            App::run();
         } else {
             echo '请使用Framework::appPath()指定应用目录';
         }
@@ -135,21 +128,4 @@ class Framework
         }
     }
 
-    /**
-     * 指定默认访问位置
-     * @param string $module
-     */
-    public static function defaultModule($module)
-    {
-        self::$defaultModule = $module;
-    }
-
-    /**
-     * 指定程序运行方式
-     * @param int $type
-     */
-    public static function runType($type)
-    {
-        self::$type = $type;
-    }
 }

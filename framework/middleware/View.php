@@ -10,7 +10,7 @@ use top\middleware\ifs\MiddlewareIfs;
 class View implements MiddlewareIfs
 {
 
-    public function before()
+    public function handler(\Closure $next)
     {
         if (!DEBUG) {
             $ident = viewCacheIdent();
@@ -22,12 +22,7 @@ class View implements MiddlewareIfs
                 return Response::instance()->dispatch($content);
             }
         }
-        return true;
-    }
-
-    public function after($data)
-    {
-        // TODO: Implement after() method.
+        return $next();
     }
 
 }

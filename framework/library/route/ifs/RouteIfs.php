@@ -10,27 +10,39 @@ interface RouteIfs
 {
 
     /**
-     * 处理路由
-     */
-    public function processing();
-
-    /**
-     * 模块
+     * 模块名
+     * @return mixed
      */
     public function module();
 
     /**
-     * 控制器
+     * 完整控制器名
+     * @return mixed
      */
-    public function ctrl();
+    public function controllerFullName();
 
     /**
-     * 方法
+     * 控制器名
+     * @return mixed
+     */
+    public function controller();
+
+    /**
+     * 方法名
+     * @return mixed
      */
     public function method();
 
     /**
-     * 解析参数
+     * 参数
+     * @return mixed
      */
     public function params();
+
+    /**
+     * 初始化路由
+     * @param $uri
+     * @return mixed
+     */
+    public function init($uri);
 }

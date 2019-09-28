@@ -5,11 +5,10 @@ namespace top\library\route\driver;
 use top\library\route\ifs\RouteIfs;
 
 /**
- * 命令行模式
- * Class Command
- * @package top\library\route\driver
+ * 兼容模式
+ * @author topnuomi 2018年11月19日
  */
-class Command implements RouteIfs
+class Compatible implements RouteIfs
 {
 
     /**
@@ -104,12 +103,7 @@ class Command implements RouteIfs
      */
     public function init($uri)
     {
-        $options = getopt('u:');
-        if (isset($options['u']) && $options['u']) {
-            $this->uriArray = $options['u'] ? explode('/', $options['u']) : [];
-        } else {
-            $this->uriArray = [];
-        }
+        $this->uriArray = $uri ? explode('/', $uri) : [];
         return $this;
     }
 

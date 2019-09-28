@@ -2,12 +2,16 @@
 
 namespace top\library;
 
+use top\traits\Json;
+
 /**
  * 基础控制器
  * @author topnuomi 2018年11月23日
  */
 abstract class Controller
 {
+
+    use Json;
 
     public function __construct()
     {
@@ -18,18 +22,11 @@ abstract class Controller
      * @param $msg
      * @param int $code
      * @param array $data
-     * @param array $ext
-     * @return false|string
+     * @return mixed
      */
-    protected function json($msg, $code = 1, $data = [], $ext = [])
+    protected function json($msg, $code = 1, $data = [])
     {
-        $array = [
-            'msg' => $msg,
-            'code' => $code,
-            'data' => $data,
-            'ext' => $ext
-        ];
-        return json_encode($array);
+        return $this->returnJson($msg, $code, $data);
     }
 
     /**
@@ -39,7 +36,7 @@ abstract class Controller
      */
     protected function cache($param = true)
     {
-        View::instance()->cache($param);
+        view_cache($param);
         return $this;
     }
 
@@ -50,7 +47,7 @@ abstract class Controller
      */
     protected function param($name, $value)
     {
-        View::instance()->param($name, $value);
+        view_param($name, $value);
     }
 
     /**
@@ -62,11 +59,11 @@ abstract class Controller
      */
     protected function view($file = '', $param = [], $cache = false)
     {
-        return View::instance()->fetch($file, $param, $cache);
+        return view($file, $param, $cache);
     }
 
     /**
-     * 跳转（非ajax）
+     * 跳转
      * @param $url
      */
     protected function redirect($url)
@@ -89,7 +86,7 @@ abstract class Controller
             $viewConfig = Config::instance()->get('view');
             $tipsTemplate = $viewConfig['dir'] . 'tips.' . $viewConfig['ext'];
             (!file_exists($tipsTemplate)) && file_put_contents($tipsTemplate, '');
-            return $this->view('tips', [
+            return view('tips', [
                 'message' => $message,
                 'url' => $url,
                 'sec' => $sec

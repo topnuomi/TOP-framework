@@ -4,81 +4,27 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitbf9b224cfc3165ead4e48be673284a7f
+class ComposerStaticInit7b44678ec2aea793416a22dbbbba76ef
 {
-    public static $files = array (
-        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-    );
-
     public static $prefixLengthsPsr4 = array (
-        'W' => 
+        'F' => 
         array (
-            'Whoops\\' => 7,
-        ),
-        'T' => 
-        array (
-            'Twig\\' => 5,
-        ),
-        'S' => 
-        array (
-            'Symfony\\Polyfill\\Mbstring\\' => 26,
-            'Symfony\\Polyfill\\Ctype\\' => 23,
-        ),
-        'P' => 
-        array (
-            'Psr\\Log\\' => 8,
+            'Firebase\\JWT\\' => 13,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Whoops\\' => 
+        'Firebase\\JWT\\' => 
         array (
-            0 => __DIR__ . '/..' . '/filp/whoops/src/Whoops',
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
-        'Twig\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/twig/twig/src',
-        ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
-        ),
-        'Symfony\\Polyfill\\Ctype\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
-        ),
-        'Psr\\Log\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
-        ),
-    );
-
-    public static $prefixesPsr0 = array (
-        'T' => 
-        array (
-            'Twig_' => 
-            array (
-                0 => __DIR__ . '/..' . '/twig/twig/lib',
-            ),
-        ),
-    );
-
-    public static $classMap = array (
-        'Smarty' => __DIR__ . '/..' . '/smarty/smarty/libs/Smarty.class.php',
-        'SmartyBC' => __DIR__ . '/..' . '/smarty/smarty/libs/SmartyBC.class.php',
-        'SmartyCompilerException' => __DIR__ . '/..' . '/smarty/smarty/libs/Smarty.class.php',
-        'SmartyException' => __DIR__ . '/..' . '/smarty/smarty/libs/Smarty.class.php',
-        'Smarty_Security' => __DIR__ . '/..' . '/smarty/smarty/libs/sysplugins/smarty_security.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitbf9b224cfc3165ead4e48be673284a7f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitbf9b224cfc3165ead4e48be673284a7f::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitbf9b224cfc3165ead4e48be673284a7f::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitbf9b224cfc3165ead4e48be673284a7f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit7b44678ec2aea793416a22dbbbba76ef::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit7b44678ec2aea793416a22dbbbba76ef::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

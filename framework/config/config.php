@@ -5,7 +5,10 @@ return [
     'register' => [
         'Top' => \top\library\template\driver\Top::class,
     ],
-    'middleware' => [],
+    'middleware' => [
+        \top\middleware\Init::class,
+        \top\middleware\View::class,
+    ],
     'session' => [
         'open' => false,
         'prefix' => '',

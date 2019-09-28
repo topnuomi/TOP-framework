@@ -2,13 +2,7 @@
 
 namespace top\library\http;
 
-use top\library\Config;
-use top\middleware\ifs\MiddlewareIfs;
-use top\middleware\Init;
-use top\library\route\driver\Command;
-use top\library\route\driver\Pathinfo;
-use top\library\Router;
-use top\middleware\View;
+use top\library\exception\RouteException;
 use top\traits\Instance;
 
 /**
@@ -37,30 +31,6 @@ class Request
      * @var null
      */
     private $router = null;
-
-    /**
-     * 模块名
-     * @var string
-     */
-    private $module = '';
-
-    /**
-     * 控制器完整类名
-     * @var string
-     */
-    private $class = '';
-
-    /**
-     * 控制器名
-     * @var string
-     */
-    private $ctrl = '';
-
-    /**
-     * 请求参数
-     * @var array
-     */
-    private $params = [];
 
     /**
      * post、get数据删除的值
@@ -179,15 +149,11 @@ class Request
 
     /**
      * 当前请求的URI
-     * @param bool $raw
      * @return mixed
      */
-    public function uri($raw = false)
+    public function uri()
     {
-        if ($raw) {
-            return $this->router->rawUri;
-        }
-        return $this->router->uri;
+        return $this->router->uri();
     }
 
     /**
@@ -196,16 +162,16 @@ class Request
      */
     public function module()
     {
-        return $this->router->module;
+        return $this->router->module();
     }
 
     /**
      * 控制器完整类名
      * @return mixed
      */
-    public function className()
+    public function controllerFullName()
     {
-        return $this->router->class;
+        return $this->router->controllerFullName();
     }
 
     /**
@@ -214,7 +180,7 @@ class Request
      */
     public function controller()
     {
-        return $this->router->ctrl;
+        return $this->router->controller();
     }
 
     /**
@@ -223,7 +189,7 @@ class Request
      */
     public function method()
     {
-        return $this->router->method;
+        return $this->router->method();
     }
 
     /**
@@ -232,7 +198,7 @@ class Request
      */
     public function params()
     {
-        return $this->router->params;
+        return $this->router->params();
     }
 
     /**
@@ -248,6 +214,23 @@ class Request
             $this->except[] = $field;
         }
         return $this;
+    }
+
+    /**
+     * 请求的header数据
+     * @param string $key
+     * @return array|false|null
+     */
+    public function header($key = '*')
+    {
+        $headers = get_header();
+        if ($key == '*') {
+            return $headers;
+        } elseif ($key && isset($headers[$key])) {
+            return $headers[$key];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -316,107 +299,34 @@ class Request
     }
 
     /**
-     * 设置中间件
-     * @param MiddlewareIfs $middleware
+     * 指定路由
+     * @param $router
+     * @return $this
      */
-    private function middleware(MiddlewareIfs $middleware)
+    public function setRoute($router)
     {
-        $this->middleware[] = $middleware;
-    }
-
-    /**
-     * 中间件前置方法
-     */
-    private function beforeRoute()
-    {
-        foreach ($this->middleware as $middleware) {
-            $returnData = $middleware->before();
-            if ($returnData !== true) {
-                return $returnData;
-            }
-            unset($returnData);
-        }
-        return true;
-    }
-
-    /**
-     * 中间件后置方法
-     * @param $data
-     */
-    private function afterRoute($data)
-    {
-        $this->middleware = array_reverse($this->middleware);
-        foreach ($this->middleware as $middleware) {
-            $middleware->after($data);
-        }
-    }
-
-    /**
-     * 指定路由驱动
-     * @param $type
-     * @return string|Command|Pathinfo
-     */
-    private function routeDriver($type)
-    {
-        $routeDriver = '';
-        if (php_sapi_name() == 'cli') {
-            // 命令行运行程序
-            $routeDriver = new Command();
-        } else {
-            // 其他方式
-            switch ($type) {
-                case 1:
-                    $routeDriver = new Pathinfo();
-                    break;
-                default:
-                    // 其他
-            }
-        }
-        return $routeDriver;
+        $this->router = $router;
+        return $this;
     }
 
     /**
      * 设置路由并执行程序
-     * @param $type
-     * @param $defaultModule
      * @return mixed
-     * @throws \top\library\exception\RouteException
      */
-    public function execute($type, $defaultModule)
+    public function execute()
     {
-        // 实例化路由，并执行对应方法
-        $routeDriver = $this->routeDriver($type);
-        $this->router = (new Router($routeDriver, $defaultModule))->handler();
+        $this->check();
 
-        $userMiddleware = Config::instance()->get('middleware');
-        $systemMiddleware = [Init::class, View::class];
+        // 将执行应用打包为$application
+        $application = function () {
 
-        $middleware = array_merge($systemMiddleware, $userMiddleware);
-        foreach ($middleware as $key => $value) {
-            $this->middleware(new $value());
-        }
-
-        $data = $this->runAction();
-        return $data;
-    }
-
-    /**
-     * 调用对应方法
-     * @return mixed
-     * @throws \ReflectionException
-     */
-    private function runAction()
-    {
-        $middlewareData = $this->beforeRoute();
-
-        if ($middlewareData === true) {
-            $ctrl = $this->router->class;
-            $method = $this->router->method;
-            $params = $this->router->params;
+            $controllerFullName = $this->controllerFullName();
+            $method = $this->method();
+            $params = $this->params();
 
             $data = null;
-            $object = new $ctrl();
-            $reflectionClass = new \ReflectionClass($ctrl);
+            $object = new $controllerFullName();
+            $reflectionClass = new \ReflectionClass($controllerFullName);
             if ($reflectionClass->hasMethod('_init')) {
                 $data = $object->_init();
             }
@@ -430,7 +340,7 @@ class Request
                 }
 
                 if ($beforeReturnData === null || $beforeReturnData === '' || $beforeReturnData === true) {
-                    $reflectionMethod = new \ReflectionMethod($ctrl, $method);
+                    $reflectionMethod = new \ReflectionMethod($controllerFullName, $method);
                     $data = $reflectionMethod->invokeArgs($object, $params);
 
                     // 后置方法
@@ -442,16 +352,35 @@ class Request
                     $data = $beforeReturnData;
                 }
             }
-        } else {
-            $data = $middlewareData;
+            return $data;
+        };
+
+        // 由路由中间件去处理application，并返回结果
+        return $this->router->middleware($application);
+    }
+
+    /**
+     * 执行必要检查
+     * @throws RouteException
+     */
+    private function check()
+    {
+        // 检查模块是否存在
+        if (!is_dir(APP_PATH . $this->module())) {
+            throw new RouteException('模块' . $this->module() . '不存在');
         }
-
-        $this->afterRoute($data);
-
-        return $data;
+        // 检查控制器是否存在
+        if (!class_exists($this->controllerFullName())) {
+            throw new RouteException('控制器' . $this->controllerFullName() . '不存在');
+        }
+        // 检查方法在控制器中是否存在
+        if (!in_array($this->method(), get_class_methods($this->controllerFullName()))) {
+            throw new RouteException('方法' . $this->method() . '在控制器' . $this->controller() . '中不存在');
+        }
     }
 
     public function __destruct()
     {
+
     }
 }

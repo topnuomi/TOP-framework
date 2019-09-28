@@ -2,67 +2,20 @@
 
 namespace top\middleware;
 
-use top\library\Config;
 use top\middleware\ifs\MiddlewareIfs;
-use top\library\Register;
-use top\library\View;
 
 /**
- * 初始化
+ * 默认中间件
  *
  * @author topnuomi 2018年11月20日
  */
 class Init implements MiddlewareIfs
 {
-
-    /**
-     * 注册一些可能会用到的类
-     * @throws \Exception
-     */
-    public function before()
+    public function handler(\Closure $next)
     {
-        // 加载系统函数库
-        require FRAMEWORK_PATH . 'library/functions/functions.php';
-
-        // 加载用户函数库
-        $funcFile = APP_PATH . request()->module() . '/functions.php';
-        if (file_exists($funcFile)) {
-            require $funcFile;
-        }
-
-        $configInstance = Config::instance();
-
-        $sessionConfig = $configInstance->get('session');
-        if (!empty($sessionConfig) && $sessionConfig['open'] === true) {
-            session_save_path(SESSION_PATH);
-            session_start();
-        }
-
-        // 数据库驱动
-        $config = $configInstance->get('db');
-        $driver = $config['driver'] ? $config['driver'] : 'MySQLi';
-        Register::set('DBDriver', function () use ($driver) {
-            $class = '\\top\\library\\database\\driver\\' . $driver;
-            return $class::instance();
-        });
-
-        // 配置文件中配置的注册
-        $initRegister = $configInstance->get('register');
-        if (!empty($initRegister)) {
-            foreach ($initRegister as $key => $value) {
-                Register::set($key, function () use ($value) {
-                    return $value::instance();
-                });
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param array $data
-     */
-    public function after($data)
-    {
+        // echo '应用开始';
+        $closure = $next();
+        // echo '应用结束';
+        return $closure;
     }
 }

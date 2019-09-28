@@ -2,7 +2,6 @@
 
 namespace top\extend;
 
-
 /**
  * 分页类
  * @author topnuomi 2018年11月28日
@@ -77,7 +76,11 @@ class Page
         // 链接没有匹配&或?，配置了伪静态也就无所谓了
         $html = '<ul>';
         for ($i = 1; $i < $this->totalPage + 1; $i++) {
-            $html .= '<li><a href="' . u($uri) . '?p=' . $i . '">' . $i . '</a></li>';
+            if ($this->page == $i) {
+                $html .= '<li class="active"><a href="' . url($uri) . '?p=' . $i . '">' . $i . '</a></li>';
+            } else {
+                $html .= '<li><a href="' . url($uri) . '?p=' . $i . '">' . $i . '</a></li>';
+            }
         }
         $html .= '</ul>';
         return $html;
