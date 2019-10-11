@@ -65,7 +65,7 @@ class App
     private static function initRoute()
     {
         $driver = null;
-        if (php_sapi_name() == 'cli') {
+        if (Request::instance()->isCLI()) {
             // 命令行运行程序
             $driver = new Command();
         } else {

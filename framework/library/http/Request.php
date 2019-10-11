@@ -125,6 +125,15 @@ class Request
     }
 
     /**
+     * CLI
+     * @return boolean
+     */
+    public function isCLI()
+    {
+        return (php_sapi_name() == 'cli');
+    }
+
+    /**
      * 创建一个请求（post或get取决于data是否有值且不为空或空数组）
      * @param string $url
      * @param array $data

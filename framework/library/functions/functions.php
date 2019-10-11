@@ -160,10 +160,14 @@ function create_http_request($url, $data = [], $header = [])
     curl_setopt($curl, CURLOPT_HEADER, $header);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-    $res = curl_exec($curl);
+    $response = curl_exec($curl);
+    if (!empty($header)) {
+        $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $response = substr($response, $headerSize);
+    }
     curl_close($curl);
-    if ($res) {
-        return $res;
+    if ($response) {
+        return $response;
     }
     return false;
 }
