@@ -2,7 +2,8 @@
 
 namespace top\library\http;
 
-use top\library\exception\RouteException;
+use top\library\Application;
+use top\library\Router;
 use top\traits\Instance;
 
 /**
@@ -21,16 +22,10 @@ class Request
     private $server = [];
 
     /**
-     * 中间件
-     * @var array
+     * 当前URI
+     * @var mixed|null
      */
-    private $middleware = [];
-
-    /**
-     * 路由实例
-     * @var null
-     */
-    private $router = null;
+    private $uri = null;
 
     /**
      * post、get数据删除的值
@@ -38,99 +33,40 @@ class Request
      */
     private $except = [];
 
+    /**
+     * Request constructor.
+     */
     private function __construct()
     {
         $this->server = (!empty($_SERVER)) ? $_SERVER : [];
+        // 当前uri
+        $this->uri = $this->getUri();
     }
 
     /**
      * 当前请求方式
      * @return mixed|string
      */
-    private function requestMethod()
+    public function requestMethod()
     {
         return (isset($this->server['REQUEST_METHOD']) && $this->server['REQUEST_METHOD'] != '') ? $this->server['REQUEST_METHOD'] : '';
     }
 
     /**
-     * POST
-     * @return boolean
+     * 判断请求方式
+     * @param $method
+     * @return bool
      */
-    public function isPost()
+    public function is($method)
     {
-        return $this->requestMethod() == 'POST';
-    }
-
-    /**
-     * GET
-     * @return boolean
-     */
-    public function isGet()
-    {
-        return $this->requestMethod() == 'GET';
-    }
-
-    /**
-     * PUT
-     * @return boolean
-     */
-    public function isPut()
-    {
-        return $this->requestMethod() == 'PUT';
-    }
-
-    /**
-     * DELETE
-     * @return boolean
-     */
-    public function isDelete()
-    {
-        return $this->requestMethod() == 'DELETE';
-    }
-
-    /**
-     * HEAD
-     * @return boolean
-     */
-    public function isHead()
-    {
-        return $this->requestMethod() == 'HEAD';
-    }
-
-    /**
-     * HEAD
-     * @return boolean
-     */
-    public function isPatch()
-    {
-        return $this->requestMethod() == 'PATCH';
-    }
-
-    /**
-     * HEAD
-     * @return boolean
-     */
-    public function isOptions()
-    {
-        return $this->requestMethod() == 'OPTIONS';
-    }
-
-    /**
-     * AJAX
-     * @return boolean
-     */
-    public function isAjax()
-    {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
-    }
-
-    /**
-     * CLI
-     * @return boolean
-     */
-    public function isCLI()
-    {
-        return (php_sapi_name() == 'cli');
+        $method = strtolower($method);
+        if ($method == 'ajax') {
+            return isset($this->server['HTTP_X_REQUESTED_WITH']) && ($this->server['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+        } elseif ($method == 'cli') {
+            return (php_sapi_name() == 'cli');
+        } else {
+            return strtolower($this->requestMethod()) == $method;
+        }
     }
 
     /**
@@ -157,12 +93,21 @@ class Request
     }
 
     /**
+     * 主机名
+     * @return mixed
+     */
+    public function host()
+    {
+        return $this->server['HTTP_HOST'];
+    }
+
+    /**
      * 当前请求的URI
      * @return mixed
      */
     public function uri()
     {
-        return $this->router->uri();
+        return $this->uri;
     }
 
     /**
@@ -171,7 +116,7 @@ class Request
      */
     public function module()
     {
-        return $this->router->module();
+        return Router::instance($this)->module();
     }
 
     /**
@@ -180,7 +125,7 @@ class Request
      */
     public function controllerFullName()
     {
-        return $this->router->controllerFullName();
+        return Router::instance($this)->controllerFullName();
     }
 
     /**
@@ -189,7 +134,7 @@ class Request
      */
     public function controller()
     {
-        return $this->router->controller();
+        return Router::instance($this)->controller();
     }
 
     /**
@@ -198,7 +143,7 @@ class Request
      */
     public function method()
     {
-        return $this->router->method();
+        return Router::instance($this)->method();
     }
 
     /**
@@ -207,7 +152,16 @@ class Request
      */
     public function params()
     {
-        return $this->router->params();
+        return Router::instance($this)->params();
+    }
+
+    /**
+     * 当前加载的路由规则
+     * @return null
+     */
+    public function routeParameters()
+    {
+        return Router::instance($this)->loadRuleParameters();
     }
 
     /**
@@ -267,6 +221,21 @@ class Request
     }
 
     /**
+     * 得到当前的URI
+     * @return mixed|null
+     */
+    private function getUri()
+    {
+        $uri = null;
+        if (isset($this->server['PATH_INFO']) && $this->server['PATH_INFO']) {
+            $uri = $this->server['PATH_INFO'];
+        } elseif (isset($_GET['s']) && $_GET['s']) {
+            $uri = $_GET['s'];
+        }
+        return str_replace('.html', '', trim($uri, '/'));
+    }
+
+    /**
      * GET POST公共方法
      * @param $type
      * @param $name
@@ -307,89 +276,4 @@ class Request
         }
     }
 
-    /**
-     * 指定路由
-     * @param $router
-     * @return $this
-     */
-    public function setRoute($router)
-    {
-        $this->router = $router;
-        return $this;
-    }
-
-    /**
-     * 设置路由并执行程序
-     * @return mixed
-     */
-    public function execute()
-    {
-        $this->check();
-
-        // 将执行应用打包为$application
-        $application = function () {
-
-            $controllerFullName = $this->controllerFullName();
-            $method = $this->method();
-            $params = $this->params();
-
-            $data = null;
-            $object = new $controllerFullName();
-            $reflectionClass = new \ReflectionClass($controllerFullName);
-            if ($reflectionClass->hasMethod('_init')) {
-                $data = $object->_init();
-            }
-
-            if ($data === null || $data === '') {
-                // 前置方法
-                $beforeReturnData = null;
-                $beforeMethod = 'before_' . $method;
-                if ($reflectionClass->hasMethod($beforeMethod)) {
-                    $beforeReturnData = $object->{$beforeMethod}();
-                }
-
-                if ($beforeReturnData === null || $beforeReturnData === '' || $beforeReturnData === true) {
-                    $reflectionMethod = new \ReflectionMethod($controllerFullName, $method);
-                    $data = $reflectionMethod->invokeArgs($object, $params);
-
-                    // 后置方法
-                    $afterMethod = 'after_' . $method;
-                    if ($reflectionClass->hasMethod($afterMethod)) {
-                        $object->{$afterMethod}();
-                    }
-                } else {
-                    $data = $beforeReturnData;
-                }
-            }
-            return $data;
-        };
-
-        // 由路由中间件去处理application，并返回结果
-        return $this->router->middleware($application);
-    }
-
-    /**
-     * 执行必要检查
-     * @throws RouteException
-     */
-    private function check()
-    {
-        // 检查模块是否存在
-        if (!is_dir(APP_PATH . $this->module())) {
-            throw new RouteException('模块' . $this->module() . '不存在');
-        }
-        // 检查控制器是否存在
-        if (!class_exists($this->controllerFullName())) {
-            throw new RouteException('控制器' . $this->controllerFullName() . '不存在');
-        }
-        // 检查方法在控制器中是否存在
-        if (!in_array($this->method(), get_class_methods($this->controllerFullName()))) {
-            throw new RouteException('方法' . $this->method() . '在控制器' . $this->controller() . '中不存在');
-        }
-    }
-
-    public function __destruct()
-    {
-
-    }
 }

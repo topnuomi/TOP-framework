@@ -2,16 +2,29 @@
 
 namespace app\{name}\controller;
 
-use app\{name}\model\Demo;
+use top\library\Controller;
+use top\library\http\Request;
 
-class Index
+class Index extends Controller
 {
 
-    public function index()
+
+    /**
+     * 首页
+     * @route /
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function index(Request $request)
     {
-        $model = model(Demo::class);
+        $uri = $request->uri();
+        (!$uri) && $this->redirect('index');
         return [
-            'hello' => $model->get()
+            'uri' => $uri,
+            'controller' => $request->controllerFullName(),
+            'method' => $request->method(),
         ];
     }
 }
+

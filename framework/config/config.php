@@ -2,11 +2,15 @@
 // 默认配置
 
 return [
+    'default_controller' => 'Index',
+    'default_method' => 'index',
+    'compel_route' => false,
+    'complete_parameter' => true,
     'register' => [
         'Top' => \top\library\template\driver\Top::class,
     ],
     'middleware' => [
-        \top\middleware\Init::class,
+        \top\middleware\Action::class,
         \top\middleware\View::class,
     ],
     'session' => [

@@ -40,7 +40,7 @@ class BaseException extends \Exception
     {
         $file = file($filename);
         $totalLine = count($file);
-        $offset = 10;
+        $offset = 6;
         $offsetStart = $line - $offset;
         $offsetEnd = $line + $offset;
         $start = ($offsetStart <= 0) ? 2 : $offsetStart;
@@ -163,7 +163,7 @@ class BaseException extends \Exception
             overflow-x: scroll;
 		}
 		.detail .codeblock .errLine {
-		    background: #f7e6e6 !important;
+		    background: #ffc7ad !important;
 		}
 		.detail .codeblock a {
 		    display: block;

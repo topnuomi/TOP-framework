@@ -2,7 +2,10 @@
 
 namespace top;
 
-use top\library\App;
+use top\library\Application;
+
+// 定义简写文件分割符号常量
+!defined('DS') && define('DS', DIRECTORY_SEPARATOR);
 
 /**
  * 框架入口
@@ -18,31 +21,32 @@ class Framework
     /**
      * 框架入口
      * @param string $callable
+     * @param array $namespaceMap
      */
-    public static function startApp($callable = '')
+    public static function startApp($callable = '', $namespaceMap = [])
     {
 
-        if (is_callable($callable)) {
-            $callable(self::class);
-        }
+        (is_callable($callable)) && $callable(self::class);
 
         // 指定时区
         date_default_timezone_set('PRC');
 
-        self::debug();
         // 强制在入口文件指定应用目录
         if (defined('APP_PATH')) {
+            self::debug();
             // self::appPath();
+            self::bindModule();
             self::appNameSpace();
             self::resourcePath();
             self::frameworkPath();
             self::sessionPath();
 
-            require 'library/App.php';
-            App::run();
-        } else {
-            echo '请使用Framework::appPath()指定应用目录';
-        }
+            // 配置文件目录
+            !defined('CONFIG_DIR') && define('CONFIG_DIR', APP_PATH . BIND_MODULE . DS . 'config' . DS);
+
+            require 'library/Application.php';
+            Application::run($namespaceMap);
+        } else echo '请使用Framework::appPath()指定应用目录';
     }
 
     /**
@@ -52,10 +56,8 @@ class Framework
     public static function appPath($path = '')
     {
         if (!defined('APP_PATH')) {
-            if (!$path) {
-                $path = './application/';
-            }
-            define('APP_PATH', $path);
+            (!$path) && $path = '.' . DS . 'application' . DS;
+            define('APP_PATH', str_replace('/', DS, $path));
         }
     }
 
@@ -65,8 +67,18 @@ class Framework
      */
     public static function debug($status = false)
     {
-        if (!defined('DEBUG')) {
-            define('DEBUG', $status);
+        (!defined('DEBUG')) && define('DEBUG', $status);
+    }
+
+    /**
+     * 绑定模块
+     * @param string $module
+     */
+    public static function bindModule($module = '')
+    {
+        if (!defined('BIND_MODULE')) {
+            (!$module) && $module = 'home';
+            define('BIND_MODULE', $module);
         }
     }
 
@@ -77,19 +89,19 @@ class Framework
     public static function frameworkPath($path = '')
     {
         if (!defined('FRAMEWORK_PATH')) {
-            if (!$path) {
-                $path = __DIR__ . '/';
-            }
-            define('FRAMEWORK_PATH', $path);
+            (!$path) && $path = __DIR__ . DS;
+            define('FRAMEWORK_PATH', str_replace('/', DS, $path));
         }
     }
 
+    /**
+     * 应用命名空间
+     * @param string $namespace
+     */
     public static function appNameSpace($namespace = '')
     {
         if (!defined('APP_NS')) {
-            if (!$namespace) {
-                $namespace = 'app';
-            }
+            (!$namespace) && $namespace = 'app';
             define('APP_NS', $namespace);
         }
     }
@@ -105,9 +117,9 @@ class Framework
                 $scriptName = $_SERVER['SCRIPT_NAME'];
                 $pos = strrpos($scriptName, '/');
                 $root = substr($scriptName, 0, $pos + 1);
-                $path = $root . 'resource/';
+                $path = $root . 'resource' . DS;
             }
-            define('RESOURCE', $path);
+            define('RESOURCE', str_replace('/', DS, $path));
         }
     }
 
@@ -118,13 +130,9 @@ class Framework
     public static function sessionPath($path = '')
     {
         if (!defined('SESSION_PATH')) {
-            if (!$path) {
-                $path = './runtime/session/';
-            }
-            if (!is_dir($path)) {
-                mkdir($path, 0755, true);
-            }
-            define('SESSION_PATH', $path);
+            (!$path) && $path = '.' . DS . 'runtime' . DS . 'session' . DS;
+            (!is_dir($path)) && mkdir($path, 0755, true);
+            define('SESSION_PATH', str_replace('/', DS, $path));
         }
     }
 

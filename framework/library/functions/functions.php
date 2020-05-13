@@ -45,12 +45,46 @@ function filterArray($array = [], $filter = 'filter', &$result = [])
 }
 
 /**
- * 调用请求类
+ * 获取/设置配置
+ * @param $key
+ * @param string $value
+ * @return mixed
+ */
+function config($key, $value = '__NULL__VALUE__')
+{
+    if ($value != '__NULL__VALUE__') {
+        return \top\library\Config::instance()->set($key, $value);
+    } else {
+        return \top\library\Config::instance()->get($key);
+    }
+}
+
+/**
+ * 请求类
+ * @return \top\traits\Instance
  */
 function request()
 {
-    $request = \top\library\http\Request::instance();
-    return $request;
+    /*static $instance;
+    if (!$instance) {
+        $instance = new \top\library\http\Request();
+    }
+    return $instance;*/
+    return \top\library\http\Request::instance();
+}
+
+/**
+ * 响应类
+ * @return \top\traits\Instance
+ */
+function response()
+{
+    /*static $instance;
+    if (!$instance) {
+        $instance = new \top\library\http\Response();
+    }
+    return $instance;*/
+    return \top\library\http\Response::instance();
 }
 
 /**
@@ -218,7 +252,7 @@ function get_client_ip($type = 0, $client = true)
  */
 function redirect($url)
 {
-    if (request()->isAjax()) {
+    if (request()->is('ajax')) {
         return json_encode([
             'redirect' => $url,
         ]);
@@ -449,13 +483,9 @@ function is_mobile()
  * 获取当前视图文件的缓存标识
  * @return string
  */
-function viewCacheIdent()
+function view_cache_ident()
 {
-    if (isset($_SERVER['REQUEST_URI'])) {
-        $ident = md5($_SERVER['REQUEST_URI']);
-    } else {
-        $ident = request()->module() . request()->controller() . request()->method();
-    }
+    $ident = md5($_SERVER['REQUEST_URI'] . request()->requestMethod());
     return $ident;
 }
 

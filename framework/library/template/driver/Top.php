@@ -90,7 +90,7 @@ class Top implements TemplateIfs
         $content = ob_get_contents();
         ob_clean();
         // 写入文件缓存
-        $ident = viewCacheIdent();
+        $ident = view_cache_ident();
         if ($cache->set($ident, $content, $cacheTime)) {
             return $cache->get($ident);
         } else {

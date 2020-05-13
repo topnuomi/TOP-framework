@@ -9,23 +9,16 @@
 </head>
 <body>
 <style>
-    h3 {
+    * {
         color: #666666;
-        font-weight: 300;
-    }
-    .version {
-        width: 100%;
-        height: 22px;
-        color: #b9b9b9;
-        font-size: 12px;
-        text-align: center;
-        line-height: 22px;
-        margin: 0 auto;
-        padding-bottom: 20px;
     }
 </style>
-<h3>{$hello}</h3>
+<h2>Welcome！</h2>
 
-<p class="version">TOP-Framework</p>
+<p>URI: {$uri}</p>
+<p>Controller: {$controller}</p>
+<p>Method: {$method}</p>
+<h5>{:top\library\Loader::getFileNumber()} files loaded.</h5>
+
 </body>
 </html>

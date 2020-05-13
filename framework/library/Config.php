@@ -2,7 +2,6 @@
 
 namespace top\library;
 
-use top\library\http\Request;
 use top\traits\Instance;
 
 /**
@@ -20,6 +19,9 @@ class Config
     // 保存配置的变量
     private $config = [];
 
+    /**
+     * Config constructor.
+     */
     private function __construct()
     {
         // 加载默认配置文件
@@ -52,16 +54,15 @@ class Config
     public function get($name = '')
     {
         // 加载用户配置文件
-        $module = Request::instance()->module();
-        $file = APP_PATH . $module . '/config/config.php';
+        $file = CONFIG_DIR . 'config.php';
         if (!isset(self::$files[$file])) {
             if (file_exists($file)) {
                 $config = require $file;
                 if (is_array($config) && !empty($config)) {
                     // 合并配置项
                     foreach ($config as $key => $value) {
-                        if (array_key_exists($key, $this->config)) {
-                            $this->config[$key] = array_merge($this->config[$key], $config[$key]);
+                        if (array_key_exists($key, $this->config) && is_array($value)) {
+                            $this->config[$key] = array_merge($this->config[$key], $value);
                         } else {
                             $this->config[$key] = $value;
                         }
@@ -87,8 +88,9 @@ class Config
      * 从配置中删除某项
      * @param string $name
      */
-    public function _unset($name)
+    public function rm($name)
     {
+        $this->config[$name] = null;
         unset($this->config[$name]);
     }
 }

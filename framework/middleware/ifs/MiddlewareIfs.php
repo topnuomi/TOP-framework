@@ -2,6 +2,8 @@
 
 namespace top\middleware\ifs;
 
+use top\library\http\Request;
+
 /**
  * 中间件接口
  *
@@ -9,5 +11,5 @@ namespace top\middleware\ifs;
  */
 interface MiddlewareIfs
 {
-    public function handler(\Closure $next);
+    public function handler(Request $request, \Closure $next);
 }

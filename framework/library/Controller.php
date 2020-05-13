@@ -2,6 +2,7 @@
 
 namespace top\library;
 
+use top\library\http\Request;
 use top\traits\Json;
 
 /**
@@ -13,8 +14,47 @@ abstract class Controller
 
     use Json;
 
-    public function __construct()
+    /**
+     * 请求类实例
+     * @var Request
+     */
+    protected $request = null;
+
+    /**
+     * URI
+     * @var string
+     */
+    protected $uri = null;
+
+    /**
+     * 控制器
+     * @var string
+     */
+    protected $controller = null;
+
+    /**
+     * 控制器全限定名
+     * @var string
+     */
+    protected $controllerFullName = null;
+
+    /**
+     * 方法
+     * @var string
+     */
+    protected $method = null;
+
+    /**
+     * 控制器基类构造方法
+     * @param Request $request
+     */
+    public function __construct(Request $request)
     {
+        $this->request = $request;
+        $this->uri = $request->uri();
+        $this->controller = $request->controller();
+        $this->controllerFullName = $request->controllerFullName();
+        $this->method = $request->method();
     }
 
     /**

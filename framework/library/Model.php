@@ -2,6 +2,7 @@
 
 namespace top\library;
 
+use Exception;
 use top\library\exception\DatabaseException;
 
 /**
@@ -98,12 +99,14 @@ class Model
         return Database::table($this->table, $this->pk, $this->prefix);
     }
 
+    // 可以静态调用的方法--开始
+
     /**
      * 影响的表（仅多表delete）
      * @param $effect
      * @return $this
      */
-    public function effect($effect)
+    private function effect($effect)
     {
         $this->getDb()->effect($effect);
         return $this;
@@ -114,7 +117,7 @@ class Model
      * @param $field
      * @return $this
      */
-    public function distinct($field)
+    private function distinct($field)
     {
         $this->getDb()->distinct($field);
         return $this;
@@ -125,7 +128,7 @@ class Model
      * @param $field
      * @return $this
      */
-    public function field($field)
+    private function field($field)
     {
         $this->getDb()->field($field);
         return $this;
@@ -135,7 +138,7 @@ class Model
      * 查询条件
      * @return $this
      */
-    public function where()
+    private function where()
     {
         call_user_func_array([
             $this->getDb(),
@@ -148,7 +151,7 @@ class Model
      * 排序
      * @return $this
      */
-    public function order()
+    private function order()
     {
         call_user_func_array([
             $this->getDb(),
@@ -161,7 +164,7 @@ class Model
      * 限制
      * @return $this
      */
-    public function limit()
+    private function limit()
     {
         call_user_func_array([
             $this->getDb(),
@@ -177,7 +180,7 @@ class Model
      * @param $name
      * @return $this
      */
-    public function join($type, $table, $name)
+    private function join($type, $table, $name)
     {
         $this->getDb()->join($type, $table, $name);
         return $this;
@@ -188,11 +191,13 @@ class Model
      * @param $on
      * @return $this
      */
-    public function on($on)
+    private function on($on)
     {
         $this->getDb()->on($on);
         return $this;
     }
+
+    // 可静态调用的方法--结束
 
     /**
      * 插入记录
@@ -628,6 +633,39 @@ class Model
                 $data = $this->$name();
         }
         return $data;
+    }
+
+    /**
+     * 非静态调用连贯操作
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+        if (method_exists($this, $name)) {
+            return $this->{$name}($arguments);
+        } else throw new Exception('不存在的方法：' . $name);
+    }
+    
+    /**
+     * 静态调用连贯操作
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     */
+    public static function __callStatic($name, $arguments)
+    {
+        $methodName = null;
+        if (method_exists(static::class, $name)) {
+            $methodName = $name;
+        } else {
+            $methodMap = ['all' => 'select', 'get' => 'find'];
+            if (isset($methodMap[$name])) {
+                $methodName = $methodMap[$name];
+            } else throw new Exception('不存在的方法：' . $name);
+        }
+        return call_user_func_array([new static, $methodName], $arguments);
     }
 
 }

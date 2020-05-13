@@ -7,6 +7,8 @@ class Loader
 
     private $prefixes = [];
 
+    private static $number = 0;
+
     /**
      * 注册自动加载
      */
@@ -74,12 +76,22 @@ class Loader
                 /*echo '<br>';
                 echo $file . '<br>';*/
                 // 如果文件存在则加载文件
-                if (file_exists($file)) {
+                if (is_file($file)) {
                     require $file;
+                    self::$number++;
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * 内置自动加载器加载的文件数
+     * @return int
+     */
+    public static function getFileNumber()
+    {
+        return self::$number;
     }
 }

@@ -11,7 +11,7 @@ require '../framework/Framework.php';
 // 可使用常量DEBUG取得该值
 
 // 项目目录，缺省值：./application/
-// Framework::appPath('../application/');
+Framework::appPath('../application/');
 // 可使用常量APP_PATH取得该值
 
 // 项目命名空间，缺省值：app
@@ -30,8 +30,9 @@ require '../framework/Framework.php';
 // Framework::resourcePath('/resource/');
 // 可使用常量RESOURCE取得该值
 
-// 路由模式，缺省值：1（pathinfo和兼容模式）
-// Framework::runType(1);
+// 绑定模块，缺省值：home
+// Framework::bindModule('index');
+// 可使用常量BIND_MODULE取得该值
 
-Framework::appPath('../application/');
+// 启动应用
 Framework::startApp();
