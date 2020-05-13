@@ -23,15 +23,12 @@ require '../framework/Framework.php';
 // 可使用常量SESSION_PATH取得该值
 
 // 框架目录，缺省值：Framework.php的绝对路径
-// Framework::frameworkPath('../framework');
+// Framework::frameworkPath('../framework/');
 // 可使用常量FRAMEWORK_PATH取得该值
 
 // 静态资源目录，缺省值：/resource/
 // Framework::resourcePath('/resource/');
 // 可使用常量RESOURCE取得该值
-
-// 当前入口文件默认模块，缺省值：home
-// Framework::defaultModule('home');
 
 // 路由模式，缺省值：1（pathinfo和兼容模式）
 // Framework::runType(1);
