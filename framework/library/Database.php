@@ -121,7 +121,7 @@ class Database
      */
     public static function table($table, $pk = '', $prefix = '')
     {
-        $ident = md5($prefix . $table);
+        $ident = $prefix . $table;
         if (!isset(self::$instance[$ident])) {
             self::$instance[$ident] = new self($table, $pk, $prefix);
         }
@@ -136,7 +136,10 @@ class Database
      */
     private function setDriver(DatabaseIfs $driver, $config)
     {
-        self::$driver = $driver->connect($config);
+        if (!self::$driver) {
+            self::$driver = $driver->connect($config);
+        }
+        return self::$driver;
     }
 
     /**
