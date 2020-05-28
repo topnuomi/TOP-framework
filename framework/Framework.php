@@ -21,9 +21,9 @@ class Framework
     /**
      * 框架入口
      * @param string $callable
-     * @param array $namespaceMap
+     * @param array $autoLoadMap
      */
-    public static function startApp($callable = '', $namespaceMap = [])
+    public static function startApp($callable = '', $autoLoadMap = [])
     {
 
         (is_callable($callable)) && $callable(self::class);
@@ -45,7 +45,7 @@ class Framework
             !defined('CONFIG_DIR') && define('CONFIG_DIR', APP_PATH . BIND_MODULE . DS . 'config' . DS);
 
             require 'library/Application.php';
-            Application::run($namespaceMap);
+            Application::run($autoLoadMap);
         } else echo '请使用Framework::appPath()指定应用目录';
     }
 

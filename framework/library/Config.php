@@ -49,7 +49,6 @@ class Config
      * 获取配置
      * @param string $name
      * @return array|mixed
-     * @throws \Exception
      */
     public function get($name = '')
     {

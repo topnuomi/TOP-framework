@@ -1,50 +1,6 @@
 <?php
 
 /**
- * 获取headers
- * @return array|false
- */
-function get_header()
-{
-    if (PHP_SAPI === 'apache2handler') {
-        $headers = getallheaders();
-        $data = [];
-        foreach ($headers as $key => $value) {
-            $data[strtolower($key)] = $value;
-        }
-        unset($headers);
-        return $data;
-    } else {
-        $server = $_SERVER;
-        $headers = [];
-        foreach ($server as $key => $value) {
-            if ('http_' == strtolower(substr($key, 0, 5))) {
-                $headers[strtolower(substr($key, 5))] = $value;
-            }
-        }
-        unset($server);
-        return $headers;
-    }
-}
-
-/**
- * 过滤数组
- * @param array $array
- * @param string $filter
- * @param array $result
- */
-function filterArray($array = [], $filter = 'filter', &$result = [])
-{
-    foreach ($array as $key => $value) {
-        if (is_array($value)) {
-            filterArray($value, $result[$key]);
-        } else {
-            $result[$key] = (!$filter) ? $value : $filter($value);
-        }
-    }
-}
-
-/**
  * 获取/设置配置
  * @param $key
  * @param string $value
@@ -65,11 +21,6 @@ function config($key, $value = '__NULL__VALUE__')
  */
 function request()
 {
-    /*static $instance;
-    if (!$instance) {
-        $instance = new \top\library\http\Request();
-    }
-    return $instance;*/
     return \top\library\http\Request::instance();
 }
 
@@ -79,30 +30,57 @@ function request()
  */
 function response()
 {
-    /*static $instance;
-    if (!$instance) {
-        $instance = new \top\library\http\Response();
-    }
-    return $instance;*/
     return \top\library\http\Response::instance();
 }
 
 /**
  * 调用模型
- * @param $class
- * @return mixed
+ * @param $name
+ * @return \top\library\Model
  */
-function model($class)
+function model($name)
 {
     static $model = [];
+    $class = class_full_name($name, 'model');
     if (!isset($model[$class])) {
+        // 模型类存在则直接实例化
+        // 模型类不存在则直接将传入的模型名当作表名处理
         if (class_exists($class)) {
             $model[$class] = new $class();
         } else {
-            $model[$class] = new \top\library\Model($class);
+            $model[$class] = new \top\library\Model($name);
         }
     }
     return $model[$class];
+}
+
+/**
+ * 调用逻辑
+ * @param $name
+ * @return mixed
+ */
+function logic($name)
+{
+    static $logic = [];
+    $class = class_full_name($name, 'logic');
+    if (!isset($logic[$class])) {
+        // 实例化逻辑类
+        $logic[$class] = new $class();
+    }
+    return $logic[$class];
+}
+
+/**
+ * 获取类全限定名
+ * @param $name
+ * @param string $type
+ * @return string
+ */
+function class_full_name($name, $type = 'model')
+{
+    if (!strstr($name, '\\')) { // 不是类全限定名，则直接拼接全限定名
+        return APP_NS . '\\' . BIND_MODULE . '\\' . $type . '\\' . $name;
+    } else return $name;
 }
 
 /**
@@ -122,6 +100,16 @@ function url($url, $param = '')
     }
     $url = ltrim($url, '/');
     return '/' . $url . $param . '.html';
+}
+
+/**
+ * 获取当前视图文件的缓存标识
+ * @return string
+ */
+function view_cache_ident()
+{
+    $ident = md5($_SERVER['REQUEST_URI'] . request()->requestMethod());
+    return $ident;
 }
 
 /**
@@ -156,6 +144,76 @@ function view($file = '', $param = [], $cache = false)
 }
 
 /**
+ * 页面跳转
+ * @param $url
+ * @return false|string
+ */
+function redirect($url)
+{
+    if (request()->is('ajax')) {
+        return json_encode([
+            'redirect' => $url,
+        ]);
+    } else {
+        header('location: ' . $url);
+    }
+}
+
+/**
+ * 框架session操作
+ * @param $name
+ * @param string $value
+ * @return bool
+ * @throws Exception
+ */
+function session($name, $value = '')
+{
+    $config = \top\library\Config::instance()->get('session');
+    if (empty($config) || !$config['prefix']) {
+        $prefix = request()->module();
+    } else {
+        $prefix = $config['prefix'];
+    }
+    if ($value === '') {
+        if (isset($_SESSION[$prefix][$name])) {
+            return $_SESSION[$prefix][$name];
+        }
+        return false;
+    } else if ($value === false) {
+        unset($_SESSION[$prefix][$name]);
+    } else {
+        $_SESSION[$prefix][$name] = $value;
+    }
+}
+
+/**
+ * 获取headers
+ * @return array|false
+ */
+function get_header()
+{
+    if (PHP_SAPI === 'apache2handler') {
+        $headers = getallheaders();
+        $data = [];
+        foreach ($headers as $key => $value) {
+            $data[strtolower($key)] = $value;
+        }
+        unset($headers);
+        return $data;
+    } else {
+        $server = $_SERVER;
+        $headers = [];
+        foreach ($server as $key => $value) {
+            if ('http_' == strtolower(substr($key, 0, 5))) {
+                $headers[strtolower(substr($key, 5))] = $value;
+            }
+        }
+        unset($server);
+        return $headers;
+    }
+}
+
+/**
  * 获取表名
  * @param $classname
  * @return string
@@ -173,37 +231,6 @@ function get_table_name($classname)
     }
     $table = implode('', $arr);
     return strtolower($table);
-}
-
-/**
- * 创建HTTP请求
- * @param $url
- * @param array $data
- * @param array $header
- * @return bool|mixed
- */
-function create_http_request($url, $data = [], $header = [])
-{
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    if (!empty($data)) {
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-    }
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_HEADER, $header);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-    $response = curl_exec($curl);
-    if (!empty($header)) {
-        $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $response = substr($response, $headerSize);
-    }
-    curl_close($curl);
-    if ($response) {
-        return $response;
-    }
-    return false;
 }
 
 /**
@@ -246,19 +273,34 @@ function get_client_ip($type = 0, $client = true)
 }
 
 /**
- * 页面跳转
+ * 创建HTTP请求
  * @param $url
- * @return false|string
+ * @param array $data
+ * @param array $header
+ * @return bool|mixed
  */
-function redirect($url)
+function create_http_request($url, $data = [], $header = [])
 {
-    if (request()->is('ajax')) {
-        return json_encode([
-            'redirect' => $url,
-        ]);
-    } else {
-        header('location: ' . $url);
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    if (!empty($data)) {
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
     }
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_HEADER, $header);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+    $response = curl_exec($curl);
+    if (!empty($header)) {
+        $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $response = substr($response, $headerSize);
+    }
+    curl_close($curl);
+    if ($response) {
+        return $response;
+    }
+    return false;
 }
 
 /**
@@ -299,29 +341,19 @@ function filter($str)
 }
 
 /**
- * 框架session操作
- * @param $name
- * @param string $value
- * @return bool
- * @throws Exception
+ * 过滤数组
+ * @param array $array
+ * @param string $filter
+ * @param array $result
  */
-function session($name, $value = '')
+function filter_array($array = [], $filter = 'filter', &$result = [])
 {
-    $config = \top\library\Config::instance()->get('session');
-    if (empty($config) || !$config['prefix']) {
-        $prefix = request()->module();
-    } else {
-        $prefix = $config['prefix'];
-    }
-    if ($value === '') {
-        if (isset($_SESSION[$prefix][$name])) {
-            return $_SESSION[$prefix][$name];
+    foreach ($array as $key => $value) {
+        if (is_array($value)) {
+            filter_array($value, $result[$key]);
+        } else {
+            $result[$key] = (!$filter) ? $value : $filter($value);
         }
-        return false;
-    } else if ($value === false) {
-        unset($_SESSION[$prefix][$name]);
-    } else {
-        $_SESSION[$prefix][$name] = $value;
     }
 }
 
@@ -479,16 +511,6 @@ function is_mobile()
     return false;
 }
 
-/**
- * 获取当前视图文件的缓存标识
- * @return string
- */
-function view_cache_ident()
-{
-    $ident = md5($_SERVER['REQUEST_URI'] . request()->requestMethod());
-    return $ident;
-}
-
 // 模型自动验证函数
 
 /**
@@ -533,7 +555,7 @@ function notEqual($value, $value1)
  * @param int $max
  * @return boolean
  */
-function isBetween($value, $min, $max)
+function length($value, $min, $max)
 {
     $length = mb_strlen($value, 'utf8');
     if ($length < $min || $length > $max) {

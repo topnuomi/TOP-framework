@@ -263,7 +263,7 @@ class Request
         // 重置except的值
         $this->except = [];
 
-        filterArray($data, $filter, $data);
+        filter_array($data, $filter, $data);
 
         if ($name) {
             if (isset($data[$name])) {

@@ -3,6 +3,7 @@
 namespace top\library;
 
 use top\library\http\Request;
+use top\traits\Magic;
 use top\traits\Json;
 
 /**
@@ -11,6 +12,8 @@ use top\traits\Json;
  */
 abstract class Controller
 {
+
+    use Magic;
 
     use Json;
 
@@ -133,4 +136,5 @@ abstract class Controller
             ]);
         }
     }
+
 }

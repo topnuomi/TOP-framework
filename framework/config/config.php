@@ -18,7 +18,7 @@ return [
         'prefix' => '',
     ],
     'db' => [
-        'driver' => 'MySQLi',
+        'driver' => 'Mysql',
         'host' => '127.0.0.1',
         'user' => '',
         'passwd' => '',

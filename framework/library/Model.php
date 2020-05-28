@@ -8,6 +8,15 @@ use top\library\exception\DatabaseException;
 /**
  * 基础模型
  * @author topnuomi 2018年11月23日
+ *
+ * @method $this alias($name)
+ * @method $this distinct(bool $distinct)
+ * @method $this field(string|array $field)
+ * @method $this where($field, $condition = null, $value = null)
+ * @method $this order(string $order)
+ * @method $this limit(string|array $limit)
+ * @method $this join(string $table, string $on, string $type = null)
+ * @method $this sql()
  */
 class Model
 {
@@ -40,7 +49,7 @@ class Model
      * insert值映射
      * @var array
      */
-    protected $inReplace = [];
+    protected $insertReplace = [];
 
     /**
      * update值映射
@@ -84,42 +93,36 @@ class Model
         if ($table) {
             $this->table = $table;
         } else if (!$this->table) {
-            $table = get_table_name(get_called_class());
+            $table = get_table_name(static::class);
             $this->table = $table;
         }
-        // $this->getDb() = Database::table($this->table, $this->pk);
     }
 
     /**
      * 获取Database实例
      * @return mixed
      */
-    private function getDb()
+    private function database()
     {
         return Database::table($this->table, $this->pk, $this->prefix);
     }
 
     // 可以静态调用的方法--开始
 
-    /**
-     * 影响的表（仅多表delete）
-     * @param $effect
-     * @return $this
-     */
-    private function effect($effect)
+    private function _alias($name)
     {
-        $this->getDb()->effect($effect);
+        $this->database()->alias($name);
         return $this;
     }
 
     /**
-     * 过滤重复值的字段
-     * @param $field
+     * 过滤重复值
+     * @param $flag
      * @return $this
      */
-    private function distinct($field)
+    private function _distinct($flag = true)
     {
-        $this->getDb()->distinct($field);
+        $this->database()->distinct($flag);
         return $this;
     }
 
@@ -128,9 +131,9 @@ class Model
      * @param $field
      * @return $this
      */
-    private function field($field)
+    private function _field($field)
     {
-        $this->getDb()->field($field);
+        $this->database()->field($field);
         return $this;
     }
 
@@ -138,10 +141,10 @@ class Model
      * 查询条件
      * @return $this
      */
-    private function where()
+    private function _where()
     {
         call_user_func_array([
-            $this->getDb(),
+            $this->database(),
             'where'
         ], func_get_args());
         return $this;
@@ -151,10 +154,10 @@ class Model
      * 排序
      * @return $this
      */
-    private function order()
+    private function _order()
     {
         call_user_func_array([
-            $this->getDb(),
+            $this->database(),
             'order'
         ], func_get_args());
         return $this;
@@ -164,10 +167,10 @@ class Model
      * 限制
      * @return $this
      */
-    private function limit()
+    private function _limit()
     {
         call_user_func_array([
-            $this->getDb(),
+            $this->database(),
             'limit'
         ], func_get_args());
         return $this;
@@ -175,26 +178,25 @@ class Model
 
     /**
      * 多表
-     * @param $type
      * @param $table
-     * @param $name
+     * @param $on
+     * @param string $type
      * @return $this
      */
-    private function join($type, $table, $name)
+    private function _join($table, $on, $type = 'INNER')
     {
-        $this->getDb()->join($type, $table, $name);
+        $this->database()->join($table, $on, $type);
         return $this;
     }
 
     /**
-     * 多表
-     * @param $on
-     * @return $this
+     * 获取最后一次执行的SQL
+     *
+     * @return string
      */
-    private function on($on)
+    private function _sql()
     {
-        $this->getDb()->on($on);
-        return $this;
+        return $this->database()->sql();
     }
 
     // 可静态调用的方法--结束
@@ -212,7 +214,7 @@ class Model
             // 此处取消了数据验证，在$this->>data()方法中验证，减少一次数据库查询
             // 入库时最后的数据处理
             $data = $this->inHandle($data);
-            return $this->getDb()->insert($data);
+            return $this->database()->insert($data);
         }
         return false;
     }
@@ -224,7 +226,7 @@ class Model
      */
     public function delete($param = false)
     {
-        return $this->getDb()->delete($param);
+        return $this->database()->delete($param);
     }
 
     /**
@@ -241,7 +243,7 @@ class Model
             // 此处取消了数据验证，在$this->data()方法中验证，减少一次数据库查询
             // 入库时最后的数据处理
             $data = $this->inHandle($data);
-            return $this->getDb()->update($data, $param);
+            return $this->database()->update($data, $param);
         }
         return false;
     }
@@ -254,7 +256,7 @@ class Model
      */
     public function find($param = false, $notRaw = true)
     {
-        $result = $this->getDb()->find($param);
+        $result = $this->database()->find($param);
         if ($notRaw) {
             if (is_array($result)) {
                 $result = $this->outHandle($result);
@@ -271,7 +273,7 @@ class Model
      */
     public function select($param = false, $notRaw = true)
     {
-        $result = $this->getDb()->select($param);
+        $result = $this->database()->select($param);
         if ($notRaw) {
             if (is_array($result)) {
                 $result = $this->outHandle($result);
@@ -287,7 +289,7 @@ class Model
      */
     public function count($param = null)
     {
-        return $this->getDb()->common($param, 'count');
+        return $this->database()->common($param, 'count');
     }
 
     /**
@@ -297,7 +299,7 @@ class Model
      */
     public function avg($param = null)
     {
-        return $this->getDb()->common($param, 'avg');
+        return $this->database()->common($param, 'avg');
     }
 
     /**
@@ -307,7 +309,7 @@ class Model
      */
     public function max($param = null)
     {
-        return $this->getDb()->common($param, 'max');
+        return $this->database()->common($param, 'max');
     }
 
     /**
@@ -317,7 +319,7 @@ class Model
      */
     public function min($param = null)
     {
-        return $this->getDb()->common($param, 'min');
+        return $this->database()->common($param, 'min');
     }
 
     /**
@@ -327,27 +329,28 @@ class Model
      */
     public function sum($param = null)
     {
-        return $this->getDb()->common($param, 'sum');
+        return $this->database()->common($param, 'sum');
     }
 
     /**
      * 执行一条SQL
      * @param $query
+     * @param array $params
      * @return mixed
      */
-    public function query($query)
+    public function query($query, $params = [])
     {
-        return $this->getDb()->query($query);
+        return $this->database()->query($query, $params);
     }
 
     /**
      * MySQL事务
      * @param $action
-     * @return mixed
+     * @return bool
      */
     public function transaction($action)
     {
-        $db = $this->getDb();
+        $db = $this->database();
         // 开启事务
         $db->begin();
         try {
@@ -363,44 +366,22 @@ class Model
     }
 
     /**
-     * 获取最后一次执行的SQL
-     *
-     * @return string
+     * 返回PDO
+     * @return \PDO
      */
-    public function _sql()
+    public function getPDO()
     {
-        return $this->getDb()->_sql();
+        return $this->database()->getPDO();
     }
 
     /**
      * 获取表单数据
      * @param array $data
-     * @param bool $notRaw
      * @return array|bool
      */
-    public function data($data = [], $notRaw = true)
+    public function data($data = [])
     {
-        $mapData = $this->processMapped($data);
-        if ($mapData) { // 如果正确处理字段映射并且数据验证通过
-            if (!$notRaw) {
-                return $mapData;
-            } else {
-                $data = [];
-                $prefix = $this->prefix ? $this->prefix : Config::instance()->get('db')['prefix'];
-                $tableDesc = $this->tableDesc($prefix . $this->table);
-                foreach ($tableDesc as $value) {
-                    if (array_key_exists($value['Field'], $mapData)) {
-                        // 如果表单值为空则赋值为数据库字段默认值
-                        if (!$mapData[$value['Field']] && !is_numeric($mapData[$value['Field']])) {
-                            $mapData[$value['Field']] = $value['Default'];
-                        }
-                        $data[$value['Field']] = $mapData[$value['Field']];
-                    }
-                }
-                return $data;
-            }
-        }
-        return false;
+        return $this->processMapped($data);
     }
 
     /**
@@ -459,15 +440,14 @@ class Model
      */
     private function inHandle($data)
     {
-        $replace = ($this->isInsert) ? $this->inReplace : $this->updateReplace;
+        $replace = ($this->isInsert) ? $this->insertReplace : $this->updateReplace;
         foreach ($replace as $key => $value) {
-            $fieldValue = '';
             if (!array_key_exists($key, $data)) {
                 $data[$key] = '';
             }
             if (is_array($value)) {
                 if (isset($value[1]) && $value[1] === true) {
-                    $object = get_called_class();
+                    $object = static::class;
                     if (method_exists($object, $value[0])) {
                         $methodName = $value[0];
                         $fieldValue = call_user_func_array([
@@ -476,6 +456,8 @@ class Model
                         ], [
                             $data[$key]
                         ]);
+                    } else {
+                        throw new Exception('方法' . $object . '->' . $value[0] . '不存在');
                     }
                 } else if (isset($value[0]) && function_exists($value[0])) {
                     $fieldValue = $value[0]($data[$key]);
@@ -593,46 +575,12 @@ class Model
     }
 
     /**
-     * 获取表结构
-     * @param $table
-     * @return mixed
-     */
-    public function tableDesc($table)
-    {
-        return $this->getDb()->tableDesc($table);
-    }
-
-    /**
      * 获取信息
      * @return string
      */
     public function getMessage()
     {
         return $this->message;
-    }
-
-    /**
-     * 某些方法提供以下替代方式
-     * @param $name
-     * @return array|mixed|null
-     */
-    public function __get($name)
-    {
-        $data = null;
-        switch ($name) {
-            case 'one':
-                $data = $this->find();
-                break;
-            case 'all':
-                $data = $this->select();
-                break;
-            case 'sql':
-                $data = $this->_sql();
-                break;
-            default:
-                $data = $this->$name();
-        }
-        return $data;
     }
 
     /**
@@ -643,8 +591,9 @@ class Model
      */
     public function __call($name, $arguments)
     {
-        if (method_exists($this, $name)) {
-            return $this->{$name}($arguments);
+        $methodName = '_' . $name;
+        if (method_exists($this, $methodName)) {
+            return call_user_func_array([$this, $methodName], $arguments);
         } else throw new Exception('不存在的方法：' . $name);
     }
     
@@ -656,10 +605,8 @@ class Model
      */
     public static function __callStatic($name, $arguments)
     {
-        $methodName = null;
-        if (method_exists(static::class, $name)) {
-            $methodName = $name;
-        } else {
+        $methodName = '_' . $name;
+        if (!method_exists(static::class, $methodName)) {
             $methodMap = ['all' => 'select', 'get' => 'find'];
             if (isset($methodMap[$name])) {
                 $methodName = $methodMap[$name];

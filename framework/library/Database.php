@@ -2,7 +2,8 @@
 
 namespace top\library;
 
-use top\library\database\ifs\DatabaseIfs;
+use top\library\database\Base;
+use top\library\exception\DatabaseException;
 
 /**
  * 数据库操作类
@@ -12,22 +13,16 @@ class Database
 {
 
     /**
-     * 数据库驱动
-     * @var null
+     * 数据库连接
+     * @var Base
      */
-    private static $driver = null;
+    private static $connection = null;
 
     /**
      * 当前类实例
      * @var array
      */
     private static $instance = [];
-
-    /**
-     * 当前表结构
-     * @var array
-     */
-    private static $tableDesc = [];
 
     /**
      * 数据库配置
@@ -48,16 +43,16 @@ class Database
     private $pk = '';
 
     /**
-     * 多个表（仅delete操作）
+     * 别名
      * @var null
      */
-    private $effect = null;
+    private $alias = null;
 
     /**
      * 数据去重
      * @var null
      */
-    private $distinct = null;
+    private $distinct = false;
 
     /**
      * 操作的字段
@@ -90,56 +85,29 @@ class Database
     private $join = [];
 
     /**
-     * 关联
-     * @var array
-     */
-    private $on = [];
-
-    /**
      * Database constructor.
      * @param $table
      * @param $pk
      * @param $prefix
-     * @throws \Exception
+     * @throws DatabaseException
      */
     private function __construct($table, $pk, $prefix)
     {
-        $driver = Register::get('DBDriver');
+        // 获取配置
         $this->config = Config::instance()->get('db');
+        // 当前操作表名
         $this->table = $this->getTableName($prefix, $table);
+        // 当前操作表主键
         $this->pk = $pk;
-        $this->setDriver($driver, $this->config);
-    }
-
-    /**
-     * 指定表
-     * @param $table
-     * @param string $pk
-     * @param string $prefix
-     * @return mixed
-     * @throws \Exception
-     */
-    public static function table($table, $pk = '', $prefix = '')
-    {
-        $ident = $prefix . $table;
-        if (!isset(self::$instance[$ident])) {
-            self::$instance[$ident] = new self($table, $pk, $prefix);
+        if (!self::$connection) { // 保证只有一个数据库连接
+            // 设置数据库驱动
+            $driver = $this->config['driver'] ? $this->config['driver'] : 'MySQLi';
+            $class = '\\top\\library\\database\\driver\\' . $driver;
+            if (class_exists($class)) {
+                // 获取数据库驱动实例
+                self::$connection = $class::instance()->connect($this->config);
+            } else throw new DatabaseException('不存在的数据库驱动：' . $driver);
         }
-        return self::$instance[$ident];
-    }
-
-    /**
-     * 指定数据库驱动
-     *
-     * @param DatabaseIfs $driver
-     * @param array $config
-     */
-    private function setDriver(DatabaseIfs $driver, $config)
-    {
-        if (!self::$driver) {
-            self::$driver = $driver->connect($config);
-        }
-        return self::$driver;
     }
 
     /**
@@ -162,23 +130,39 @@ class Database
     }
 
     /**
-     * 指定多张表
-     * @param $effect
+     * 指定表
+     * @param $table
+     * @param string $pk
+     * @param string $prefix
+     * @return $this
+     */
+    public static function table($table = '', $pk = '', $prefix = '')
+    {
+        $ident = $prefix . $table;
+        if (!isset(self::$instance[$ident])) {
+            self::$instance[$ident] = new self($table, $pk, $prefix);
+        }
+        return self::$instance[$ident];
+    }
+
+    /**
+     * 设置表别名
+     * @param $name
      * @return \top\library\Database
      */
-    public function effect($effect)
+    public function alias($name)
     {
-        $this->effect = $effect;
+        $this->alias = $name;
         return $this;
     }
 
     /**
-     * @param $field
+     * @param $flag
      * @return \top\library\Database
      */
-    public function distinct($field)
+    public function distinct($flag = true)
     {
-        $this->distinct = $field;
+        $this->distinct = $flag ? true : false;
         return $this;
     }
 
@@ -260,12 +244,12 @@ class Database
     /**
      * 多表
      *
+     * @param $table
+     * @param $on
      * @param string $type
-     * @param string $table
-     * @param string $name
      * @return \top\library\Database
      */
-    public function join($type, $table, $name)
+    public function join($table, $on, $type = 'INNER')
     {
         $tableName = null;
         if (is_array($table) && isset($table[0]) && isset($table[1])) {
@@ -274,21 +258,10 @@ class Database
             $tableName = $this->config['prefix'] . $table;
         }
         $this->join[] = [
-            $type,
             $tableName,
-            $name
+            $on,
+            $type
         ];
-        return $this;
-    }
-
-    /**
-     * 多表关联
-     * @param string $on
-     * @return \top\library\Database
-     */
-    public function on($on)
-    {
-        $this->on[] = $on;
         return $this;
     }
 
@@ -300,7 +273,7 @@ class Database
      */
     public function insert($data)
     {
-        $result = self::$driver->insert($this->table, $data);
+        $result = self::$connection->insert($this->table, $data);
         return $result;
     }
 
@@ -311,17 +284,21 @@ class Database
      */
     public function find($param = false)
     {
-        if (is_callable($param))
-            $param($this);
-        $field = $this->getPk();
-        $pkWhere = [];
-        if (!is_bool($param) && !is_callable($param))
-            $pkWhere = [$field => $param];
-        $result = self::$driver->find([
+        (is_callable($param)) && $param($this);
+        if (!is_bool($param) && !is_callable($param)) {
+            $this->where = array_merge($this->where, [
+                [($this->alias ? $this->alias . '.' : '') . $this->getPk() => $param],
+            ]);
+        }
+        $result = self::$connection->find(
             $this->table,
-            !empty($this->join),
-            $pkWhere
-        ], $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order);
+            $this->alias,
+            $this->distinct,
+            $this->field,
+            $this->join,
+            $this->where,
+            $this->order
+        );
         $this->_reset();
         return $result;
     }
@@ -334,17 +311,22 @@ class Database
      */
     public function select($param = false)
     {
-        if (is_callable($param))
-            $param($this);
-        $field = $this->getPk();
-        $pkWhere = [];
-        if (!is_bool($param) && !is_callable($param))
-            $pkWhere = [$field => $param];
-        $result = self::$driver->select([
+        (is_callable($param)) && $param($this);
+        if (!is_bool($param) && !is_callable($param)) {
+            $this->where = array_merge($this->where, [
+                [($this->alias ? $this->alias . '.' : '') . $this->getPk() => $param],
+            ]);
+        }
+        $result = self::$connection->select(
             $this->table,
-            !empty($this->join),
-            $pkWhere
-        ], $this->distinct, $this->field, $this->join, $this->on, $this->where, $this->order, $this->limit);
+            $this->alias,
+            $this->distinct,
+            $this->field,
+            $this->join,
+            $this->where,
+            $this->order,
+            $this->limit
+        );
         $this->_reset();
         foreach ($result as $k => $v)
             $result[$k] = $v;
@@ -360,17 +342,21 @@ class Database
      */
     public function update($data, $param = false)
     {
-        if (is_callable($param))
-            $param($this);
-        $field = $this->getPk();
-        $pkWhere = [];
-        if (!is_bool($param) && !is_callable($param))
-            $pkWhere = [$field => $param];
-        $result = self::$driver->update([
+        (is_callable($param)) && $param($this);
+        if (!is_bool($param) && !is_callable($param)) {
+            $this->where = array_merge($this->where, [
+                [($this->alias ? $this->alias . '.' : '') . $this->getPk() => $param],
+            ]);
+        }
+        $result = self::$connection->update(
             $this->table,
-            !empty($this->join),
-            $pkWhere
-        ], $this->join, $this->on, $this->where, $this->order, $this->limit, $data);
+            $this->alias,
+            $this->join,
+            $this->where,
+            $this->order,
+            $this->limit,
+            $data
+        );
         $this->_reset();
         return $result;
     }
@@ -383,18 +369,20 @@ class Database
      */
     public function delete($param = false)
     {
-        if (is_callable($param)) {
-            $param($this);
+        (is_callable($param)) && $param($this);
+        if (!is_bool($param) && !is_callable($param)) {
+            $this->where = array_merge($this->where, [
+                [($this->alias ? $this->alias . '.' : '') . $this->getPk() => $param],
+            ]);
         }
-        $field = $this->getPk();
-        $pkWhere = [];
-        if (!is_bool($param) && !is_callable($param))
-            $pkWhere = [$field => $param];
-        $result = self::$driver->delete($this->effect, [
+        $result = self::$connection->delete(
             $this->table,
-            !empty($this->join),
-            $pkWhere
-        ], $this->join, $this->on, $this->where, $this->order, $this->limit);
+            $this->alias,
+            $this->join,
+            $this->where,
+            $this->order,
+            $this->limit
+        );
         $this->_reset();
 
         return $result;
@@ -409,48 +397,32 @@ class Database
      */
     public function common($param, $type)
     {
-        if (is_callable($param)) {
-            $param($this);
-        }
+        (is_callable($param)) && $param($this);
         if (empty($this->field) && $param && !is_callable($param)) {
             $this->field = $param;
         }
-        $result = self::$driver->common([
+        $result = self::$connection->common(
             $this->table,
-            !empty($this->join),
-            []
-        ], $this->distinct, $this->field, $this->join, $this->on, $this->where, $type);
+            $this->alias,
+            $this->field,
+            $this->join,
+            $this->where,
+            $type
+        );
         $this->_reset();
 
         return $result;
     }
 
     /**
-     * 获取表结构
-     *
-     * @param string $table
-     * @return mixed
-     */
-    public function tableDesc($table = '')
-    {
-        $table = ($table) ? $table : $this->table;
-        if (!isset(self::$tableDesc[$table])) {
-            self::$tableDesc[$table] = self::$driver->tableDesc($table);
-        }
-
-        return self::$tableDesc[$table];
-    }
-
-    /**
      * 执行一条SQL
-     *
-     * @param string $query
-     * @return resource|bool
+     * @param $query
+     * @param array $params
+     * @return bool|\PDOStatement
      */
-    public function query($query)
+    public function query($query, $params = [])
     {
-        $result = self::$driver->query($query);
-        return $result;
+        return self::$connection->query($query, $params);
     }
 
     /**
@@ -458,7 +430,7 @@ class Database
      */
     public function begin()
     {
-        self::$driver->begin();
+        self::$connection->begin();
     }
 
     /**
@@ -466,7 +438,7 @@ class Database
      */
     public function commit()
     {
-        self::$driver->commit();
+        self::$connection->commit();
     }
 
     /**
@@ -474,7 +446,16 @@ class Database
      */
     public function rollback()
     {
-        self::$driver->rollback();
+        self::$connection->rollback();
+    }
+
+    /**
+     * 返回PDO
+     * @return \PDO
+     */
+    public function getPDO()
+    {
+        return self::$connection->getPDO();
     }
 
     /**
@@ -482,9 +463,9 @@ class Database
      *
      * @return string
      */
-    public function _sql()
+    public function sql()
     {
-        return self::$driver->sql();
+        return self::$connection->sql();
     }
 
     /**
@@ -492,11 +473,9 @@ class Database
      */
     private function _reset()
     {
-        $this->effect = null;
-        $this->distinct = null;
+        $this->distinct = false;
         $this->field = null;
         $this->join = [];
-        $this->on = [];
         $this->where = [];
         $this->order = null;
         $this->limit = null;
@@ -510,15 +489,8 @@ class Database
     private function getPk()
     {
         if (!$this->pk) {
-            $tableInfo = $this->tableDesc();
-            $pk = '';
-            foreach ($tableInfo as $value) {
-                if ($value['Key'] == 'PRI') {
-                    $pk = $value['Field'];
-                    break;
-                }
-            }
-            return $pk;
+            $pk = self::$connection->getPk($this->table, $this->config['dbname']);
+            return ($pk) ? $pk : 'id';
         }
         return $this->pk;
     }
