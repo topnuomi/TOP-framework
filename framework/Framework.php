@@ -117,9 +117,9 @@ class Framework
                 $scriptName = $_SERVER['SCRIPT_NAME'];
                 $pos = strrpos($scriptName, '/');
                 $root = substr($scriptName, 0, $pos + 1);
-                $path = $root . 'resource' . DS;
+                $path = $root . 'resource' . '/';
             }
-            define('RESOURCE', str_replace('/', DS, $path));
+            define('RESOURCE', $path);
         }
     }
 

@@ -244,7 +244,7 @@ class Router
             $this->handler($this->request->uri());
         } catch (RouteException $exception) {
             if (!DEBUG) { // 非调试模式直接404
-                return \response()->notFound();
+                return \response()->code(404)->send();
             } else throw $exception;
         }
 

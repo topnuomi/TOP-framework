@@ -1,11 +1,13 @@
 <?php
 // 默认配置
-
 return [
     'default_controller' => 'Index',
     'default_method' => 'index',
     'compel_route' => false,
     'complete_parameter' => true,
+    'error_pages' => [
+        404 => '.' . DS . '404.html',
+    ],
     'register' => [
         'Top' => \top\library\template\driver\Top::class,
     ],
