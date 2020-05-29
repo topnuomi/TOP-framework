@@ -56,9 +56,7 @@ class Top implements TemplateIfs
                     $this->engine->loadTaglib($lib);
                 }
             }
-            $content = file_get_contents($filename);
-            $content = $this->engine->compile($content);
-            $content = $this->engine->returnRaw($content);
+            $content = $this->engine->compile(file_get_contents($filename));
             file_put_contents($compileFileName, $content);
         }
         return $compileFileName;
