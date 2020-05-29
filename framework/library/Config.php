@@ -61,7 +61,9 @@ class Config
                     // 合并配置项
                     foreach ($config as $key => $value) {
                         if (array_key_exists($key, $this->config) && is_array($value)) {
-                            $this->config[$key] = array_merge($this->config[$key], $value);
+                            foreach ($value as $k => $v) {
+                                $this->config[$key][$k] = $v;
+                            }
                         } else {
                             $this->config[$key] = $value;
                         }
