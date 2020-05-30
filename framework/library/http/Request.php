@@ -2,7 +2,6 @@
 
 namespace top\library\http;
 
-use top\library\Application;
 use top\library\Router;
 use top\traits\Instance;
 

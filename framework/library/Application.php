@@ -83,10 +83,10 @@ class Application
 
         // 处理请求并得到数据
         $response = Response::instance()->header([
-            'X-Powered-By: TOP-Framework'
+            'X-Powered-By: TOP-Framework',
         ])->send($router->execute());
-
-        // 响应内容
+        
+        // 统一输出响应内容
         echo $response->content;
 
     }

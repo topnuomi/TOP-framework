@@ -2,7 +2,7 @@
 
 namespace top\library\http;
 
-use Exception;
+use top\library\exception\ResponseException;
 use top\library\View;
 use top\traits\Instance;
 use top\traits\Json;
@@ -100,6 +100,7 @@ class Response
         foreach ($this->header as $value) {
             header($value);
         }
+
         return $this;
     }
 
@@ -118,7 +119,7 @@ class Response
                 'Status ' . $text,
             ]);
         }
-        throw new Exception('不支持的状态码：' . $code);
+        throw new ResponseException('不支持的状态码：' . $code);
     }
 
     /**
@@ -149,6 +150,23 @@ class Response
     }
 
     /**
+     * 输出文件
+     * @param $filename
+     * @param $name
+     * @return Response
+     */
+    public function sendFile($filename = null, $name = null)
+    {
+        if (is_file($filename)) {
+            $name = ($name) ? $name : uniqid() . '.' . substr($filename, strrpos($filename, '.') + 1);
+            return $this->header([
+                'Content-Disposition: attachment; filename="' . $name . '"',
+            ])->code(200)->send(readfile($filename));
+        }
+        throw new ResponseException('不存在的文件：' . $filename);
+    }
+
+    /**
      * 处理数据
      * @param $data
      * @return false|int|null|string
@@ -171,15 +189,6 @@ class Response
             return '[OBJECT]';
         }
         return $data;
-    }
-
-    /**
-     * 直接echo处理
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->content;
     }
 
 }
