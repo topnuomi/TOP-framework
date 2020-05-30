@@ -2,6 +2,7 @@
 
 namespace top\library\template\driver\engine;
 
+use Exception;
 use top\traits\Instance;
 
 /**
@@ -315,8 +316,11 @@ class Engine
                 }
             } else { // 自闭合标签处理
                 $template = preg_replace_callback($pattern, function ($matches) use ($name, $item) {
-                    $attr = $item['attr'] ? $this->getAttr($matches[0], explode(',', $item['attr'])) : [];
-                    return $this->getTagParseResult($name, $attr);
+                    if (!isset($matches[2])) {
+                        $attr = $item['attr'] ? $this->getAttr($matches[0], explode(',', $item['attr'])) : [];
+                        return $this->getTagParseResult($name, $attr);
+                    }
+                    return $matches[0];
                 }, $template);
             }
         }
@@ -332,13 +336,13 @@ class Engine
     private function getAttr($string, $tags = [])
     {
         $attr = [];
-        $attrPattern = '/[ +](.*?)=["](.*?)["]/is';
+        $attrPattern = '/[ +](.*?)=([\'"])(.*?)\\2/is';
         preg_match_all($attrPattern, $string, $result);
         if (isset($result[0]) && !empty($result[0])) {
             foreach ($result[1] as $key => $value) {
                 $name = trim($value, ' ');
                 if (in_array($name, $tags)) {
-                    $attr[$name] = $result[2][$key];
+                    $attr[$name] = $result[3][$key];
                 }
             }
         }
@@ -469,7 +473,8 @@ class Engine
 
     private function _assign($tag)
     {
-        $parse = '<?php $' . $tag['name'] . ' = ' . (is_numeric($tag['value']) ? $tag['value'] : '\'' . $tag['value'] . '\'') . '; ?>';
+        $quot = (strstr($tag['value'], '\'')) ? '"' : '\'';
+        $parse = '<?php $' . $tag['name'] . ' = ' . (is_numeric($tag['value']) ? $tag['value'] : $quot . $tag['value'] . $quot) . '; ?>';
         return $parse;
     }
 
