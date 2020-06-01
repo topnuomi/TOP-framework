@@ -6,7 +6,7 @@ use Exception;
 use top\traits\Instance;
 
 /**
- * 模板标签库（支持模板继承）
+ * 模板标签解析
  * Class Template
  * @package lib
  */
@@ -31,30 +31,19 @@ class Engine
     protected $tags = [];
 
     /**
-     * @var null 模板配置
+     * @var array 模板配置
      */
-    protected $config = null;
+    protected $config = [];
 
     /**
-     * @var null 扩展标签库
+     * @var array 标签库
      */
-    private $extend = [];
+    private $libs = [];
 
     /**
-     * @var array 扩展标签库类实例
+     * @var array 标签库类实例
      */
-    private $extendInstance = [];
-
-    /**
-     * @var array 默认标签定义
-     */
-    private $defaultTags = [
-        'php' => ['attr' => null, 'close' => 1],
-        'if' => ['attr' => 'condition', 'close' => 1],
-        'else' => ['attr' => 'condition', 'close' => 0],
-        'loop' => ['attr' => 'name,id,key', 'close' => 1],
-        'assign' => ['attr' => 'name,value', 'close' => 0]
-    ];
+    private $libInstance = [];
 
     /**
      * 构造方法
@@ -79,10 +68,10 @@ class Engine
      */
     private function parseExtend($template)
     {
-        $pattern = '/' . $this->left . 'extend.*?file=[\'"](.*?)[\'"].*?\/' . $this->right . '/is';
+        $pattern = '/' . $this->left . 'extend\s+file[\s\S]*?=[\s\S]*?[\'"](.*?)[\'"][\s\S]*?\/' . $this->right . '/is';
         preg_match($pattern, $template, $matches);
         if (!empty($matches)) {
-            $blockPattern = '/' . $this->left . 'block.*?name=[\'"](.*?)[\'"]' . $this->right;
+            $blockPattern = '/' . $this->left . 'block\s+name[\s\S]*?=[\s\S]*?[\'"](.*?)[\'"][\s\S]*?' . $this->right;
             $blockPattern .= '([\s\S]*?)' . $this->left . '\/block' . $this->right . '/is';
             // 获得被继承的模板内容
             $file = $this->config['dir'] . $matches[1] . '.' . ltrim($this->config['ext'], '.');
@@ -132,7 +121,7 @@ class Engine
      */
     private function parseInclude($template)
     {
-        $pattern = '/' . $this->left . 'include.*?file=[\'"](.*?)[\'"].*?\/' . $this->right . '/is';
+        $pattern = '/' . $this->left . 'include\s+file[\s\S]*?=[\s\S]*?[\'"](.*?)[\'"][\s\S]*?\/' . $this->right . '/is';
         $template = preg_replace_callback($pattern, function ($result) {
             $string = null;
             $file = $this->config['dir'] . $result[1] . '.' . ltrim($this->config['ext'], '.');
@@ -155,7 +144,7 @@ class Engine
      */
     private function hasInclude($template)
     {
-        $pattern = '/' . $this->left . 'include.*?file=[\'"](.*?)[\'"].*?\/' . $this->right . '/is';
+        $pattern = '/' . $this->left . 'include\s+file[\s\S]*?=[\s\S]*?[\'"](.*?)[\'"][\s\S]*?\/' . $this->right . '/is';
         preg_match($pattern, $template, $matches);
         return !empty($matches);
     }
@@ -184,7 +173,6 @@ class Engine
                     $content = $matches[1][$i];
                 }
                 $replace[] = '<?php echo ($' . $content . '); ?>';
-                // $replace[] = $matches[0][$i];
             }
         }
         $template = str_replace($search, $replace, $template);
@@ -193,31 +181,35 @@ class Engine
 
     /**
      * 外部加载扩展标签
-     * @param $lib
+     * @param $prefix
+     * @param $className
      */
-    public function loadTaglib($lib)
+    public function loadTaglib($prefix, $className)
     {
-        $this->extend[] = $lib;
+        if ($prefix == 'default') {
+            throw new Exception('扩展标签库前缀不能为default');
+        }
+        $this->libs[$prefix] = $className;
     }
 
     /**
-     * 标签处理
-     * @param $template
+     * 获取所有标签
      * @return null|string|string[]
      */
-    private function parseTags($template)
+    private function getTags()
     {
-        foreach ($this->extend as $lib) {
-            $prefix = substr($lib, strrpos($lib, '\\') + 1);
-            $this->extendInstance[$prefix] = $object = new $lib;
+        $tags = [];
+        // 加入默认标签库
+        $this->libs = array_merge(['default' => Tags::class,], $this->libs);
+        foreach ($this->libs as $prefix => $lib) {
+            $this->libInstance[$prefix] = $object = new $lib;
             foreach ($object->tags as $name => $tag) {
-                if (!isset($this->tags[$name]) && !isset($this->defaultTags[$name])) {
-                    $this->tags[$prefix . ':' . $name] = $tag;
+                if (!isset($tags[$name])) { // 如果不存在则加入到标签库
+                    $tags[($prefix == 'default' ? '' : $prefix . ':') . $name] = $tag;
                 }
             }
         }
-        $tags = array_merge($this->defaultTags, $this->tags);
-        return $this->_parseTags($template, $tags);
+        return $tags;
     }
 
     /**
@@ -225,20 +217,20 @@ class Engine
      * @param $name
      * @param $attr
      * @param string $content
-     * @return null
+     * @return mixed
      */
     private function getTagParseResult($name, $attr, $content = '')
     {
         // 如果是扩展标签则找到扩展类进行处理
         if (strstr($name, ':')) {
             $tagInfo = explode(':', $name);
-            if (method_exists($this->extendInstance[$tagInfo[0]], '_' . $tagInfo[1])) {
-                return $this->extendInstance[$tagInfo[0]]->{'_' . $tagInfo[1]}($attr, $content);
+            if (method_exists($this->libInstance[$tagInfo[0]], '_' . $tagInfo[1])) {
+                return $this->libInstance[$tagInfo[0]]->{'_' . $tagInfo[1]}($attr, $content);
             }
         }
-        // 否则尝试自带标签处理
-        else if (method_exists($this, '_' . $name)) {
-            return $this->{'_' . $name}($attr, $content);
+        // 否则尝试默认标签处理
+        else if (method_exists($this->libInstance['default'], '_' . $name)) {
+            return $this->libInstance['default']->{'_' . $name}($attr, $content);
         }
     }
 
@@ -248,9 +240,9 @@ class Engine
      * @param $tags
      * @return null|string|string[]
      */
-    private function _parseTags($template, $tags)
+    private function parseTags($template)
     {
-        foreach ($tags as $name => $item) {
+        foreach ($this->getTags() as $name => $item) {
             $pattern = '/' . $this->left . '(?:(' . $name . ')\b(?>[^' . $this->right . ']*)|\/(' . $name . '))';
             $pattern .= $this->right . '/is';
             if ($item['close']) {
@@ -336,11 +328,11 @@ class Engine
     private function getAttr($string, $tags = [])
     {
         $attr = [];
-        $attrPattern = '/[ +](.*?)=([\'"])(.*?)\\2/is';
+        $attrPattern = '/\s+(.*?)=[\s\S]*?([\'"])(.*?)\\2/is';
         preg_match_all($attrPattern, $string, $result);
         if (isset($result[0]) && !empty($result[0])) {
             foreach ($result[1] as $key => $value) {
-                $name = trim($value, ' ');
+                $name = str_replace([' ', "\t", PHP_EOL], '', $value);
                 if (in_array($name, $tags)) {
                     $attr[$name] = $result[3][$key];
                 }
@@ -386,99 +378,6 @@ class Engine
     }
 
     /**
-     * php标签开始
-     * @param $tag
-     * @param $content
-     * @return string
-     */
-    private function _php($tag, $content)
-    {
-        return '<?php ' . $content . ' ?>';
-    }
-
-    /**
-     * if标签
-     * @param $tag
-     * @param $content
-     * @return string
-     */
-    private function _if($tag, $content)
-    {
-        $tag['condition'] = $this->_parseCondition($tag['condition']);
-        $parse = '<?php if (' . $tag['condition'] . '): ?>';
-        $parse .= $content;
-        $parse .= '<?php endif; ?>';
-        return $parse;
-    }
-
-    /**
-     * else标签
-     * @param $tag
-     * @return string
-     */
-    private function _else($tag)
-    {
-        if (isset($tag['condition'])) {
-            $tag['condition'] = $this->_parseCondition($tag['condition']);
-            $parse = '<?php elseif (' . $tag['condition'] . '): ?>';
-        } else {
-            $parse = '<?php else: ?>';
-        }
-        return $parse;
-    }
-
-    /**
-     * 处理if/else标签的条件比较符
-     * @param $condition
-     * @return mixed
-     */
-    private function _parseCondition($condition)
-    {
-        return str_ireplace([
-            ' eq ',
-            ' neq ',
-            ' lt ',
-            ' elt ',
-            ' gt ',
-            ' egt ',
-            ' heq ',
-            ' nheq '
-        ], [
-            ' == ',
-            ' != ',
-            ' < ',
-            ' <= ',
-            ' > ',
-            ' >= ',
-            ' === ',
-            ' !== '
-        ], $condition);
-    }
-
-    /**
-     * loop标签
-     * @param $tag
-     * @param $content
-     * @return string
-     */
-    private function _loop($tag, $content)
-    {
-        $parse = '<?php ' . (isset($tag['key']) ? '$' . $tag['key'] . ' = 0; ' : '');
-        $parse .= 'foreach($' . $tag['name'] . ' as ' . (isset($tag['index']) ? '$' . $tag['index'] . '=>' : '') . '$' . $tag['id'] . '): ';
-        $parse .= (isset($tag['key']) ? '$' . $tag['key'] . '++;' : '') . ' ?>';
-        $parse .= $content;
-        $parse .= '<?php endforeach; ?>';
-        return $parse;
-    }
-
-    private function _assign($tag)
-    {
-        $quot = (strstr($tag['value'], '\'')) ? '"' : '\'';
-        $parse = '<?php $' . $tag['name'] . ' = ' . (is_numeric($tag['value']) ? $tag['value'] : $quot . $tag['value'] . $quot) . '; ?>';
-        return $parse;
-    }
-
-    /**
      * 获取编译后的内容
      * @param $template
      * @return mixed|null|string|string[]
@@ -498,7 +397,7 @@ class Engine
         // 还原original内容
         $template = $this->returnOriginal($template);
 
-        return '<?php if (!defined(\'APP_PATH\')) { exit; } ?>' . $template;
+        return '<?php if (!defined(\'APP_PATH\')) exit; ?>' . $template;
     }
 
 }

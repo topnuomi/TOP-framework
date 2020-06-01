@@ -14,14 +14,14 @@ class Top implements TemplateIfs
     use Instance;
 
     /**
-     * @var null 模板引擎实现
+     * @var Engine 模板引擎实现
      */
     private $engine = null;
 
     /**
-     * @var null 模板配置
+     * @var array 模板配置
      */
-    private $config = null;
+    private $config = [];
 
     /**
      * @var bool 缓存状态
@@ -52,8 +52,8 @@ class Top implements TemplateIfs
                 mkdir($this->config['compileDir'], 0755, true);
             }
             if (isset($this->config['tagLib']) && !empty($this->config['tagLib'])) {
-                foreach ($this->config['tagLib'] as $lib) {
-                    $this->engine->loadTaglib($lib);
+                foreach ($this->config['tagLib'] as $prefix => $className) {
+                    $this->engine->loadTaglib($prefix, $className);
                 }
             }
             $content = $this->engine->compile(file_get_contents($filename));
