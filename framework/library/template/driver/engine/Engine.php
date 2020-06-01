@@ -166,13 +166,8 @@ class Engine
                 $replace[] = '<?php echo (' . ltrim($matches[1][$i], ':') . '); ?>';
             } elseif ($start == '@') { // 输出常量
                 $replace[] = '<?php echo (' . ltrim($matches[1][$i], '@') . '); ?>';
-            } else { // 输出变量，自动拼接$
-                if (strstr($matches[1][$i], '.')) {
-                    $content = str_replace('.', '[\'', $matches[1][$i]) . '\']';
-                } else {
-                    $content = $matches[1][$i];
-                }
-                $replace[] = '<?php echo ($' . $content . '); ?>';
+            } else { // 输出变量
+                $replace[] = '<?php echo (' . $matches[1][$i] . '); ?>';
             }
         }
         $template = str_replace($search, $replace, $template);
