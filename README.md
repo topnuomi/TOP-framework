@@ -17,7 +17,6 @@
         -exception      异常处理
         -functions      框架函数库
         -http           请求/响应类
-        -route          路由具体实现
         -template       模板引擎具体实现
         -......         实际调用的类
     -middleware        默认中间件
@@ -39,7 +38,7 @@ require '../framework/Framework.php';
 // Framework::debug(true);
 // 可使用常量DEBUG取得该值
 
-// 项目目录，缺省值：./application/
+// 项目目录，无缺省值，必须指定
 // Framework::appPath('../application/');
 // 可使用常量APP_PATH取得该值
 
@@ -59,6 +58,10 @@ require '../framework/Framework.php';
 // Framework::resourcePath('/resource/');
 // 可使用常量RESOURCE取得该值
 
+// 绑定模块，缺省值：home
+// Framework::bindModule('index');
+// 可使用常量BIND_MODULE取得该值
+
 Framework::appPath('../application/');
 Framework::startApp();
 ```
@@ -68,7 +71,6 @@ Framework::startApp();
 1. 手动创建
 在application（可更改）目录下创建home目录，再创建config、controller（必须）、model、view目录
 2. 命令行自动创建
-命令格式（[]为可选参数）：
 ```
 php create.php 目录 模块名 [入口文件]
 ```
@@ -78,7 +80,7 @@ php create.php 目录 模块名 [入口文件]
 php create.php application home index
 ```
 
-至此，已经通过简单的命令创建了home模块，浏览器输入127.0.0.1即可访问home模块（系统默认模块为home模块，可在入口文件中指定），亦可命令行访问home模块。
+至此，已经通过简单的命令创建了home模块，浏览器输入127.0.0.1即可访问home模块（系统默认模块为home模块，可在入口文件中使用Framework::bindModule()指定）。
 
 ## 控制器
 ### 创建控制器
@@ -164,24 +166,55 @@ public function index()
 }
 ```
 以上两种方式等效。
-### 控制器方法的前置、后置操作
+
+### 参数自动注入
 ```
-public function before_index()
-{
-}
+namespace app\home\controller;
 
-public function after_index()
-{
-}
+use app\home\model\Users;
+use top\library\http\Request;
 
+class Index
+{
+
+    protected $users = null;
+
+    public function __construct(Users $users)
+    {
+        $this->users = $users;
+    }
+    
+    public function index(Request $request, Users $users)
+    {
+        return 'Hello';
+    }
+}
+```
+可在参数中指定所有可以被实例化（外部new或外部静态调用instance方法）的类，将自动将类实例化并注入到方法中。
+
+### 前置与后置操作
+前、后置操作仅支持使用注解配置，多个方法可使用|隔开。方法名称必须以_开头，如果前置方法return的值为真，则不会继续执行。
+```
+/**
+ * @beforeAction _before
+ * @afterAction _after
+ */
 public function index()
 {
-    return [
-        'param' => 'Hello world!'
-    ];
+    return 'Hello';
+}
+
+public function _before()
+{
+    // 前置操作
+}
+
+public function _after()
+{
+    // 后置操作
 }
 ```
-命名规范：before_方法名（前置）、after_方法名（后置），执行index方法之前会先执行before_index方法（如果存在），执行完index方法后会执行after_index方法（如果存在）。当前置方法return的值为空字符串、null、true时才会继续执行，否则前置方法的return等效于index方法的return。
+这部分的实现代码是放在默认Action中间件中的，后面可能会改。
 
 ## 模板
 框架自带一款模板引擎，暂时命名为TOP模板引擎。此外支持扩展其他第三方模板引擎，后面会讲到，先来看看自带模板引擎的基础使用。
@@ -249,18 +282,18 @@ else标签。此标签为自闭合标签，可选属性condition，存在conditi
 </if>
 ```
 
-4. volist
+4. loop
 
 循环标签。此标签为闭合标签，属性列表：name、id、key（可选）。
 
 ```
-<volist name="lists" id="item">
-    {$item['id']}
-</volist>
+<loop name="lists" id="item">
+    {item.id}
+</loop>
 
-<volist name="lists" id="item" key="i">
-    {$i}、{$item['id']}
-</volist>
+<loop name="lists" id="item" key="i">
+    {i}、{item.id}
+</loop>
 ```
 
 5. assign
@@ -271,37 +304,54 @@ else标签。此标签为自闭合标签，可选属性condition，存在conditi
 <assign name="username" value="TOP糯米" />
 ```
 
-6. raw
+6. original
 
-该标签为闭合标签。raw标签中的内容不会被编译。
+此标签为闭合标签。original标签中的内容不会被编译。
 
 ```
-<raw>
-    <volist name="lists" id="item">
-        {$item['id']}
-    </volist>
-</raw>
+<original>
+    <loop name="lists" id="item">
+        {item.id}
+    </loop>
+</original>
 ```
-上例，volist标签会被原样输出。
+上例，loop标签会被原样输出。
 
-7. include
+7. switch
+
+此标签为闭合标签。
+
+```
+<assign name="value" value="1" />
+<switch name="value">
+    <case value="0">
+        $name的值为0
+    </case>
+    <case value="1">
+        $name的值为1
+    </case>
+    <case>默认</case>
+</switch>
+```
+
+8. include
 
 在当前模板中加载其他模板文件。
 
-8. 变量、函数输出
+9. 变量、函数调用
 ```
 // 变量输出
-{$username}
+{username}
 
-// 调用函数，左定界符后加上:表示调用函数
+// 函数调用需要在左定界符后加上:
 {:mb_substr($username, 0, 3, 'utf8')}
 ```
 
 ### 自定义标签
-新建自定义标签库类文件/application/home/taglib/Extend.php，目录及文件名称没有要求。
+新建自定义标签库类文件/application/home/tags/Extend.php，目录及文件名称没有要求。自定义标签会以类名进行分组。
 #### 闭合标签
 ```
-namespace app\home\taglib;
+namespace app\home\tags;
 
 class Extend
 {
@@ -309,12 +359,11 @@ class Extend
         'test' => ['attr' => 'start,length,id', 'close' => 1]
     ];
 
-    public function _test($tag, $content)
+    public function _test($attr, $content)
     {
-        $parse = '<?php ';
-        $parse .= 'for ($' . $tag['id'] . ' = ' . $tag['start'] . '; $' . $tag['id'];
-        $parse .=  ' < ' . $tag['start'] . ' + ' . $tag['length'] . '; ';
-        $parse .= '$' . $tag['id'] . '++): ?>';
+        $parse = '<?php for ($' . $attr['id'] . ' = ' . $attr['start'] . '; $' . $attr['id'];
+        $parse .=  ' < ' . $attr['start'] . ' + ' . $attr['length'] . '; ';
+        $parse .= '$' . $attr['id'] . '++): ?>';
         $parse .= $content;
         $parse .= '<?php endfor; ?>';
         return $parse;
@@ -325,15 +374,15 @@ class Extend
 ```
 'view' => [
     'tagLib' => [
-        \app\home\taglib\Extend::class
+        \app\home\tags\Extend::class
     ]
 ],
 ```
 添加完成后即可在模板中使用
 ```
-<test start="1" length="10" id="test">
+<extend:test start="1" length="10" id="test">
     {$test}
-</test>
+</extend:test>
 ```
 #### 自闭合标签
 添加一个描述
@@ -342,20 +391,20 @@ class Extend
 ```
 新建_say方法
 ```
-public function _say($tag)
+public function _say($attr)
 {
-    return "<?php echo '{$tag['what']}'; ?>";
+    return "<?php echo '{$attr['what']}'; ?>";
 }
 ```
 模板调用
 ```
-<say what="Hello world!" />
+<extend:say what="Hello world!" />
 ```
 
 ### 模板缓存
-#### 关于模板缓存的实现
+#### 实现
 在渲染模板后，可选择将渲染结果缓存下来（文件缓存）。在框架调用控制器之前有面向控制器的前置操作，在此会判断是否存在模板缓存文件，如果存在并且有效，则会直接使用缓存文件。否则，将会重新渲染模板。
-#### 如何使用模板缓存
+#### 使用
 1. 在view方法中使用。第三个参数为缓存控制，传入的参数为true时使用配置文件中设置的全局缓存时间，传入数字则表示当前模板的缓存时间（秒）
 ```
 return $this->view('Index/index', [
@@ -419,26 +468,20 @@ class 模型名称 extends Model
 
 继承自top\library\Model基础模型后，模型将拥有以下方法或属性：
 #### 方法
-1. data($data = [], $notRaw = true)
-获取即将操作的数据
 
-接收两个参数，参数一：指定的数据（数组），传入空数组则为POST数据。参数二：是否返回进行数据表字段过滤的原始数据（布尔值）。
-
-未通过验证则返回false，否则返回数组。
-
-2. query($query)
+1. query($query)
 执行一条SQL语句
 
 成功返回true，失败抛出DatabaseException异常。
 
-3. insert($data = [])
+2. insert($data = [])
 插入一条记录
 
 传入数组为即将插入的记录
 
 成功返回受影响的记录数，失败抛出DatabaseException异常。
 
-4. update($data, $param = false)
+3. update($data, $param = false)
 更新一条记录
 
 第一个参数为即将更新的数据，可传入第二个参数为主键。
@@ -464,8 +507,8 @@ $this->where('id', 1)->update([
 
 成功返回受影响的记录数，失败抛出DatabaseException异常。
 
-5. find($param = false, $notRaw = true)
-查找一条记录
+4. find($param = false, $notRaw = true)
+查找一条记录，方法get可使用静态调用
 
 可传入第一个参数为主键，第二个参数为是否按指定的规则（outReplace属性）进行处理。
 
@@ -486,14 +529,14 @@ $this->where('id', 1)->find();
 
 成功返回一个一维数组，失败抛出DatabaseException异常。
 
-6. select($param = false, $notRaw = true)
-查找多条记录
+5. select($param = false, $notRaw = true)
+查找多条记录，方法all可使用静态调用
 
 使用方法同find
 
 成功返回一个二维数组，失败抛出DatabaseException异常。
 
-7. delete
+6. delete
 删除记录
 
 直接传入主键
@@ -513,7 +556,7 @@ $this->where('id', 1)->delete();
 
 成功返回受影响的记录数，失败抛出DatabaseException异常。
 
-8. count
+7. count
 返回记录数
 
 一般调用
@@ -524,7 +567,7 @@ $this->count();
 
 成功返回记录数，失败抛出DatabaseException异常。
 
-9. avg
+8. avg
 计算平均值
 
 接收一个参数，当没有使用field方法指定字段时，可直接传入字段名，以计算平均值。
@@ -544,33 +587,26 @@ $this->avg(function ($model) {
 ```
 成功返回平均值，失败抛出DatabaseException异常。
 
-10. max
+9. max
 计算最大值
 
 同avg方法
 
-11. min
+10. min
 计算最小值
 
 同avg方法
 
-12. sum
+11. sum
 求和
 
 同avg方法
 
-13. _sql
-返回最后执行的SQL语句
+12. sql
+返回最后执行的SQL语句，可使用静态调用
 
-14. tableDesc
-返回表结构
-
-接收参数为一个完整表名。
-
-成功返回表结构，失败抛出DatabaseException异常。
-
-15. distinct
-过滤记录中的重复值
+13. distinct
+过滤记录中的重复值，可使用静态调用
 
 接收一个为字段名称的参数
 
@@ -581,28 +617,13 @@ $this->distinct('sex')->select();
 
 失败抛出DatabaseException异常。
 
-16. effect
-删除时指定表（别）名
-
-接收一个参数，可以为字符串或数组，参数为表名或表别名
-
-调用
-```
-$this->delete(function ($model) {
-    $model->effect('s,this');
-    $model->join('left', 'score', 's');
-    $model->on('s.uid = this.id');
-    $model->where(['this.id' => 3]);
-});
-```
-
-17. field
-指定字段
+14. field
+指定字段，可使用静态调用
 
 可传入字符串或数组
 
-18. where
-指定条件
+15. where
+指定条件，可使用静态调用
 
 最多可接收三个参数
 
@@ -621,16 +642,16 @@ $this->where('sex', 1)->select();
 $this->where('sex', '>', 1)->select();
 ```
 
-19. order
-对结果进行排序
+16. order
+对结果进行排序，可使用静态调用
 
 ```
 $this->order('id desc')->select();
 ```
 也可以使用匿名函数调用order方法
 
-20. limit
-查询范围
+17. limit
+查询范围，可使用静态调用
 
 接收一个参数，可以是字符串或数组
 
@@ -641,26 +662,25 @@ $this->limit([0, 5])->select();
 ```
 两种方式等效
 
-21. join
-加入多表进行查询，通常情况下与on方法同时使用
+18. alias
+指定当前表别名，可使用静态调用
+
+具体请看join演示
+
+19. join
+加入多表进行查询，可使用静态调用
 
 接收三个参数，第一个参数为连接方式（空、left、right、full），第二个参数为表名（不包含前缀），第三个参数为别名（当前表会自动将”this“作为别名）。
 
 一般调用
 ```
-$this->select(function ($model) {
-    $model->join('left', 'score', 's');
-    $model->on('s.uid = this.id');
+$this->alias('t')->select(function ($model) {
+    $model->join('score s', 's.uid = t.id', 'left');
 });
 ```
 同样也可以使用连贯操作
 
-22. on
-表字段连接关系
-
-见join方法
-
-23. transaction
+20. transaction
 
 事务处理
 
@@ -677,6 +697,11 @@ $res = $userModel->transaction(function ($model) {
 var_dump($res);
 ```
 上例中，开启了一个事务，先删除一条记录，再更新一条记录的ID为已存在的ID，更新操作必定不会执行成功，所以数据将会执行回滚，删除数据也不会执行成功，var_dump($res)结果为false。返回值为布尔值，成功返回true，失败返回false。transaction方法接收一个匿名函数，匿名函数形参为当前模型。SQL执行失败时会回滚事务，也可以通过手动抛出DatabaseException异常来回滚事务。
+
+21. getPDO
+获取PDO对象
+
+使用该方法获取到PDO对象，可以自行使用PDO操作数据库
 
 #### 属性
 1. $table
@@ -709,12 +734,12 @@ protected $map = [
 protected $prefix = 'cms_';
 ```
 
-5. $inReplace
+5. $insertReplace
 入库时替换值
 
 数据入库时自动格式化时间为unix时间戳
 ```
-protected $inReplace = [
+protected $insertReplace = [
     'create_time' => ['formatTime', true]
 ];
 
@@ -738,14 +763,9 @@ protected $outReplace = [
 protected function outFormatSex($sex)
 {
     switch ($sex) {
-        case 1:
-            return '男';
-            break;
-        case 2:
-            return '女';
-            break;
-        default:
-            return '未知';
+        case 1: return '男';
+        case 2: return '女';
+        default: return '未知';
     }
 }
 ```
@@ -846,7 +866,7 @@ $cache->remove('lists');
 $cache->exists('lists');
 ```
 
-### 文件缓存
+### File
 1. 使用判断设置缓存
 ```
 use top\library\cache\driver\File;
@@ -864,8 +884,7 @@ use top\library\cache\driver\File;
 
 $cache = File::instance();
 $data = $cache->get('text', function ($cache) {
-    $text = '测试';
-    $cache->set('text', $text);
+    $cache->set('text', $text = '测试');
     return $text;
 });
 ```
@@ -873,113 +892,91 @@ $data = $cache->get('text', function ($cache) {
 
 使用方式同File缓存
 
-### 自定义缓存类
+### 自定义缓存实现
 文件存放位置 'framework/library/cache/driver' 。必须实现CacheIfs接口，具体方法看缓存介绍。
 
 ## 路由
-路由配置文件位于 application 下，文件名：route.php
+可在config.php配置文件中使用的配置
+```
+'compel_route' => false, // 是否开启强制路由
+'complete_parameter' => true, // 是否开启完整参数
+```
 
-使用方法：
-```
-规则名称 => [访问位置, 参数, 执行的中间件, 不执行的中间件]
-```
+### 默认路由
+访问方式 http://yourdomain/控制器/方法 
+开启完整参数，则传递参数需要使用完整名称，如方法有参数id，则需要将id在链接中体现
+http://yourdomain/Users/edit/id/1
+关闭完整参数，可以直接跟参数值
+http://yourdomain/Users/edit/1
 
-现有News控制器中的detail方法
+### 强制路由
+开启强制路由后，默认路由方式将全部失效，仅手动配置（配置文件、注解）的路由可用。
+
+### 路由配置
+#### 方法注解
+假设有控制器Index
 ```
-public function detail($id)
+class Index
 {
-    return [
-        'id' => (int) $id
-    ];
+    /**
+     * 首页
+     * @route /home
+     * @requestMethod GET
+     */
+    public function index()
+    {
+      return 'Hello';  
+    }
 }
 ```
-假设访问地址为： http://127.0.0.1/home/news/detail/id/1.html 。
-### 必须参数
-添加如下规则
+给index方法添加注解@route为/home，则可以直接通过 http://yourdomain/home 访问到对应位置，@requestMethod注解为请求方法，如果不指定请求方法，则任何方法都可访问。
+
+#### 配置文件
+路由配置文件位于模块config目录下，文件名：route.php
 ```
-'detail' => ['home/news/detail', 'id']
+return [
+    'get' => [
+        '/home' => [
+            'class' => app\home\controller\Index::class,
+            'method' => 'index',
+        ],
+    ],
+];
 ```
-完成后，可使用 http://127.0.0.1/detail/1.html 访问到对应位置。
-### 可选参数
-修改detail方法
+进行以上配置后，可以通过GET方式请求 http://yourdomain/home 访问到对应位置。可配置的组有any、其他请求方法，其中any为不限制，任何方法都可访问，路由配置文件中可以指定执行、不执行的中间件，accept_middleware为执行的中间件，except_middleware为不执行的中间件，如下：
 ```
-public function detail($id = 0)
-{
-    return [
-        'id' => (int) $id
-    ];
-}
-```
-添加路由规则
-```
-'detail' => ['home/news/detail', '?id']
-```
-完成后，可使用 http://127.0.0.1/detail.html 访问到对应位置，如果没传递id，则使用默认值。
-### 多个参数
-```
-'detail' => ['home/news/detail', 'id,?type']
+return [
+    'get' => [
+        '/home' => [
+            'class' => app\home\controller\Index::class,
+            'method' => 'index',
+            'accept_middleware' => [
+                app\home\middleware\Auth::class    
+            ],
+            'except_middleware' => [],
+        ],
+    ],
+];
 ```
 
 ## 其他
 ### Database类
-模型中的数据库操作实际也是调用Database类中的方法，模型类是在此基础上新增了更多高级操作，Database类方法的使用请参照模型中的2至22个方法的使用。在此需要特别指出，获取Database类实例使用table方法，table方法中传入表名以指定即将操作的数据表，例：
+模型中的数据库操作实际也是调用Database类中的方法，模型类是在此基础上新增了更多高级操作，Database类方法的使用请参照模型的使用。在此需要特别指出，获取Database类实例使用table方法，table方法中传入表名以指定即将操作的数据表，例：
 ```
 $db = Database::table('users');
 $data = $db->find(1);
 ```
-框架默认使用MySQL数据库。此外，支持自定义数据库操作驱动类，文件位置 'framework/library/database/driver' ，参数需要自行解析，换言之，也就是SQL语句需要自行组合。自定义数据库驱动类必须实现DatabaseIfs接口，包括以下方法：
+框架使用PDO操作数据库。此外，支持自定义数据库操作驱动类，文件位置 'framework/library/database/driver' ，必须实现连接数据库、获取表主键方法，可以继承Base类，拥有通用的增删改查方法。此外，可以实现DatabaseIfs接口，包括以下方法：
 1. connect
 
-连接数据库。方法参数为数据库连接配置。
+使用PDO连接数据库。
 
-2. insert
+2. getPk
 
-插入记录。参数列表：
-$table、$join、$on、$where、$order、$limit、$data
-
-3. update
-
-更新记录。参数列表
-$table、$distinct、$field、$join、$on、$where、$order
-
-4. find
-
-查询一条记录。参数列表
-$table、$distinct、$field、$join、$on、$where、$order
-
-5. select
-
-查询所有记录。参数列表
-$table、$distinct、$field、$join、$on、$where、$order、$limit
-
-6. delete
-
-删除记录。参数列表
-$effect、$table、$join、$on、$where、$order、$limit
-
-7. query
-
-执行SQL语句。参数列表
-$query
-
-8. begin
-
-开启数据库事务
-
-9. commit
-
-提交事务
-
-10. rollback
-
-回滚
-
-11. close
-
-关闭数据库连接。
+获取表主键。
 
 #### 注意
-Database类的事务与Model类不同，Model类进行了更进一步的封装。Database类事务使用示例：
+Database类仅提供基本的增删改查，不会有模型中的入库、出库值替换，也不会有数据验证等操作，查询使用方式与Model类基本相同。Database类的事务与Model类不同，Model类进行了更进一步的封装。Database类事务使用示例：
 ```
 use top\library\Database;
 
@@ -1000,50 +997,23 @@ try {
 ```
 
 ### Request类
-获取实例
-1. instance方法获取单例
+#### 获取实例
 ```
 Request::instance();
-```
-2. request函数获取单例
-```
+// 或者
 request();
 ```
+#### 方法
+1. is
+判断请求方法
+```
+// 判断是否为POST请求
+request()->is('post');
+// 判断是否为GET请求
+request()->is('get');
+```
 
-#### 提供的方法
-1. isPost
-
-判断是否是POST请求
-
-2. isGet
-
-判断是否是GET请求
-
-3. isPut
-
-判断是否是PUT请求
-
-4. isDelete
-
-判断是否是DELETE请求
-
-5. isHead
-
-判断是否是HEAD请求
-
-6. isPatch
-
-判断是否是PATCH请求
-
-7. isOptions
-
-判断是否是OPTIONS请求
-
-8. isAjax
-
-判断是否是AJAX请求
-
-9. create
+2. create
 
 创建一个HTTP请求
 
@@ -1051,31 +1021,31 @@ request();
 
 第一个参数为请求的链接，第二个参数为将要POST的数据，第三个参数为指定Header参数
 
-10. ip
+3. ip
 
 返回客户端IP地址
 
-11. module
+4. module
 
 当前请求的模型名称
 
-12. controllerFullName
+5. controllerFullName
 
 当前请求的完整控制器名称
 
-13. controller
+6. controller
 
 当前请求的不包含命名空间的控制器名称
 
-14. method
+7. method
 
 当前请求的方法名称
 
-15. params
+8. params
 
 当前请求所带的参数
 
-16. get
+9. get
 
 获取get数据
 
@@ -1094,19 +1064,19 @@ request()->get('id', ['type'], function ($value) {
 });
 ```
 
-17. post
+10. post
 
 获取post数据
 
 使用同get方法
 
-18. header
+11. header
 
 获取请求中header数据
 
 使用同get方法
 
-19. except
+12. except
 
 指定过滤的变量
 
@@ -1118,37 +1088,30 @@ request()->except('type')->get();
 ### Response类
 #### 获取实例
 ```
-use top\library\http\Response;
-$instance = Response::instance();
+Response::instance();
+// 或者
+response();
 ```
-#### 设置响应头、响应内容
+#### 响应内容
 ```
-return $instance->header([
-    'HTTP/1.1 200 OK'
-])->dispatch('OK');
+return $response->code(200)->header([
+    'X-Powered-By: 测试',
+])->send('OK');
 ```
-其中，header方法接收数组或字符串的参数，参数为具体的响应头内容。dispatch方法参数为具体响应内容，为字符串。
-如果需要文件下载，例：
-```
-$filename = './demo.zip';
-$instance>header([
-    'Content-type: application/x-zip-compressed',
-    'Content-Disposition: attachment; filename="demo.zip"'
-]);
-readfile($filename);
-```
-使用header方法设置响应头，接下来使用readfile函数将文件内容读取到缓冲区，这样输出时将下载demo.zip文件。或者直接使用header函数设置响应头也是可行的。
+其中，header方法接收数组或字符串的参数，参数为具体的响应头内容。send方法参数为具体响应内容。
 
 ### 中间件
+### 创建中间件
 创建application/home/middleware/Auth.php测试文件
 ```
 namespace app\home\middleware;
 
 use top\middleware\ifs\MiddlewareIfs;
+use top\library\http\Request;
 
 class Auth implements MiddlewareIfs
 {
-    public function handler(\Closure $next)
+    public function handler(Request $request, \Closure $next)
     {
         if (true) {
             return '拒绝请求';
@@ -1157,20 +1120,40 @@ class Auth implements MiddlewareIfs
     }
 }
 ```
-创建完成后，加入配置
+#### 使之生效
+##### 方法注解
+```
+/**
+ * @acceptMiddleware app\home\middleware\Auth
+ */
+public function index()
+{
+}
+```
+
+##### 配置文件
 ```
 'middleware' => [
-    \app\home\middleware\Auth::class
+    app\home\middleware\Auth::class
 ],
 ```
-现在，访问项目则会得到 ' 拒绝请求 ' 结果。
 
-### 配置文件
+配置文件中的配置的中间件是全局有效的。使用注解，可以为方法指定执行的中间件，同样也可以为方法指定不执行的中间件，只需要加上@exceptMiddleware注解即可，如下：
+```
+/**
+ * @exceptMiddleware app\home\middleware\Auth
+ */
+public function index()
+{
+}
+```
+
+### config.php
 以home模块为例，文件位置 'application/home/config/config.php'。此外还存在一个默认配置文件，文件位置 'framework/config/config.php'，如果用户存在同名配置，将会执行merge操作。
 如果需要配置数据库，将如下内容添加到应用配置文件中
 ```
 'db' => [
-    'driver' => 'MySQLi',
+    'driver' => 'Mysql',
     'host' => '127.0.0.1',
     'user' => '',
     'passwd' => '',
@@ -1186,10 +1169,9 @@ class Auth implements MiddlewareIfs
 Config类用于获取、设置配置。
 #### 获取实例
 ```
-use top\library\Config;
-$instance = Config::instance();
+Config::instance();
 ```
-#### 添加动态配置
+#### 动态配置
 ```
 $instance->set('appid', '1234566');
 ```
@@ -1199,3 +1181,5 @@ $instance->get('appid');
 ```
 
 ### Composer
+请配置vendor目录到framework/vendor。
+
