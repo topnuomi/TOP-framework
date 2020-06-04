@@ -160,12 +160,15 @@ class Engine
         $search = [];
         $replace = [];
         for ($i = 0; $i < count($matches[0]); $i++) {
-            $start = substr($matches[1][$i], 0, 1);
+            $start = mb_substr($matches[1][$i], 0, 1, 'utf8');
+            $end = mb_substr($matches[1][$i], -1, null, 'utf8');
             $search[] = $matches[0][$i];
             if ($start == ':') { // 调用函数
                 $replace[] = '<?php echo (' . ltrim($matches[1][$i], ':') . '); ?>';
             } elseif ($start == '@') { // 输出常量
                 $replace[] = '<?php echo (' . ltrim($matches[1][$i], '@') . '); ?>';
+            } elseif ($start == '*' && $end == '*') { // 注释
+                $replace[] = '<?php /* ' . trim($matches[1][$i], '*') . ' */ ?>';
             } else { // 输出变量
                 $replace[] = '<?php echo (' . $matches[1][$i] . '); ?>';
             }
