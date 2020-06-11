@@ -18,7 +18,7 @@ class Tags
         'php' => ['attr' => '', 'close' => 1],
         'if' => ['attr' => 'condition', 'close' => 1],
         'else' => ['attr' => 'condition', 'close' => 0],
-        'loop' => ['attr' => 'name,id,key', 'close' => 1],
+        'loop' => ['attr' => 'from,to,index,key', 'close' => 1],
         'assign' => ['attr' => 'name,value', 'close' => 0],
         'switch' => ['attr' => 'name', 'close' => 1],
         'case' => ['attr' => 'value', 'close' => 1],
@@ -104,7 +104,7 @@ class Tags
     public function _loop($attr, $content)
     {
         $parse = '<?php ' . (isset($attr['key']) ? '$' . $attr['key'] . ' = 0; ' : '');
-        $parse .= 'foreach($' . $attr['name'] . ' as ' . (isset($attr['index']) ? '$' . $attr['index'] . '=>' : '') . '$' . $attr['id'] . '): ';
+        $parse .= 'foreach($' . $attr['from'] . ' as ' . (isset($attr['index']) ? '$' . $attr['index'] . '=>' : '') . '$' . $attr['to'] . '): ';
         $parse .= (isset($attr['key']) ? '$' . $attr['key'] . '++;' : '') . ' ?>';
         $parse .= $content;
         $parse .= '<?php endforeach; ?>';
