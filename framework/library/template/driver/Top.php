@@ -3,7 +3,6 @@
 namespace top\library\template\driver;
 
 use top\library\cache\driver\File;
-use top\library\Config;
 use top\library\template\driver\engine\Engine;
 use top\library\template\ifs\TemplateIfs;
 use top\traits\Instance;
@@ -30,11 +29,7 @@ class Top implements TemplateIfs
 
     public function run()
     {
-        $this->config = Config::instance()->get('view');
-        $module = request()->module();
-        (!$this->config['dir']) && $this->config['dir'] = APP_PATH . $module . '/view/';
-        (!$this->config['cacheDir']) && $this->config['cacheDir'] = './runtime/cache/application/' . $module . '/';
-        (!$this->config['compileDir']) && $this->config['compileDir'] = './runtime/compile/application/' . $module . '/';
+        $this->config = \config('view');
         $this->engine = Engine::instance($this->config);
         return $this;
     }

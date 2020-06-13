@@ -24,7 +24,7 @@ class Router
 
     /**
      * 请求类
-     * @var null
+     * @var Request
      */
     private $request = null;
 
@@ -248,28 +248,10 @@ class Router
             } else throw $exception;
         }
 
-        // 将执行应用打包为一个$application
-        $application = function () {
-            // 执行控制器方法
-            $object = Application::getInstance($this->controllerFullName);
-            $reflectionMethod = Application::getReflectionMethod($this->controllerFullName, $this->method);
-            $invokeParams = [];
-            foreach ($reflectionMethod->getParameters() as $parameter) {
-                $className = $parameter->getClass();
-                if (!is_null($className)) {
-                    $invokeParams[$parameter->name] = Application::getInstance($className->name);
-                } else {
-                    if (isset($this->params[$parameter->name])) {
-                        $invokeParams[$parameter->name] = $this->params[$parameter->name];
-                    }
-                }
-            }
-
-            return $reflectionMethod->invokeArgs($object, $invokeParams);
-        };
-
-        // 路由中间件处理application
-        return $this->middleware($application);
+        // 路由中间件处理
+        return $this->middleware(function () {
+            return Application::callMethod($this->controllerFullName, $this->method, $this->params);
+        });
     }
 
     /**

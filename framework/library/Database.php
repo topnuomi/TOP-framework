@@ -94,7 +94,7 @@ class Database
     private function __construct($table, $pk, $prefix)
     {
         // 获取配置
-        $this->config = Config::instance()->get('db');
+        $this->config = config('db');
         // 当前操作表名
         $this->table = $this->getTableName($prefix, $table);
         // 当前操作表主键

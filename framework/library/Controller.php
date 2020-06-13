@@ -123,10 +123,10 @@ abstract class Controller
      */
     protected function tips($message, $url = '', $sec = 3)
     {
-        if (request()->isAjax()) {
+        if (request()->is('ajax')) {
             return $this->json($message, '', 'tips', ['url' => $url, 'sec' => $sec]);
         } else {
-            $viewConfig = Config::instance()->get('view');
+            $viewConfig = config('view');
             $tipsTemplate = $viewConfig['dir'] . 'tips.' . $viewConfig['ext'];
             (!file_exists($tipsTemplate)) && file_put_contents($tipsTemplate, '');
             return view('tips', [

@@ -25,9 +25,12 @@ class View
      */
     private function __construct()
     {
-        $this->config = Config::instance()->get('view');
-        $driver = Register::get($this->config['engine']);
-        $this->template = Template::instance($driver);
+        $this->config = config('view');
+        $className = '\\top\\library\\template\\driver\\' . $this->config['engine'];
+        if (!class_exists($className)) {
+            throw new Exception('不存在的模板引擎：' . $className);
+        }
+        $this->template = Template::instance($className::instance());
     }
 
     /**

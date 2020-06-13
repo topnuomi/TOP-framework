@@ -33,7 +33,7 @@ class JWT
 
     public function __construct()
     {
-        $this->config = Config::instance()->get('jwt');
+        $this->config = \config('jwt');
         if (isset($this->config['key'])) {
             $this->key = $this->config['key'];
         } else {

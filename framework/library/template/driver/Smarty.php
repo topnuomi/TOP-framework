@@ -2,7 +2,6 @@
 
 namespace top\library\template\driver;
 
-use top\library\Config;
 use top\library\template\ifs\TemplateIfs;
 use top\traits\Instance;
 
@@ -17,11 +16,7 @@ class Smarty implements TemplateIfs
 
     public function run()
     {
-        $this->config = Config::instance()->get('view');
-        $module = request()->module();
-        (!$this->config['dir']) && $this->config['dir'] = APP_PATH . 'home/view/';
-        (!$this->config['cacheDir']) && $this->config['cacheDir'] = './runtime/cache/application/' . $module . '/';
-        (!$this->config['compileDir']) && $this->config['compileDir'] = './runtime/compile/application/' . $module . '/';
+        $this->config = \config('view');
         $this->smarty = new \Smarty();
         $this->smarty->setCacheDir($this->config['cacheDir']);
         $this->smarty->setCompileDir($this->config['compileDir']);

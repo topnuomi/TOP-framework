@@ -1,15 +1,13 @@
 <?php
 // 默认配置
+
 return [
     'default_controller' => 'Index',
     'default_method' => 'index',
     'compel_route' => false,
     'complete_parameter' => true,
     'error_pages' => [
-        404 => '.' . DS . '404.html',
-    ],
-    'register' => [
-        'Top' => \top\library\template\driver\Top::class,
+        404 => './404.html',
     ],
     'middleware' => [
         \top\middleware\Action::class,
@@ -38,9 +36,9 @@ return [
         'engine' => 'Top',
         'tagLib' => [],
         'ext' => 'html',
-        'dir' => '',
-        'cacheDir' => '',
-        'compileDir' => '',
+        'dir' => APP_PATH . BIND_MODULE . '/view/',
+        'cacheDir' => './runtime/cache/application/' . BIND_MODULE . '/',
+        'compileDir' => './runtime/compile/application/' . BIND_MODULE . '/',
         'left' => '<',
         'right' => '>',
         'cacheTime' => 5

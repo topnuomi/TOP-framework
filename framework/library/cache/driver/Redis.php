@@ -34,7 +34,7 @@ class Redis implements CacheIfs
      */
     private function __construct()
     {
-        $config = Config::instance()->get('redis');
+        $config = \config('redis');
         $this->redis = new \Redis();
         try {
             $this->redis->connect($config['host'], $config['port']);

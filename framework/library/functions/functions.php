@@ -4,12 +4,13 @@
  * 获取/设置配置
  * @param $key
  * @param string $value
- * @return mixed
+ * @return array|bool|mixed
  */
 function config($key, $value = '__NULL__VALUE__')
 {
     if ($value != '__NULL__VALUE__') {
-        return \top\library\Config::instance()->set($key, $value);
+        \top\library\Config::instance()->set($key, $value);
+        return true;
     } else {
         return \top\library\Config::instance()->get($key);
     }
@@ -17,7 +18,7 @@ function config($key, $value = '__NULL__VALUE__')
 
 /**
  * 请求类
- * @return \top\traits\Instance
+ * @return \top\library\http\Request
  */
 function request()
 {
@@ -26,7 +27,7 @@ function request()
 
 /**
  * 响应类
- * @return \top\traits\Instance
+ * @return \top\library\http\Response
  */
 function response()
 {
@@ -168,7 +169,7 @@ function redirect($url)
  */
 function session($name, $value = '')
 {
-    $config = \top\library\Config::instance()->get('session');
+    $config = config('session');
     if (empty($config) || !$config['prefix']) {
         $prefix = request()->module();
     } else {

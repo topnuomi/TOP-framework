@@ -6,6 +6,7 @@ use top\library\error\BaseError;
 use top\library\exception\BaseException;
 use top\library\http\Request;
 use top\library\http\Response;
+use top\library\template\driver\Top;
 
 /**
  * Class Application
@@ -62,20 +63,10 @@ class Application
         (is_file($funcFile)) && require $funcFile;
 
         // session目录
-        $sessionConfig = Config::instance()->get('session');
+        $sessionConfig = config('session');
         if (!empty($sessionConfig) && $sessionConfig['open'] === true) {
             session_save_path(SESSION_PATH);
             session_start();
-        }
-
-        // 配置文件中注册的类
-        $initRegister = Config::instance()->get('register');
-        if (!empty($initRegister)) {
-            foreach ($initRegister as $key => $value) {
-                Register::set($key, function () use ($value) {
-                    return $value::instance();
-                });
-            }
         }
 
         // 初始化路由实例
@@ -128,47 +119,85 @@ class Application
     /**
      * 获取一个类实例
      * @param $className
+     * @param $parameters
      * @return mixed
      * @throws \ReflectionException
      */
-    public static function getInstance($className)
+    public static function getInstance($className, $parameters = [])
     {
-        $classRef = self::getReflectionClass($className);
-        $isInstantiable = $classRef->isInstantiable();
-        if (!$isInstantiable) { // 不可被实例化
-            if ($classRef->hasMethod('instance')) {
-                $instance = $classRef->getMethod('instance');
+        $reflectionClass = self::getReflectionClass($className);
+        $isInstantiable = $reflectionClass->isInstantiable();
+        // 获取构造方法(__construct或instance)
+        if (!$isInstantiable) {
+            if ($reflectionClass->hasMethod('instance')) {
+                $constructor = $reflectionClass->getMethod('instance');
             } else throw new \Exception('不可实例化的类：' . $className);
         } else {
-            $instance = $classRef->getConstructor();
+            $constructor = $reflectionClass->getConstructor();
         }
-
-        if (!is_null($instance)) {
-            $instanceParams = $instance->getParameters();
-            if (empty($instanceParams)) { // 构造函数没有参数直接返回当前类实例
+         // 没有构造方法或者构造方法没有参数则直接返回实例
+        if (!is_null($constructor)) {
+            $constructorParameters = $constructor->getParameters();
+            if (empty($constructorParameters)) {
                 if (!$isInstantiable) return $className::instance();
                 return new $className;
             }
-        } else { // 没有构造方法直接返回实例
+        } else {
             if (!$isInstantiable) return $className::instance();
             return new $className;
         }
-
-        // 构造函数存在参数则去递归实例化类
-        $actualParams = [];
-        foreach ($instanceParams as $param) {
-            $actualClass = $param->getClass();
-            if (!is_null($actualClass)) { // 参数是一个类
-                $actualParams[$param->name] = self::getInstance($actualClass->name);
+        $actualParameters = [];
+        foreach ($constructorParameters as $constructorParameter) {
+            $actualClass = $constructorParameter->getClass();
+            // 参数是一个类实例则递归获取实例，不是类实例则检查是否有默认值或用户传入参数
+            if (!is_null($actualClass)) {
+                $actualParameters[$constructorParameter->name] = Application::getInstance($actualClass->name);
+            } else {
+                try {
+                    $value = isset($parameters[$constructorParameter->name])
+                    ? $parameters[$constructorParameter->name]
+                    : $constructorParameter->getDefaultValue();
+                } catch (\ReflectionException $exception) {
+                    $value = null;
+                }
+                $actualParameters[$constructorParameter->name] = $value;
             }
         }
 
         if ($isInstantiable) {
-            return $classRef->newInstanceArgs($actualParams);
+            return $reflectionClass->newInstanceArgs($actualParameters);
         } else {
-            $reflectionMethod = new \ReflectionMethod($className, 'instance');
-            return $reflectionMethod->invokeArgs(null, $actualParams);
+            $reflectionMethod = Application::getReflectionMethod($className, 'instance');
+            return $reflectionMethod->invokeArgs(null, $actualParameters);
         }
+    }
+
+    /**
+     * 调用一个类方法
+     * @param $className
+     * @param $method
+     * @param array $parameters
+     * @return mixed
+     */
+    public static function callMethod($className, $method, $parameters = [])
+    {
+        $instance = Application::getInstance($className);
+        $reflectionMethod = Application::getReflectionMethod($className, $method);
+        $invokeParams = [];
+        foreach ($reflectionMethod->getParameters() as $parameter) {
+            $className = $parameter->getClass();
+            if (!is_null($className)) {
+                $invokeParams[$parameter->name] = Application::getInstance($className->name);
+            } else {
+                if (isset($parameters[$parameter->name])) {
+                    $invokeParams[$parameter->name] = $parameters[$parameter->name];
+                } else {
+                    $invokeParams[$parameter->name] = null;
+                }
+            }
+        }
+        // 返回执行结果
+        return $reflectionMethod->invokeArgs($instance, $invokeParams);
     }
 
 }
