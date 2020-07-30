@@ -16,6 +16,11 @@ class Engine
     use Instance;
 
     /**
+     * @var array 标签定义
+     */
+    protected $tags = [];
+
+    /**
      * @var string 左定界符
      */
     private $left = '<';
@@ -26,14 +31,9 @@ class Engine
     private $right = '>';
 
     /**
-     * @var array 标签定义
-     */
-    protected $tags = [];
-
-    /**
      * @var array 模板配置
      */
-    protected $config = [];
+    private $config = [];
 
     /**
      * @var array 标签库
@@ -80,8 +80,8 @@ class Engine
                 $extendFileContent = file_get_contents($file);
             }
             // 处理继承中的include标签
-            $tempContent = $this->parseInclude($extendFileContent);
-            $extendFileContent = $tempContent !== false ? $tempContent : $extendFileContent;
+            // $tempContent = $this->parseInclude($extendFileContent);
+            // $extendFileContent = $tempContent !== false ? $tempContent : $extendFileContent;
             // 被继承模板中的块
             preg_match_all($blockPattern, $extendFileContent, $extendResult);
             // 继承模板中的块
@@ -140,13 +140,12 @@ class Engine
     /**
      * 检测是否含有include
      * @param $template
-     * @return bool
+     * @return int|false
      */
     private function hasInclude($template)
     {
         $pattern = '/' . $this->left . 'include\s+file[\s\S]*?=[\s\S]*?[\'"](.*?)[\'"][\s\S]*?\/' . $this->right . '/is';
-        preg_match($pattern, $template, $matches);
-        return !empty($matches);
+        return preg_match($pattern, $template, $matches);
     }
 
     /**
@@ -162,19 +161,81 @@ class Engine
         for ($i = 0; $i < count($matches[0]); $i++) {
             $start = mb_substr($matches[1][$i], 0, 1, 'utf8');
             $end = mb_substr($matches[1][$i], -1, null, 'utf8');
-            $search[] = $matches[0][$i];
-            if ($start == ':') { // 调用函数
+            if ($start == '$') { // 输出变量
+                $search[] = $matches[0][$i];
+                $output = $this->parseParameterOutput($matches[1][$i]);
+                $replace[] = '<?php echo htmlentities(' . $output . '); ?>';
+            } elseif ($start == ':') { // 调用函数
+                $search[] = $matches[0][$i];
                 $replace[] = '<?php echo (' . ltrim($matches[1][$i], ':') . '); ?>';
             } elseif ($start == '@') { // 输出常量
-                $replace[] = '<?php echo (' . ltrim($matches[1][$i], '@') . '); ?>';
+                $search[] = $matches[0][$i];
+                $replace[] = '<?php echo htmlentities(' . ltrim($matches[1][$i], '@') . '); ?>';
             } elseif ($start == '*' && $end == '*') { // 注释
+                $search[] = $matches[0][$i];
                 $replace[] = '<?php /* ' . trim($matches[1][$i], '*') . ' */ ?>';
-            } else { // 输出变量
-                $replace[] = '<?php echo (' . $matches[1][$i] . '); ?>';
             }
         }
-        $template = str_replace($search, $replace, $template);
+        if (!empty($search) && !empty($replace)) {
+            $template = str_replace($search, $replace, $template);
+        }
+
         return $template;
+    }
+
+    /**
+     * 解析变量输出
+     * @param $output
+     * @return string
+     */
+    private function parseParameterOutput($output)
+    {
+        // 处理|函数调用
+        if (strstr($output, '|')) {
+            $functions = explode('|', $output);
+            $parse = $functions[0];
+            // 只留下函数表达式
+            unset($functions[0]);
+            // 重置调用函数数组索引以便开始foreach循环
+            $functions = array_values($functions);
+            foreach ($functions as $function) {
+                $expParameters = explode('=', $function);
+                $functionName = $expParameters[0];
+                // 如果有带上参数，则进行参数处理，没有声明参数则直接将当前值作为函数的第一个参数
+                if (isset($expParameters[1])) {
+                    $parameters = $expParameters[1];
+                    // 如果有参数，则处理，同时将占位符###替换为上次解析结果
+                    // 如果存在占位符，则直接替换，没有占位符则将当前值作为函数的第一个参数
+                    if (strstr($expParameters[1], '###')) {
+                        $parse = $functionName . '(' . str_replace('###', $parse, $parameters) . ')';
+                    } else {
+                        $parse = $functionName . '(' . $parse . ',' . $parameters . ')';
+                    }
+                } else {
+                    $parse = $functionName . '(' . $parse . ')';
+                }
+            }
+            $output = $parse;
+        }
+
+        return $this->parseDotSyntax($output);
+    }
+
+    /**
+     * 处理.语法
+     * @param $string
+     * @return null|string|string[]
+     */
+    private function parseDotSyntax($string)
+    {
+        // 处理.语法（仅数组或已实现数组访问接口的对象）
+        return preg_replace_callback("/\.([a-zA-Z0-9_-]*)/", function ($match) {
+            if (isset($match[1])) {
+                return '[' . (is_numeric($match[1]) ? $match[1] : '\'' . $match[1] . '\'') . ']';
+            } else {
+                return null;
+            }
+        }, $string);
     }
 
     /**
@@ -225,8 +286,7 @@ class Engine
             if (method_exists($this->libInstance[$tagInfo[0]], '_' . $tagInfo[1])) {
                 return $this->libInstance[$tagInfo[0]]->{'_' . $tagInfo[1]}($attr, $content);
             }
-        }
-        // 否则尝试默认标签处理
+        } // 否则尝试默认标签处理
         else if (method_exists($this->libInstance['default'], '_' . $name)) {
             return $this->libInstance['default']->{'_' . $name}($attr, $content);
         }
@@ -235,7 +295,6 @@ class Engine
     /**
      * 进行标签处理
      * @param $template
-     * @param $tags
      * @return null|string|string[]
      */
     private function parseTags($template)
@@ -276,8 +335,9 @@ class Engine
                             // 得到准备替换的值
                             $replace = explode($cut, $this->getTagParseResult($name, $attr, $cut));
                             $replace = [
-                                (isset($replace[0])) ? $replace[0] : [],
-                                (isset($replace[1])) ? $replace[1] : [],
+                                // 递归解析标签，使之可以在自定义标签中嵌套标签
+                                (isset($replace[0])) ? $this->parseTags($replace[0]) : '',
+                                (isset($replace[1])) ? $replace[1] : '',
                             ];
                             while ($startArray) {
                                 $begin = end($startArray);
@@ -314,7 +374,7 @@ class Engine
                 }, $template);
             }
         }
-        return preg_replace('/\?>([\r|\n|\s]*?)<\?php/is', '', $template);
+        return $template;
     }
 
     /**
@@ -364,7 +424,7 @@ class Engine
      * @param $template
      * @return mixed
      */
-    public function returnOriginal($template)
+    private function returnOriginal($template)
     {
         return str_replace([
             '<!ORIGINAL--', '--ORIGINAL>',
@@ -388,12 +448,14 @@ class Engine
         $template = $this->parseExtend($template);
         // 处理include标签
         $template = $this->parseInclude($template);
-        // 处理变量以及函数
-        $template = $this->parseVars($template);
         // 处理定义的标签
         $template = $this->parseTags($template);
+        // 处理变量以及函数
+        $template = $this->parseVars($template);
         // 还原original内容
         $template = $this->returnOriginal($template);
+        // 清除多余开始结束标签
+        $template = preg_replace('/\?>([\r|\n|\s]*?)<\?php/is', '', $template);
 
         return '<?php if (!defined(\'APP_PATH\')) exit; ?>' . $template;
     }

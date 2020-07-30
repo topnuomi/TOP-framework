@@ -4,6 +4,7 @@ namespace top\library;
 
 use Exception;
 use top\library\exception\DatabaseException;
+use top\library\model\Data;
 
 /**
  * 基础模型
@@ -11,10 +12,10 @@ use top\library\exception\DatabaseException;
  *
  * @method $this alias($name)
  * @method $this distinct(bool $distinct)
- * @method $this field(string|array $field)
+ * @method $this field(string | array $field)
  * @method $this where($field, $condition = null, $value = null)
  * @method $this order(string $order)
- * @method $this limit(string|array $limit)
+ * @method $this limit(string | array $limit)
  * @method $this join(string $table, string $on, string $type = null)
  * @method $this sql()
  */
@@ -82,6 +83,12 @@ class Model
      * @var bool
      */
     private $isInsert = false;
+
+    /**
+     * 当前查询到的数据
+     * @var array
+     */
+    private $data = [];
 
     /**
      * 用数据库配置获取实例
@@ -250,9 +257,9 @@ class Model
 
     /**
      * 查询单条记录
-     * @param string|bool $param
+     * @param bool $param
      * @param bool $notRaw
-     * @return array
+     * @return Data
      */
     public function find($param = false, $notRaw = true)
     {
@@ -262,14 +269,14 @@ class Model
                 $result = $this->outHandle($result);
             }
         }
-        return $result;
+        return new Data($result);
     }
 
     /**
      * 查询所有记录
-     * @param string|bool $param
+     * @param bool $param
      * @param bool $notRaw
-     * @return array
+     * @return Data
      */
     public function select($param = false, $notRaw = true)
     {
@@ -279,7 +286,7 @@ class Model
                 $result = $this->outHandle($result);
             }
         }
-        return $result;
+        return new Data($result);
     }
 
     /**
@@ -596,7 +603,7 @@ class Model
             return call_user_func_array([$this, $methodName], $arguments);
         } else throw new Exception('不存在的方法：' . $name);
     }
-    
+
     /**
      * 静态调用连贯操作
      * @param string $name

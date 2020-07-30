@@ -22,8 +22,11 @@ class Tags
         'assign' => ['attr' => 'name,value', 'close' => 0],
         'switch' => ['attr' => 'name', 'close' => 1],
         'case' => ['attr' => 'value', 'close' => 1],
+        'empty' => ['attr' => 'name', 'close' => 1],
+        'notempty' => ['attr' => 'name', 'close' => 1],
+        'eq' => ['attr' => 'name,value', 'close' => 1],
+        'neq' => ['attr' => 'name,value', 'close' => 1],
     ];
-    
 
     /**
      * php标签
@@ -162,4 +165,65 @@ class Tags
         }
         return $parse;
     }
+
+    /**
+     * empty标签
+     * @param $attr
+     * @param $content
+     * @return string
+     */
+    public function _empty($attr, $content)
+    {
+        $parse = "<?php if (empty(\${$attr['name']})): ?>";
+        $parse .= $content;
+        $parse .= '<?php endif; ?>';
+        return $parse;
+    }
+
+    /**
+     * notempty标签
+     * @param $attr
+     * @param $content
+     * @return string
+     */
+    public function _notempty($attr, $content)
+    {
+        $parse = "<?php if (!empty(\${$attr['name']})): ?>";
+        $parse .= $content;
+        $parse .= '<?php endif; ?>';
+        return $parse;
+    }
+
+    /**
+     * eq标签
+     * @param $attr
+     * @param $content
+     * @return string
+     */
+    public function _eq($attr, $content)
+    {
+        $name = is_numeric($attr['name']) ? $attr['name'] : "\$'{$attr['name']}'";
+        $value = is_numeric($attr['value']) ? $attr['value'] : "\$'{$attr['value']}'";
+        $parse = "<?php if ({$name} == {$value}): ?>";
+        $parse .= '{' . $content . '}';
+        $parse .= '<?php endif; ?>';
+        return $parse;
+    }
+
+    /**
+     * neq标签
+     * @param $attr
+     * @param $content
+     * @return string
+     */
+    public function _neq($attr, $content)
+    {
+        $name = is_numeric($attr['name']) ? $attr['name'] : "\$'{$attr['name']}'";
+        $value = is_numeric($attr['value']) ? $attr['value'] : "\$'{$attr['value']}'";
+        $parse = "<?php if ({$name} != {$value}): ?>";
+        $parse .= '{' . $content . '}';
+        $parse .= '<?php endif; ?>';
+        return $parse;
+    }
+
 }
