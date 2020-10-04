@@ -6,7 +6,7 @@ class RouteException extends BaseException
 {
     public function __construct($message = "", $code = 0, \Throwable $previous = null)
     {
-        parent::__construct('[DatabaseException]' . $message, $code, $previous);
+        parent::__construct('[RouteException]' . $message, $code, $previous);
     }
 
     /**
