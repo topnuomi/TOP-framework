@@ -494,8 +494,8 @@ $this->update([
 ```
 $this->update([
     'username' => 'TOP糯米'
-], function ($model) {
-    $model->where('id', 1);
+], function ($db) {
+    $db->where('id', 1);
 });
 ```
 当然，也可以使用连贯操作
@@ -518,8 +518,8 @@ $this->find(1);
 ```
 匿名函数
 ```
-$this->find(function ($model) {
-    $model->where('id', 1);
+$this->find(function ($db) {
+    $db->where('id', 1);
 });
 ```
 连贯操作
@@ -545,8 +545,8 @@ $this->delete(1);
 ```
 匿名函数
 ```
-$this->delete(function () {
-    $model->where('id', 1);
+$this->delete(function ($db) {
+    $db->where('id', 1);
 });
 ```
 连贯操作
@@ -580,9 +580,9 @@ $this->field('score')->avg();
 ```
 匿名函数中指定字段或条件
 ```
-$this->avg(function ($model) {
-    $model->where('score', '>=', 60);
-    $model->field('score');
+$this->avg(function ($db) {
+    $db->where('score', '>=', 60);
+    $db->field('score');
 });
 ```
 成功返回平均值，失败抛出DatabaseException异常。
@@ -674,8 +674,8 @@ $this->limit([0, 5])->select();
 
 一般调用
 ```
-$this->alias('t')->select(function ($model) {
-    $model->join('score s', 's.uid = t.id', 'left');
+$this->alias('t')->select(function ($db) {
+    $db->join('score s', 's.uid = t.id', 'left');
 });
 ```
 同样也可以使用连贯操作
@@ -688,9 +688,9 @@ $this->alias('t')->select(function ($model) {
 use app\home\model\Users;
 
 $userModel = model(Users::class);
-$res = $userModel->transaction(function ($model) {
-    $model->delete(4);
-    $model->update([
+$res = $userModel->transaction(function ($db) {
+    $db->delete(4);
+    $db->update([
         'id' => 3,
     ], 1);
 });
