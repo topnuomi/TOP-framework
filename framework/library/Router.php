@@ -307,6 +307,11 @@ class Router
      */
     public function handler($uri)
     {
+        // 检查模块是否存在
+        if (!is_dir(APP_PATH . BIND_MODULE)) {
+            throw new RouteException('不存在的模块：' . BIND_MODULE);
+        }
+        // 如果为空则默认为/
         $uri = $uri ? $uri : '/';
         $defaultMethod = config('default_method');
         $requestMethod = strtolower($this->request->requestMethod());
